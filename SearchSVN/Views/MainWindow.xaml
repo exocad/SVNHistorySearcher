@@ -1,0 +1,173 @@
+﻿<Window x:Class="SVNHistorySearcher.MainWindow" 
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:SVNHistorySearcher"
+		xmlns:views="clr-namespace:SVNHistorySearcher.Views"
+        xmlns:vm="clr-namespace:SVNHistorySearcher.ViewModels"
+        xmlns:models="clr-namespace:SVNHistorySearcher.Models"
+		xmlns:system="clr-namespace:System;assembly=mscorlib"
+		Closing="Window_Closing"
+        Title="{Binding WindowCaption}" Height="553" Width="960" MinWidth="600" MinHeight="300">
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="250" MinWidth="200" MaxWidth="500"/>
+			<ColumnDefinition Width="250" MinWidth="200" MaxWidth="500"/>
+			<ColumnDefinition Width="AUTO"/>
+			<ColumnDefinition Width="100*" MinWidth="100"/>
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="232"/>
+			<RowDefinition/>
+			<RowDefinition Height="AUTO"/>
+		</Grid.RowDefinitions>
+
+		<ComboBox Text="{Binding RepositoryUrl}" ItemsSource="{Binding RecentRepositories}" IsEditable="True" Height="20" VerticalAlignment="Top" Grid.ColumnSpan="2" Margin="10,10,123,0">
+			<ComboBox.ItemTemplate>
+				<DataTemplate>
+					<TextBlock Text="{Binding}"/>
+				</DataTemplate>
+			</ComboBox.ItemTemplate>
+		</ComboBox>
+		<Button Command="{Binding ButtonChangeRepository}" Content="Change Repository" HorizontalAlignment="Right" VerticalAlignment="Top" Width="108" Margin="0,10,10,0" Grid.Column="1" Height="20"/>
+
+		<Label Content="Find what?" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top" Width="76" Height="25" Grid.Column="0"/>
+		<TextBox Text="{Binding SearchString}" Height="23" Margin="86,43,90,0" TextWrapping="Wrap" VerticalAlignment="Top"  Grid.Column="0" Grid.ColumnSpan="2"/>
+		<Button Content="Find" Command="{Binding ButtonSearchCommand}" Height="23" VerticalAlignment="Top"  Grid.Column="1" Margin="0,43,10,0" HorizontalAlignment="Right" Width="75"/>
+
+		<GroupBox Header="Revision Span" Margin="10,81,5,0" Grid.Column="0" Grid.Row="0" Height="89" VerticalAlignment="Top">
+			<Grid Margin="0,0,0,-7">
+				<TextBox Text="{Binding StartRevisionText}" GotKeyboardFocus="TextBox_GotKeyboardFocus" GotMouseCapture="TextBox_GotMouseCapture" Margin="42,10,5,0" Height="19" VerticalAlignment="Top" ToolTip="Enter a Revision number or a Date( dd.MM.yyyy )." />
+				<TextBox Text="{Binding EndRevisionText}" GotKeyboardFocus="TextBox_GotKeyboardFocus" GotMouseCapture="TextBox_GotMouseCapture" Margin="42,41,5,0" Height="19" VerticalAlignment="Top" ToolTip="Enter a Revision number or a Date( dd.MM.yyyy )."/>
+				<Label Content="From" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,10,0,0" />
+				<Label Content="To" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,41,0,0" />
+			</Grid>
+		</GroupBox>
+
+		<GroupBox Header="Search options" Grid.Row="0" Margin="10,81,10,0" Grid.Column="1" Height="89" VerticalAlignment="Top">
+			<StackPanel Margin="0,0,0,1">
+				<CheckBox Content="Match Case" IsChecked="{Binding CaseSensitive}"/>
+				<CheckBox Content="Stop On Copy/Rename" IsChecked="{Binding StopOnCopy}" ToolTip="Choosing this option limits the content search to modifications made to selected files since they have their current names."/>
+				<CheckBox Content="Search in Filenames" IsChecked="{Binding SearchInRenames}"/>
+				<CheckBox Content="Search in Content Changes" IsChecked="{Binding SearchInContent}"/>
+			</StackPanel>
+		</GroupBox>
+
+		<TextBox TextWrapping="Wrap" Text="{Binding AuthorsString}" ToolTip="Type in Authors, split by a comma. ( au, tho, rs )" Margin="71,180,75,0" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Height="23" VerticalAlignment="Top"/>
+		<Label Content="Authors" HorizontalAlignment="Left" Width="56" Grid.Row="0" Margin="10,180,0,0" Height="26" VerticalAlignment="Top"/>
+		<CheckBox Content="Exclude" IsChecked="{Binding ExcludeAuthors}" HorizontalAlignment="Right" Width="60" Grid.Row="0" Grid.Column="1" Margin="0,186,10,0" Height="15" VerticalAlignment="Top"/>
+		<Label Content="Filename" Margin="10,211,0,0" Grid.Row="0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Width="104" Grid.RowSpan="2" />
+		<TextBox Height="23" TextWrapping="Wrap" Text="{Binding FilenameRegex}" ToolTip="Type &quot;config.xml&quot; to search in all files that contain &quot;config.xml&quot; in name. You can type in &quot;*&quot; to search in all files." Grid.Row="0" Grid.ColumnSpan="2" VerticalAlignment="Top" Margin="71,213,10,0" Grid.RowSpan="2"/>
+
+		<TextBox  TextAlignment="Center" Height="23" Margin="94,9,0,0" Grid.Row="1" TextWrapping="Wrap" Text="{Binding TreeRevisionText}" GotKeyboardFocus="TextBox_GotKeyboardFocus" GotMouseCapture="TextBox_GotMouseCapture" Width="110" KeyDown="TextBox_KeyDown" MaxLines="1" VerticalAlignment="Top" HorizontalAlignment="Left" AutoWordSelection="True"/>
+		<Button Content="&lt;" IsTabStop="False" Command="{Binding ButtonPreRevCommand}" HorizontalAlignment="Left" Margin="71,9,0,0" Grid.Row="1" VerticalAlignment="Top" Width="23" Height="23"/>
+		<Button Content="&gt;" IsTabStop="False" Command="{Binding ButtonNextRevCommand}" HorizontalAlignment="Left" Margin="204,9,0,0" Grid.Row="1" VerticalAlignment="Top" Width="24" Height="23"/>
+		<Label Content="Revision" HorizontalAlignment="Left" Margin="10,6,0,0" Grid.Row="1" VerticalAlignment="Top"/>
+		
+		<Grid Margin="10,37,10,5" Grid.ColumnSpan="2" Grid.Row="1">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="50*" MinWidth="50"/>
+				<ColumnDefinition Width="AUTO"/>
+				<ColumnDefinition Width="50*" MinWidth="50"/>
+			</Grid.ColumnDefinitions>
+
+			<TreeView ItemsSource="{Binding RepositoryOverview.Items}" Grid.Column="0" Margin="0,0,1.8,0">
+				<TreeView.Resources>
+					<HierarchicalDataTemplate DataType="{x:Type local:CheckableItem}" ItemsSource="{Binding Children, Mode=Oneway}">
+
+						<HierarchicalDataTemplate.ItemContainerStyle>
+							<Style TargetType="{x:Type TreeViewItem}">
+								<Setter Property="ToolTip" Value="{Binding Path, Mode=OneWay}"/>
+								<Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+							</Style>
+						</HierarchicalDataTemplate.ItemContainerStyle>
+
+						<StackPanel Orientation="Horizontal">
+							<CheckBox Focusable="True" IsChecked="{Binding IsChecked, Mode=TwoWay}" VerticalAlignment="Center"/>
+							<ContentPresenter Content="{Binding Text, Mode=OneTime}" Margin="2,0"/>
+							<StackPanel.ContextMenu>
+								<ContextMenu>
+									<MenuItem Header="Open" Command="{Binding OpenFile}"/>
+									<!--<MenuItem Header="Open with..." Command="{Binding OpenFileWith}"/>-->
+									<MenuItem Header="Download and open in explorer" Command="{Binding OpenParentInExplorer}"/>
+									<MenuItem Header="Set as Repository overview root" Command="{Binding SetAsTreeRoot}" IsEnabled="{Binding IsFolder}"/>
+								</ContextMenu>
+							</StackPanel.ContextMenu>
+						</StackPanel>
+					</HierarchicalDataTemplate>
+				</TreeView.Resources>
+				<TreeView.ItemContainerStyle>
+					<Style TargetType="{x:Type TreeViewItem}">
+						<Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+					</Style>
+				</TreeView.ItemContainerStyle>
+			</TreeView>
+
+			<GridSplitter IsTabStop="False" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="5" ResizeBehavior="PreviousAndNext" Grid.Column="1" />
+
+			<views:MyTreeView ItemsSource="{Binding SearchResults.Items}" SelectedItem="{Binding SearchResults.SelectedItem, Mode=TwoWay}" Grid.Column="2" Margin="1.4,0,0,0">
+
+				<TreeView.ItemContainerStyle>
+					<Style TargetType="{x:Type TreeViewItem}">
+						<Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=OneWay}"/>
+					</Style>
+				</TreeView.ItemContainerStyle>
+
+				<views:MyTreeView.Resources>
+					<HierarchicalDataTemplate DataType="{x:Type models:FoundFile}" ItemsSource="{Binding Items}">
+						<WrapPanel Cursor="Hand">
+							<WrapPanel.Resources>
+								<Style TargetType="TextBlock">
+									<Setter Property="Foreground" Value="{Binding TextColor, Mode=OneWay}"/>
+									<Setter Property="Background" Value="{Binding BackgroundColor, Mode=OneWay}"/>
+								</Style>
+							</WrapPanel.Resources>
+							<TextBlock Text="{Binding Name}"/>
+						</WrapPanel>
+					</HierarchicalDataTemplate>
+					<HierarchicalDataTemplate DataType="{x:Type models:FoundDiffWithColorSolution}">
+						<ContentControl MouseDoubleClick="FoundDiff_MouseDoubleClick">
+							<WrapPanel Cursor="Hand">
+								<WrapPanel.Resources>
+									<Style TargetType="TextBlock">
+										<Setter Property="Foreground" Value="{Binding TextColor, Mode=OneWay}"/>
+									</Style>
+								</WrapPanel.Resources>
+								<TextBlock Text="Revision: "/>
+								<TextBlock Text="{Binding Revision}"/>
+								<!--<TextBlock Text=", " />
+								<TextBlock Text="{Binding ResultCountString}"/>-->
+							</WrapPanel>
+						</ContentControl>
+					</HierarchicalDataTemplate>
+				</views:MyTreeView.Resources>
+
+			</views:MyTreeView>
+		</Grid>
+
+		<GridSplitter IsTabStop="False" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="5" Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" ResizeBehavior="PreviousAndNext"/>
+
+		<TextBox Text="{Binding FilePreview.FilePath, Mode=OneWay}" IsTabStop="False" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Grid.Column="3" Margin="10,6,119,0" IsReadOnly="True"/>
+		<Button Content="Open in Tortoise" Command="{Binding ButtonOpenInTortoise}" Grid.Column="3" Margin="0,6,10,0" VerticalAlignment="Top" Height="23" HorizontalAlignment="Right" Width="104"/>
+
+		<Grid Grid.Column="3" Grid.RowSpan="2">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="AUTO" MinHeight="62" MaxHeight="200"/>
+				<RowDefinition Height="12"/>
+				<RowDefinition Height="*" MinHeight="20"/>
+			</Grid.RowDefinitions>
+			<Label Content="Author" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,35,0,0" Height="26" Width="47" Grid.Row="0"/>
+			<Label Content="Date" VerticalAlignment="Top" Margin="0,35,111,0" HorizontalAlignment="Right" Width="35" RenderTransformOrigin="0.929,0.538" Height="26" Grid.Row="0"/>
+			<Label Content="Msg" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="132,35,0,0" Height="26" Width="33" Grid.Row="0"/>
+			<TextBox Text="{Binding FilePreview.Author, Mode=OneWay}" IsTabStop="False" IsReadOnly="True" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="65" Margin="62,38,0,0" Grid.Row="0"/>
+			<TextBox Text="{Binding FilePreview.Date, Mode=OneWay}" IsTabStop="False" IsReadOnly="True" Height="23" Margin="0,38,10,0" TextWrapping="Wrap" VerticalAlignment="Top" HorizontalAlignment="Right" Width="96" Grid.Row="0"/>
+			<TextBox Text="{Binding FilePreview.Message, Mode=OneWay}" IsTabStop="False" TextWrapping="Wrap" Margin="170,38,151,1" IsReadOnly="True" Grid.Row="0"/>
+			<GridSplitter IsTabStop="False" VerticalAlignment="Center" HorizontalAlignment="Stretch" ResizeBehavior="PreviousAndNext" ResizeDirection="Rows" Height="4" Grid.Row="1" RenderTransformOrigin="0.5,0.5" Margin="0,4"/>
+			<views:MvvmTextEditor CaretOffset="{Binding FilePreview.CaretOffset}" Text="{Binding FilePreview.FileContent, Mode=OneWay}" HighlightingLanguage="{Binding FilePreview.FileLanguage}" HighlightedString="{Binding FilePreview.HighlightedString, Mode=OneWay}" ShowLineNumbers="True" IsReadOnly="True" Margin="9,0,10,5" Grid.Row="2"/>
+		</Grid>
+
+		<StatusBar Height="30" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" VerticalAlignment="Bottom">
+			<ProgressBar Value="{Binding ProgressPercentage, Mode=OneWay}" Height="20" Width="200"/>
+			<TextBlock Text="{Binding LogMessage, Mode=OneWay}" Height="20"/>
+		</StatusBar>
+	</Grid>
+</Window>
