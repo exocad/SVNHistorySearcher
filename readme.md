@@ -1,63 +1,75 @@
 This tool "SVNHistorySearcher" is licensed under the "Apache License Version 2.0", see License.txt
 The tool "SVNHistorySearcher" was developed in the company exocad GmbH by the author Ion Paciu in 2019.
 
-'''Anleitung:'''
 
-1. Repository auswählen, auf "Change Repository" klicken
+# SVNHistorySearcher  
+*A tool that allows you to fully search your SVN repository.*  
+*You can search your repository for certain filenames.*  
+*and certain strings in the content changes. (like git's pickaxe)*  
 
-2. ins "Find what?" Feld reinschreiben wonach man sucht
+## Instruction  
+1. Select Repository. Click "Change Repository"  
 
-3. Wenn nötig, Datum/Revisionsspanne und Suchoptionen anpassen.
-   ( Stop on copy bedeutet, dass nicht in den Dateien, von denen die ausgewählten Dateien
-   abstammen sucht.
-   z.B. wenn man in einem Branch sucht und stop-on-copy AUS ist, wird auch in den Dateien, von denen die Dateien aus dem Branch abstammen, gesucht. )
+2. Put the string you want to search for in the "Find what?" field  
 
-4. Wenn nötig, auf Autoren beschränken. (Autoren mit Komma getrennt auflisten. Exclude bedeutet, dass nicht in Commits, dieser Autoren gesucht werden soll.)
+3. If necessary, change your search options.
 
-5. Dateien auswählen in denen gesucht werden soll:
-   Das kann man im Baum oder mit dem "Filename" Textfeld machen. Oder mit beiden.
-
-   Beim Textfeld werden alle Dateien durchsucht, die in ihrem Namen den angegebenen String haben und sich unter dem, am Anfang angegebenen Pfad befinden.
-   In diesem Fall ist es egal, ob die Datei in einer vorherigen Revision gelöscht wurde und jetzt nicht mehr existiert.
-
-   Man kann auch ein * ins Textfeld eingeben. Das wäre dann eine Suche durch alle Dateien unter dem am Anfang angegebenen Pfad.
-
-   Bei Auswahl über das Textfeld, wird stop-on-copy ignoriert, weil es da keinen Sinn ergibt.
-
-   Bei Dateien, die im Baum ausgewählt werden, wird standardmäßig in Dateien gesucht, von denen die aktuell ausgewählten Dateien abstammen.
-
-6. auf "Find" drücken und Geduld haben.
-   Erstmal werden alle Diffs zu der Suche vom Server heruntergeladen und lokal gespeichert.
-   Das kann, abhängig von der Größe sehr lange dauern.
-   Da der SVNHistorySearcher viele Threads startet um die Diffs ein bisschen schneller herunterzuladen, kann es passieren, das 
-   der Server überlastet wird. Ich empfehle große Anfragen( z.b. das ganze Repository runterladen ) über Nacht zu machen.
-
-   Es kann passieren, dass der Ladebalken am Ende sehr lange braucht. Das bedeutet nicht, dass es kaputt ist.
-
-   Die Textsuche, bei schon heruntergeladen Diffs, geht sehr schnell.
+4. Select files. This can be done in the tree or file the "Filename" field or both.
+   * When using the text field, it will search all files that contain the substring in their name.
+   * You can type an \* into the search field and it will search in all files.
    
-'''WICHTIG'''
-   Bei jeder Suche werden Dateien ignoriert, deren Endung eine Typische, für binäre Dateien ist. (z.B. exe, obj, stl)
-   Eine volle Liste befindet sich in der settings.xml
+5. Press "Find" and be patient. It can take a while depending on the size of your query. 
+   It downloads the diffs, relevant for your search, and stores them locally. The second search will be faster.  
+   It could happen, that the loading bar stays at the end for a very long time. That doesn't mean that it's broken.  
 
-   Der SVNHistorySearcher sucht in Änderung des Inhalts einer Datei:
-   Er zeigt nicht alle Revisionen, in denen sich ein bestimmter Text in einer Datei befand, als Ergebnis an.
-   Er lädt sich die Diffs aller Modifikationen und Dateierstellungen runter und sucht nur in Zeilen, die mit einem + oder - beginnen.
+## Search Options  
+**Case sensitive**  trivial  
+
+**Stop on copy/rename**  If unchecked:  Searcher will search in the selected files and in ancestor files the selected files. If checked: Search will be limited to the selected files.  
+
+**Search in filenames**  If checked: Results will contain files and folders whose name or ancestor names matched the search string in any revision.  
+**NOTE:** In order to search your repository for all files with a certain name you have to put an \* in the Filename field.  
+**NOTE:** The "stop on copy" option is ignored here because it doesn't make sense here.  
+
+**Search in content changes** If checked: Will in diffs of selected files  
    
-'''Ergebnisse:'''
-   In der Ergebnisliste tauchen Dateien und Ordner auf.
+**Authors**  Limits the search to commits of certain authors. **Exclude** Excludes commits certain authors have made from search.  
 
-   Wenn sie in grüner Textfarbe sind, bedeutet das, dass der Suchtext in ihrem Namen gefunden wurde.
+**Filename**  Adds files whose name math this field's text to the search. (eg. type "Dog.cs" to search in all files whose name case insensitivly contains "Dog.cs")  
+You can type in an \* to search in all files.  
+**NOTE:** This will also search in files that don't exist in the current revision. \-\> you can search in deleted files.  
 
-   Wenn sie eine rote Hintergrundfarbe haben, bedeutet das, dass die Datei/der Ordner in der aktuellen Revision nicht mehr existiert.
-   Sie ist entweder verschoben worden, wurde umbenannt oder gelöscht.
+## Results  
+The result list contains files and folders.  
+If the text name is **green**, the search string was found in the name.  
+If the background color is **red**, the file/folder does not exist in the HEAD revision. It might have been deleted, moved or renamed.  
 
-   Wenn man auf die Datei oder den Ordner klickt, wird im Textfeld rechts die Geschichte dieser Datei angezeigt. (Wann sie erstellt wurde, von wo sie kopiert wurde, ...)
+You can click on each search result to see the history of this file/folder (creation, movements, renames, deletion).  
 
-   Bei Dateien werden untergeordnet die einzeilnen Revisionen gezeigt, in denen eine Änderung gefunden wurde.
-   Blaue Textfarbe bei einer Revision bedeutet, dass diese Änderung in einer Datei stattfand, von der die jetztige Datei abstammt.
+Search results in the content are listed under the filenames.  
+**Blue** text color means that this change in content occered in an ancestor file of this file.  
 
-   Mit Doppelklick oder mit dem Button "Open in Tortoise" kann man Dateien in Tortoise öffnen und sich die Änderung anschauen.
-   
-'''Sonstiges'''
-   Bei der Repository Übersicht gibt es ein Context Menu, mit dem man sich den Inhalt der Dateien ansehen kann.
+You can open Tortoise too see die difference by double clicking of clicking the "Open in Tortoise" button.  
+
+## Important  
+There is a settings file located at "data/settings.xml". It is created/updated when you close the searcher.  
+
+Files with typical binary file extentions (.exe, .obj, ...) are ignored. A full list can be found the "settings.xml".  
+
+The Searcher searches in content changes:  
+It downloads the diffs and searches for the string in lines that start with a \+ or \-.  
+It does not show you which revisions contained your search string. But you can easily get to that by looking at the results.
+
+## Things that can happen  
+The downloading process seems to be going really fast but then it restarts with about the same "unified diffs" to download 3 times and then tells you that many files are missing from search.  
+This is because some subversion servers block clients that send multiple request in parallel for too long.  
+
+**Solution:**  
+Close SVNHistorySearcher.  
+Open your "settings.xml" in the "data" folder.  
+Set MaxFetchingThreads to 1.  
+Wait a bit.  
+Open SVNHistorySearcher and try again.  
+
+## Miscelleaneous
+   You can open files from the repository overview by right clicking on them and selecting "Open".
