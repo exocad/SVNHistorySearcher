@@ -6,6 +6,8 @@ The tool "SVNHistorySearcher" was developed in the company exocad GmbH by the au
 *A tool that allows you to fully search your SVN repository.*  
 *You can search your repository for certain filenames.*  
 *and certain strings in the content changes. (like git's pickaxe)*  
+* The most important feature of the tool is, that it will find any strings that ever existed in the repository, even in deleted or renamed or moved files. This does not seem to be possible with any other tool as far as we know. 
+* The tool can will build up its own search structure database, such that many fast queries can be done after this initial database build-up phase is finished. 
 
 ## Instruction  
 1. Select Repository. Click "Change Repository"  
@@ -49,7 +51,7 @@ You can click on each search result to see the history of this file/folder (crea
 Search results in the content are listed under the filenames.  
 **Blue** text color means that this change in content occered in an ancestor file of this file.  
 
-You can open Tortoise too see die difference by double clicking of clicking the "Open in Tortoise" button.  
+You can open TortoiseSVN too see die difference by double clicking of clicking the "Open in Tortoise" button.  
 
 ## Important  
 There is a settings file located at "data/settings.xml". It is created/updated when you close the searcher.  
