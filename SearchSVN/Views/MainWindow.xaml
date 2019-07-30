@@ -45,10 +45,10 @@
 
 		<GroupBox Header="Search options" Grid.Row="0" Margin="10,81,10,0" Grid.Column="1" Height="89" VerticalAlignment="Top">
 			<StackPanel Margin="0,0,0,1">
-				<CheckBox Content="Match Case" IsChecked="{Binding CaseSensitive}"/>
-				<CheckBox Content="Stop On Copy/Rename" IsChecked="{Binding StopOnCopy}" ToolTip="Choosing this option limits the content search to modifications made to selected files since they have their current names."/>
-				<CheckBox Content="Search in Filenames" IsChecked="{Binding SearchInRenames}"/>
-				<CheckBox Content="Search in Content Changes" IsChecked="{Binding SearchInContent}"/>
+				<CheckBox Content="Case sensitive" IsChecked="{Binding CaseSensitive}"/>
+				<CheckBox Content="Stop on copy/rename" IsChecked="{Binding StopOnCopy}" ToolTip="Choosing this option limits the content search to modifications made to selected files since they have their current names."/>
+				<CheckBox Content="Search in filenames" IsChecked="{Binding SearchInRenames}"/>
+				<CheckBox Content="Search in content changes" IsChecked="{Binding SearchInContent}"/>
 			</StackPanel>
 		</GroupBox>
 
