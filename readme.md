@@ -4,7 +4,7 @@ The tool "SVNHistorySearcher" was developed in the company exocad GmbH by the au
 
 # SVNHistorySearcher  
 *A tool that allows you to fully search your SVN repository.*  
-*You can search your repository for certain filenames.*  
+*You can search your repository for certain filenames*  
 *and certain strings in the content changes. (like git's pickaxe)*  
 * The most important feature of the tool is, that it will find any strings that ever existed in the repository, even in deleted or renamed or moved files. This does not seem to be possible with any other tool as far as we know. 
 * The tool can will build up its own search structure database, such that many fast queries can be done after this initial database build-up phase is finished. 
@@ -25,6 +25,8 @@ The tool "SVNHistorySearcher" was developed in the company exocad GmbH by the au
    It could happen, that the loading bar stays at the end for a very long time. That doesn't mean that it's broken.  
 
 ## Search Options  
+**Revision Span**  from which to which revision span to search  
+
 **Case sensitive**  trivial  
 
 **Stop on copy/rename**  If unchecked:  Searcher will search in the selected files and in ancestor files the selected files. If checked: Search will be limited to the selected files.  
