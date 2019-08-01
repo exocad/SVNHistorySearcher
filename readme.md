@@ -25,7 +25,7 @@ The tool "SVNHistorySearcher" was developed in the company exocad GmbH by the au
    It could happen, that the loading bar stays at the end for a very long time. That doesn't mean that it's broken.  
 
 ## Search Options  
-**Revision Span**  from which to which revision span to search  
+**Revision Span**  From which to which revision to search. Can be either a date, a number or "HEAD".  
 
 **Case sensitive**  trivial  
 
