@@ -111,7 +111,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Common\AtomicBoolean.cs" />
-    <Compile Include="EqualityConverter.cs" />
     <Compile Include="Models\DataSaver.cs" />
     <Compile Include="Models\DiffInfo.cs" />
     <Compile Include="Models\FoundDiff.cs" />
