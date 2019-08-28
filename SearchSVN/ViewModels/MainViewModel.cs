@@ -671,7 +671,7 @@ namespace SVNHistorySearcher.ViewModels {
 		/// Has to run asyncronously because it invokes methods in main thread
 		/// </summary>
 		/// <param name="repoUrl"></param>
-		void TryLoadRepository(string repoUrl) {
+		async void TryLoadRepository(string repoUrl) {
 			if (!currentlyLoadingRepository.CompareAndSet(false, true)) {
 				return; // do nothing because one repository is already loading
 			}
@@ -750,22 +750,35 @@ namespace SVNHistorySearcher.ViewModels {
 				if (info == SubversionSearcher.AuthenticationInfo.Successful) {
 					Progress.Log("Loading Repository");
 
-					Action<SubversionSearcher> callback = (svs) => {
-						App.Current.Dispatcher.Invoke(() => MakeTreeAndUpdateRepoUrl(svs, repoUrl));
-						if (!currentlyLoadingRepository.CompareAndSet(true, false)) {
-							// should never happen
-						}
-					};
-
 					if (useCredentials) {
 						// Use credentials from credentials window or file
-						Task.Run(() => { subversionSearcher = new SubversionSearcher(RepositoryUrl, _username, _password); callback(subversionSearcher); });
+						await Task.Run(() => {
+							try {
+								subversionSearcher = new SubversionSearcher(RepositoryUrl, _username, _password);
+							} catch(Exception ex) {
+								Progress.Log("Failed to initialize. See error.log");
+								Progress.ErrorLog(ex);
+							}
+						});
 					} else {
 						// Use credentials from tortoise
-						Task.Run(() => { subversionSearcher = new SubversionSearcher(RepositoryUrl); callback(subversionSearcher); });
+						await Task.Run(() => {
+							try {
+								subversionSearcher = new SubversionSearcher(RepositoryUrl);
+							} catch (Exception ex) {
+								Progress.Log("Failed to initialize. See error.log");
+								Progress.ErrorLog(ex);
+							}
+						});
 					}
 
+					App.Current.Dispatcher.Invoke(() => MakeTreeAndUpdateRepoUrl(subversionSearcher, repoUrl));
+					
 				}
+			}
+
+			if (!currentlyLoadingRepository.CompareAndSet(true, false)) {
+				// should never happen
 			}
 		}
 
