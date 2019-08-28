@@ -21,7 +21,7 @@
 			<RowDefinition Height="AUTO"/>
 		</Grid.RowDefinitions>
 
-		<ComboBox Text="{Binding RepositoryUrl}" ItemsSource="{Binding RecentRepositories}" IsEditable="True" Height="20" VerticalAlignment="Top" Grid.ColumnSpan="2" Margin="10,10,123,0">
+		<ComboBox Text="{Binding RepositoryUrl}" ToolTip="Repository Url (e.g. &quot;svn://example.com/svn/&quot;)" ItemsSource="{Binding RecentRepositories}" IsEditable="True" Height="20" VerticalAlignment="Top" Grid.ColumnSpan="2" Margin="10,10,123,0">
 			<ComboBox.ItemTemplate>
 				<DataTemplate>
 					<TextBlock Text="{Binding}"/>
