@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SharpSvn;
 
-namespace SVNHistorySearcher.Models {
+namespace SVNHistorySearcher.Models
+{
 
 	[Serializable]
 	public struct NodeAction {
@@ -104,6 +102,7 @@ namespace SVNHistorySearcher.Models {
 			}
 		}
 
+
 		public void AddChild(NodeAtTime child) {
 			_children.Add(child);
 			SetIsFolder();
@@ -128,6 +127,24 @@ namespace SVNHistorySearcher.Models {
 					_ancestor.Ancestor.SetIsFile();
 				}
 			}
+		}
+
+		/// <summary>
+		/// Gets whether the node was deleted before or at that revision
+		/// </summary>
+		/// <param name="revision"></param>
+		/// <returns>True if it was deleted. False if not.</returns>
+		public bool DeletedAt(long revision) {
+			return DeleteRevision != long.MaxValue && DeleteRevision <= revision;
+		}
+
+		/// <summary>
+		/// Gets whether the node exists at given revision
+		/// </summary>
+		/// <param name="revision"></param>
+		/// <returns>True if it exists. False if not.</returns>
+		public bool ExistsAtRevision(long revision) {
+			return revision >= AddRevision && (revision < DeleteRevision || DeleteRevision == long.MaxValue);
 		}
 	}
 }

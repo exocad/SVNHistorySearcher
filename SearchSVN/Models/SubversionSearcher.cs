@@ -246,6 +246,8 @@ namespace SVNHistorySearcher.Models {
 
 		string username;
 		string password;
+		bool useCredentials;
+
 		int maxThreads;
 		
 		/// <summary>
@@ -283,16 +285,31 @@ namespace SVNHistorySearcher.Models {
 
 		LuceneIndexer indexer;
 
-		public SubversionSearcher(string rawUrl) : this(rawUrl, "", "") { }
+		/// <summary>
+		/// Initializes SubversionSearcher. Will use Tortoise Credentials Cache.
+		/// </summary>
+		/// <param name="rawUrl">Any Url inside the repository</param>
+		/// <exception cref="System.Exception"></exception>
+		public SubversionSearcher(string rawUrl) : this(rawUrl, null, null) { }
 
+
+		/// <summary>
+		/// Initializes SubversionSearcher. Will use given credentials.
+		/// </summary>
+		/// <param name="rawUrl">Any Url inside the repository</param>
+		/// <param name="username">Username to use</param>
+		/// <param name="password">Password to use</param>
+		/// <exception cref="System.Exception"></exception>
 		public SubversionSearcher(string rawUrl, string username, string password) {
 			maxThreads = DataSaver.MaxThreads;
 
 			runningProcesses = new ConcurrentDictionary<Process, byte>();
+
+			useCredentials = username != null && password != null;
 			this.username = username;
 			this.password = password;
-			runningThreads = new List<Thread>();
 
+			runningThreads = new List<Thread>();
 
 			SvnClient client = GetFreshSvnClient();
 
@@ -1342,7 +1359,7 @@ namespace SVNHistorySearcher.Models {
 			SvnClient result = new SvnClient();
 
 			
-			if (!String.IsNullOrEmpty(username) && password != null) {
+			if (useCredentials) {
 				result.Authentication.Clear();
 				result.Authentication.DefaultCredentials = new System.Net.NetworkCredential(username, password);
 			}
@@ -1769,7 +1786,7 @@ namespace SVNHistorySearcher.Models {
 
 				if (nat.Children != null) {
 					foreach (var child in nat.Children) {
-						if (child.AddRevision <= revision && child.DeleteRevision > revision) {
+						if (child.ExistsAtRevision(revision)) {
 
 							if (getChildList) {
 								// finding out whether this child has children so we can make it expandable in the tree view
@@ -1984,7 +2001,12 @@ namespace SVNHistorySearcher.Models {
 			return result;
 		}
 
-		// throws Exception
+		/// <summary>
+		/// Finds the base url of the repository.
+		/// </summary>
+		/// <param name="anyUrl">Any Url inside the repository.</param>
+		/// <returns>Base Url</returns>
+		/// <exception cref="System.Exception">If the repository base could not be found.</exception>
 		string GetRepositoryBase(string anyUrl) {
 			if (String.IsNullOrEmpty(anyUrl)) {
 				throw new System.Exception(String.Format("RepositoryUrl empty: \"{0}\"", anyUrl));

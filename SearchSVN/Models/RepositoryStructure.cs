@@ -314,7 +314,7 @@ namespace SVNHistorySearcher.Models
 				for (int k = ancli.Count - 1; k >= 0; k--) {
 					if (ancli[k].AddRevision <= revision) {
 
-						if (ancli[k].DeleteRevision > revision) {
+						if (!ancli[k].DeletedAt(revision)) {
 							return ancli[k];
 						} else {
 							Progress.DebugLog("NodeAtTime {0}@{1} cannot be found because it's deleted at {2}", path, revision, ancli[k].DeleteRevision);
@@ -340,7 +340,7 @@ namespace SVNHistorySearcher.Models
 			int result = 0;
 
 			foreach (NodeAtTime n in node.Children) {
-				if (n.AddRevision <= revision && n.DeleteRevision > revision) {
+				if (n.ExistsAtRevision(revision)) {
 					result += GetNodeChecksum(n, revision);
 				}
 			}
