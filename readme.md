@@ -56,6 +56,8 @@ Search results in the content are listed under the filenames.
 You can open TortoiseSVN too see die difference by double clicking of clicking the "Open in Tortoise" button.  
 
 ## Important  
+SVNHistorySearcher only works if you have read-access to the entire repository.  
+
 There is a settings file located at "data/settings.xml". It is created/updated when you close the searcher.  
 
 Files with typical binary file extentions (.exe, .obj, ...) are ignored. A full list can be found the "settings.xml".  
