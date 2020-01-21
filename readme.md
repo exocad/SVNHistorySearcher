@@ -29,6 +29,8 @@ The tool "SVNHistorySearcher" was developed in the company exocad GmbH by the au
 
 **Case sensitive**  trivial  
 
+**Use regular expressions**  uses regular expressions. Single line only.
+
 **Stop on copy/rename**  If unchecked:  Searcher will search in the selected files and in ancestor files the selected files. If checked: Search will be limited to the selected files.  
 
 **Search in filenames**  If checked: Results will contain files and folders whose name or ancestor names matched the search string in any revision.  
