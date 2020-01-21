@@ -64,6 +64,15 @@ namespace SVNHistorySearcher.ViewModels {
 			}
 		}
 
+		public bool UseRegex {
+			get {
+				return mainViewModel.SearchResults.SearchResults != null && mainViewModel.SearchResults.SearchResults.UseRegex;
+			}
+			set {
+				RaisePropertyChanged("UseRegex");
+			}
+		}
+
 		public string Author {
 			get {
 				if (_openedFile != null) {
@@ -120,6 +129,7 @@ namespace SVNHistorySearcher.ViewModels {
 				RaisePropertyChanged("FileLanguage");
 				RaisePropertyChanged("CursorPosition");
 				RaisePropertyChanged("HighlightedString");
+				RaisePropertyChanged("UseRegex");
 				RaisePropertyChanged("Author");
 				RaisePropertyChanged("Date");
 				RaisePropertyChanged("Message");

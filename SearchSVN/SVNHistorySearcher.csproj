@@ -131,7 +131,6 @@
     <Compile Include="Views\MyTreeView.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Models\FoundFile.cs" />
-    <Compile Include="Views\MvvmSearchPanel.cs" />
     <Compile Include="Views\MvvmTextEditor.cs" />
     <Compile Include="CommandHandler.cs" />
     <Compile Include="ViewModels\RepositoryOverviewViewModel.cs" />

@@ -225,6 +225,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using SVNHistorySearcher.Common;
+using System.Text.RegularExpressions;
 
 namespace SVNHistorySearcher.Models {
 	public partial class SubversionSearcher {
@@ -1449,7 +1450,7 @@ namespace SVNHistorySearcher.Models {
 			Task t = new Task(() => {
 				if (searchOptions.SearchInRenames) {
 					foreach (KeyValuePair<string, IList<MovementInfo>> kv in movementInfos) {
-						if (SearchNameHistory(kv.Value, searchOptions.Text, searchOptions.CaseSensitive)) {
+						if (SearchNameHistory(kv.Value, searchOptions)) {
 							filesContainingTextInFileName.Add(kv.Key);
 						}
 					}
@@ -1471,7 +1472,7 @@ namespace SVNHistorySearcher.Models {
 			Progress.Log("Loading results...");
 			int resultCount;
 			var rs = GetFoundFiles(searchOptions, diffInfoFileRelations, movementInfos, filesContainingTextInFileName, filesContainingTextInContent, out resultCount);
-			SearchResults result = new SearchResults(rs, searchOptions.Text, resultCount);
+			SearchResults result = new SearchResults(rs, searchOptions, resultCount);
 
 			if (!isComplete || Progress.GetFailedRequests() > 0) {
 
@@ -2029,24 +2030,36 @@ namespace SVNHistorySearcher.Models {
 		}
 
 
-		private bool SearchNameHistory(IList<MovementInfo> movements, string text, bool caseSensitive) {
+		private bool SearchNameHistory(IList<MovementInfo> movements, SearchOptions options) {
+
 			if (movements != null) {
 
-				string st = caseSensitive ? text : text.ToLower();
+				if (options.UseRegex) {
 
-				foreach (MovementInfo mi in movements) {
-					if (mi != null) {
-						
-						if (caseSensitive) {
-							if (mi.OldName.Contains(st) || mi.NewName.Contains(st)) {
-								return true;
+					Regex pattern = new Regex(options.Text, options.CaseSensitive ? 0 : RegexOptions.IgnoreCase);
+
+					foreach (MovementInfo mi in movements) {
+						if (pattern.IsMatch(mi.OldName) || pattern.IsMatch(mi.NewName))
+							return true;
+					}
+
+				} else {
+					string st = options.CaseSensitive ? options.Text : options.Text.ToUpperInvariant();
+
+					foreach (MovementInfo mi in movements) {
+						if (mi != null) {
+
+							if (options.CaseSensitive) {
+								if (mi.OldName.Contains(st) || mi.NewName.Contains(st)) {
+									return true;
+								}
+							} else {
+								if (mi.OldName.ToUpperInvariant().Contains(st) || mi.NewName.ToUpperInvariant().Contains(st)) {
+									return true;
+								}
 							}
-						} else {
-							if (mi.OldName.ToLower().Contains(st) || mi.NewName.ToLower().Contains(st)) {
-								return true;
-							}
+
 						}
-
 					}
 				}
 			}

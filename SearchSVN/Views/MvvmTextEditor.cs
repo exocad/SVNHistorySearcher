@@ -48,6 +48,15 @@ namespace SVNHistorySearcher.Views {
 			})
 		);
 
+		public static DependencyProperty UseRegexProperty =
+			DependencyProperty.Register("UseRegex", typeof(bool), typeof(MvvmTextEditor),
+			// binding changed callback: set value of underlying property
+			new PropertyMetadata((obj, args) => {
+				MvvmTextEditor target = (MvvmTextEditor)obj;
+				target.UseRegex = (bool)args.NewValue;
+			})
+		);
+
 		public new string Text {
 			get { return base.Text; }
 			set { base.Text = value; }
@@ -70,17 +79,26 @@ namespace SVNHistorySearcher.Views {
 			}
 		}
 
+		public bool UseRegex {
+			set {
+				_useRegex = value;
+				ReOpenSearchPanel();
+			}
+		}
+
 		public void ReOpenSearchPanel() {
 			if (searchPanel == null) {
 				searchPanel = SearchPanel.Install(this);
 			}
 			searchPanel.SearchPattern = _highlightedString;
+			searchPanel.UseRegex = _useRegex;
 			searchPanel.Open();
 		}
 
 		public int Length { get { return base.Text.Length; } }
 		string hLang = ".txt";
 		string _highlightedString = "";
+		bool _useRegex = false;
 		SearchPanel searchPanel;
 
 		protected override void OnTextChanged(EventArgs e) {

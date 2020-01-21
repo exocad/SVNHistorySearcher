@@ -22,6 +22,8 @@ using System.Security.Cryptography;
 using SVNHistorySearcher.Common;
 
 using Directory = Lucene.Net.Store.Directory;
+using System.Text.RegularExpressions;
+
 namespace SVNHistorySearcher.Models {
 
 	// this Indexer is tied to a repository
@@ -94,6 +96,12 @@ namespace SVNHistorySearcher.Models {
 
 			ConcurrentBag<DiffInfo> notFoundPrep = new ConcurrentBag<DiffInfo>();
 
+			Regex pattern = null;
+
+			// regex instantiation should never fail because it was tested before
+			if (searchOptions.UseRegex)
+				pattern = new Regex(searchOptions.Text, searchOptions.CaseSensitive ? 0 : RegexOptions.IgnoreCase);
+
 			long searchedTrough = 0;
 
 			AtomicBoolean running = new AtomicBoolean(true);
@@ -126,7 +134,12 @@ namespace SVNHistorySearcher.Models {
 
 							Interlocked.Add(ref searchedTrough, 1);
 
-							if(Utils.BestSearch(text, searchOptions.Text, searchOptions.CaseSensitive)) {
+
+							bool foundSomething = searchOptions.UseRegex ?
+								Utils.BestSearch(text, pattern) :
+								Utils.BestSearch(text, searchOptions.Text, searchOptions.CaseSensitive);
+
+							if (foundSomething) {
 								IList<DiffInfo> li;
 									if (docIDtoDiffs.TryGetValue(docId, out li)) {
 										foreach (var e in li) {

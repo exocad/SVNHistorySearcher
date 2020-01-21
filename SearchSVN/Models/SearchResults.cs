@@ -28,9 +28,13 @@ namespace SVNHistorySearcher.Models {
 		private bool _successful;
 		public bool Successful { get { return _successful; } }
 
-		string _searchString;
+		private SearchOptions _searchOptions;
 		public string SearchString {
-			get { return _searchString; }
+			get { return _searchOptions.Text; }
+		}
+
+		public bool UseRegex {
+			get { return _searchOptions.UseRegex; }
 		}
 
 		IList<FoundFile> _files;
@@ -38,10 +42,10 @@ namespace SVNHistorySearcher.Models {
 			get { return _files; }
 		}
 
-		public SearchResults(IList<FoundFile> files, string searchString, int resultCount, bool successful = true, string errorsPath = "") {
+		public SearchResults(IList<FoundFile> files, SearchOptions searchOptions, int resultCount, bool successful = true, string errorsPath = "") {
 			_successful = successful;
 			_files = files;
-			_searchString = searchString;
+			_searchOptions = searchOptions;
 			_errorPath = errorsPath;
 			_resultCount = resultCount;
 		}

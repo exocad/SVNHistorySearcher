@@ -22,6 +22,7 @@ namespace SVNHistorySearcher.Models {
 		public string HeadNodePath = "";
 		public string FilenameSubstring = "";
 		public bool CaseSensitive = false;
+		public bool UseRegex = false;
 		public bool SearchInRenames = true;
 		public bool SearchInContent = true;
 		public bool StopOnCopy = false;
@@ -57,6 +58,7 @@ namespace SVNHistorySearcher.Models {
 			result += 19*(Text != null ? Text.GetHashCode() : 1);
 			result += 23*(CaseSensitive.GetHashCode() + 1);
 			result += 29*(SearchInRenames.GetHashCode() + 1);
+			result += 31 * (UseRegex.GetHashCode() + 1);
 			return result;
 		}
 	}

@@ -223,6 +223,7 @@ using System.Collections.ObjectModel;
 using SVNHistorySearcher.Views;
 using SVNHistorySearcher.Models;
 using SVNHistorySearcher.Common;
+using System.Text.RegularExpressions;
 
 namespace SVNHistorySearcher.ViewModels {
 	public class MainViewModel : ViewModel {
@@ -277,6 +278,14 @@ namespace SVNHistorySearcher.ViewModels {
 			set {
 				_caseSensitive = value;
 				RaisePropertyChanged("CaseSensitive");
+			}
+		}
+		private bool _useRegex = false;
+		public bool UseRegex {
+			get { return _useRegex; }
+			set {
+				_useRegex = value;
+				RaisePropertyChanged("UseRegex");
 			}
 		}
 		private bool _stopOnCopy = false;
@@ -894,6 +903,15 @@ namespace SVNHistorySearcher.ViewModels {
 					return;
 				}
 
+				if(UseRegex) {
+					try {
+						Regex rx = new Regex(_searchString);
+					} catch (ArgumentException) {
+						Progress.Log("Invalid regex");
+						return;
+					}
+				}
+
 				Progress.Log("Listing...");
 
 				ISet<string> recursivlyAdded = new HashSet<string>();
@@ -924,6 +942,7 @@ namespace SVNHistorySearcher.ViewModels {
 
 				SearchOptions options = new SearchOptions() { 
 					CaseSensitive = _caseSensitive,
+					UseRegex = _useRegex,
 					SearchFromRevision = useDateForStart ? new SharpSvn.SvnRevision(searchFromDate.Date) : new SharpSvn.SvnRevision(searchFromRevision),
 					SearchToRevision = useDateForEnd ? new SharpSvn.SvnRevision(searchToDate.Date) : new SharpSvn.SvnRevision(searchToRevision),
 					TreeRevision = new SharpSvn.SvnRevision(TreeRevision),

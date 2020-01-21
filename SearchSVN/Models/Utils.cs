@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace SVNHistorySearcher.Models {
 	public static class Utils {
@@ -162,6 +163,27 @@ namespace SVNHistorySearcher.Models {
 			} else {
 				return text.IndexOf(pattern, StringComparison.OrdinalIgnoreCase) >= 0 && FastSearchWithPlusMinus(text, pattern, StringComparison.OrdinalIgnoreCase);
 			}
+		}
+
+		/// <summary>
+		/// Searches for a regex a text. Ignores lines that don't start with '+' or '-'
+		/// Is fast for texts that don't contain the pattern at all
+		/// </summary>
+		/// <param name="text">text to search in</param>
+		/// <param name="pattern">Regex object to search with to search for</param>
+		/// <returns></returns>
+		public static bool BestSearch(string text, Regex pattern) {
+
+			using (var reader = new StringReader(text)) {
+				String line;
+
+				while((line = reader.ReadLine()) != null) {
+					if(line.Length != 0 && (line[0] == '+' || line[0] == '-') && pattern.IsMatch(line, 1)) {
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 
 		/// <summary>
