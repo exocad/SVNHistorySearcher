@@ -42,7 +42,7 @@ namespace SVNHistorySearcher.Models
 		string _path;
 		IList<NodeAction> _actions;
 		AncestorRelation _ancestor;
-		long _deleteRevision;
+		long? _deleteRevision;
 		IList<NodeAtTime> _children;
 		bool _isFolder = false;   // true means that it's proved to be a folder, false means we don't know
 		bool _isFile = false;   // true means that it's proved to be a file, false means we don't know
@@ -54,7 +54,7 @@ namespace SVNHistorySearcher.Models
 		public bool IsFile { get { return _isFile; } }
 		public IList<NodeAction> Actions { get { return _actions; } }
 		public long AddRevision { get { return _actions[0].Revision; } }
-		public long DeleteRevision { get { return _deleteRevision; } }
+		public long? DeleteRevision { get { return _deleteRevision; } }
 		public AncestorRelation Ancestor { get { return _ancestor; } }
 
 		public SvnNodeKind NodeKind {
@@ -72,7 +72,7 @@ namespace SVNHistorySearcher.Models
 		public NodeAtTime(string path, long revision, AncestorRelation ancestor) {
 			_path = path;
 			_actions = new List<NodeAction> { new NodeAction(revision, true, false)};
-			_deleteRevision = long.MaxValue;
+			_deleteRevision = null;
 			_ancestor = ancestor;
 			_children = new List<NodeAtTime>();
 		}
@@ -80,7 +80,7 @@ namespace SVNHistorySearcher.Models
 		public NodeAtTime(string path, long revision) {
 			_path = path;
 			_actions = new List<NodeAction> { new NodeAction(revision, true, false) };
-			_deleteRevision = long.MaxValue;
+			_deleteRevision = null;
 			_ancestor = null;
 			_children = new List<NodeAtTime>();
 		}
@@ -135,7 +135,7 @@ namespace SVNHistorySearcher.Models
 		/// <param name="revision"></param>
 		/// <returns>True if it was deleted. False if not.</returns>
 		public bool DeletedAt(long revision) {
-			return DeleteRevision != long.MaxValue && DeleteRevision <= revision;
+			return DeleteRevision.HasValue && DeleteRevision <= revision;
 		}
 
 		/// <summary>
@@ -144,7 +144,7 @@ namespace SVNHistorySearcher.Models
 		/// <param name="revision"></param>
 		/// <returns>True if it exists. False if not.</returns>
 		public bool ExistsAtRevision(long revision) {
-			return revision >= AddRevision && (revision < DeleteRevision || DeleteRevision == long.MaxValue);
+			return revision >= AddRevision && (!DeleteRevision.HasValue || revision < DeleteRevision);
 		}
 	}
 }

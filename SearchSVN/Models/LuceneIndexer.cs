@@ -74,7 +74,7 @@ namespace SVNHistorySearcher.Models {
 			GC.SuppressFinalize(this);
 		}
 
-		protected virtual void Dispose(bool bo) {
+		protected void Dispose(bool bo) {
 			SaveEqualContent();
 			IsActive.Set(false);
 			if (Writer != null) {

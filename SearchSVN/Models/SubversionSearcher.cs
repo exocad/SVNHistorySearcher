@@ -1771,7 +1771,7 @@ namespace SVNHistorySearcher.Models {
 				if (li[i].AddRevision > revision) {
 					continue;
 				}
-				if (li[i].DeleteRevision <= revision) {
+				if (li[i].DeleteRevision.HasValue && li[i].DeleteRevision.Value <= revision) {
 					break;
 				}
 				queue.Enqueue(li[i]);
@@ -1794,7 +1794,7 @@ namespace SVNHistorySearcher.Models {
 								bool hasAtLeastOneChild = false;
 								if (child.Children != null) {
 									foreach (var c in child.Children) {
-										if (c.AddRevision >= revision && c.DeleteRevision > revision) {
+										if (c.AddRevision >= revision && (!c.DeleteRevision.HasValue || c.DeleteRevision > revision)) {
 											hasAtLeastOneChild = true;
 											break;
 										}

@@ -82,7 +82,7 @@ namespace SVNHistorySearcher.Models
 
 					foreach (var nat in kv.Value) {
 
-						if (nat.DeleteRevision == nat.AddRevision) {
+						if (nat.DeleteRevision.HasValue && nat.DeleteRevision == nat.AddRevision) {
 							// happens when replaces happen
 							if (natsToRemove == null) {
 								natsToRemove = new List<NodeAtTime>();
@@ -107,8 +107,8 @@ namespace SVNHistorySearcher.Models
 							} else {
 								table.AddToDict(nat.Actions[0].Revision, kv.Key, isBinary);
 							}
-							if (nat.DeleteRevision != long.MaxValue) {
-								table.AddToDict(nat.DeleteRevision, kv.Key, isBinary);
+							if (nat.DeleteRevision.HasValue) {
+								table.AddToDict(nat.DeleteRevision.Value, kv.Key, isBinary);
 							}
 						}
 					}
@@ -256,7 +256,7 @@ namespace SVNHistorySearcher.Models
 				currentNode.SetIsFolder(false);
 
 				foreach (var c in previousNode.Children) {
-					if (c.AddRevision <= previousRevision && previousRevision < c.DeleteRevision) {
+					if (c.AddRevision <= previousRevision && (!c.DeleteRevision.HasValue || previousRevision < c.DeleteRevision)) {
 
 						string relpath = c.Path.Substring(previousNode.Path.Length);
 						string newPath = path + relpath;
@@ -366,13 +366,13 @@ namespace SVNHistorySearcher.Models
 						continue;
 					}
 					if (j-- > 0) {
-						prevRev = li[j].DeleteRevision;
+						prevRev = li[j].DeleteRevision.Value;
 					}
 					break;
 				}
 			}
 
-			for( int i=0; i< node.Actions.Count; i++){
+			for ( int i=0; i< node.Actions.Count; i++){
 				var na = node.Actions[i];
 
 				// revision span
@@ -381,9 +381,10 @@ namespace SVNHistorySearcher.Models
 				} else if (na.Revision > endRevision) {
 					break;
 				}
+				
 
 				// ignoring delete revision because we don't diff deletes
-				if (ignoreRevsions.Contains(na.Revision) || na.Revision == node.DeleteRevision) {
+				if (ignoreRevsions.Contains(na.Revision) || node.DeleteRevision.HasValue && na.Revision == node.DeleteRevision) {
 					continue;
 				}
 
@@ -391,7 +392,7 @@ namespace SVNHistorySearcher.Models
 				if (i < node.Actions.Count - 1 ) {
 					nextRev = node.Actions[i + 1].Revision-1;
 				} else {
-					nextRev = Math.Min(node.DeleteRevision - 1, HeadRevision);
+					nextRev = node.DeleteRevision.HasValue ? node.DeleteRevision.Value - 1 : HeadRevision;
 				}
 
 				DiffInfo newDI = null;
@@ -523,15 +524,14 @@ namespace SVNHistorySearcher.Models
 			} else if (initialNode == node) {
 				return;
 			}
-			if (node.DeleteRevision <= toRevision) {
-				list.Add(new MovementInfo(MovementAction.Delete, node.Path, node.Path, node.DeleteRevision, node.DeleteRevision));
+			if (node.DeleteRevision.HasValue && node.DeleteRevision.Value <= toRevision) {
+				list.Add(new MovementInfo(MovementAction.Delete, node.Path, node.Path, node.DeleteRevision.Value, node.DeleteRevision.Value));
 			}
 
 			if (node.Ancestor == null) {
 				list.Add(new MovementInfo(MovementAction.Add, node.Path, node.Path, node.AddRevision, node.AddRevision));
 			} else {
-
-				if (node.Ancestor.Ancestor.DeleteRevision == node.AddRevision) {
+				if (node.Ancestor.Ancestor.DeleteRevision.HasValue && node.Ancestor.Ancestor.DeleteRevision.Value == node.AddRevision) {
 					list.Add(new MovementInfo(MovementAction.Move, node.Ancestor.Ancestor.Path, node.Path, node.Ancestor.CopiedAtRevision, node.AddRevision));
 				} else {
 					list.Add(new MovementInfo(MovementAction.Copy, node.Ancestor.Ancestor.Path, node.Path, node.Ancestor.CopiedAtRevision, node.AddRevision));
@@ -553,7 +553,7 @@ namespace SVNHistorySearcher.Models
 			}
 
 			long revA = 0;
-			long revC = nodeAtTime.DeleteRevision - 1;
+			long revC = nodeAtTime.DeleteRevision.HasValue ? nodeAtTime.DeleteRevision.Value - 1 : long.MaxValue;
 
 			if (nodeAtTime.Actions.Count > 1) {
 				revC = nodeAtTime.Actions[1].Revision - 1;
@@ -568,7 +568,7 @@ namespace SVNHistorySearcher.Models
 
 					if (i > 0) {
 						i--;
-						revA = li[i].DeleteRevision;
+						revA = li[i].DeleteRevision.Value;
 					}
 					break;
 				}
