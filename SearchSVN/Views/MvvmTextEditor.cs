@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.AvalonEdit.Search;
+using System;
 using System.ComponentModel;
 using System.Windows;
 
-using ICSharpCode.AvalonEdit;
-using ICSharpCode.AvalonEdit.Highlighting;
-using ICSharpCode.AvalonEdit.Search;
-
-namespace SVNHistorySearcher.Views {
-	public class MvvmTextEditor : TextEditor, INotifyPropertyChanged {
+namespace SVNHistorySearcher.Views
+{
+	public class MvvmTextEditor : TextEditor, INotifyPropertyChanged
+	{
 		public static DependencyProperty CaretOffsetProperty =
 			DependencyProperty.Register("CaretOffset", typeof(int), typeof(MvvmTextEditor),
 			// binding changed callback: set value of underlying property
@@ -108,7 +105,7 @@ namespace SVNHistorySearcher.Views {
 
 		public event PropertyChangedEventHandler PropertyChanged;
 		public void RaisePropertyChanged(string info) {
-			if(PropertyChanged != null) {
+			if (PropertyChanged != null) {
 				PropertyChanged(this, new PropertyChangedEventArgs(info));
 			}
 		}

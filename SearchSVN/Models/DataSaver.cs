@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using System.IO;
-using System.Security.Cryptography;
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
-using System.Collections.ObjectModel;
 
-namespace SVNHistorySearcher.Models {
-	public static class DataSaver {
+namespace SVNHistorySearcher.Models
+{
+	public static class DataSaver
+	{
 
 		static XDocument doc;
 		public static string RootPath = Path.GetFullPath(@".\");
@@ -127,7 +125,7 @@ namespace SVNHistorySearcher.Models {
 				string loadPrevious = e.Value.Trim().ToLower();
 				LoadPreviousRepositoryOnStartup = (loadPrevious == "yes" || loadPrevious == "y" || loadPrevious == "true");
 			}
-			
+
 		}
 
 		/// <summary>
@@ -142,7 +140,7 @@ namespace SVNHistorySearcher.Models {
 				StreamReader sr = new StreamReader(resourceStream);
 				string text = sr.ReadToEnd().Replace("[VERSION]", settingsVersion);
 				MemoryStream stream = new MemoryStream();
-				StreamWriter sw = new StreamWriter(stream) {AutoFlush = true};
+				StreamWriter sw = new StreamWriter(stream) { AutoFlush = true };
 				sw.Write(text);
 
 				stream.Position = 0;
@@ -165,7 +163,7 @@ namespace SVNHistorySearcher.Models {
 			foreach (var a in doc.Root.Element("RecentRepositories").Elements("Url")) {
 				RecentRepositories.Add(a.Value.Trim());
 			}
-			
+
 			FileExtensionBlacklist = new List<string>();
 			foreach (var a in doc.Root.Element("FileExtensionBlacklist").Elements("e")) {
 				FileExtensionBlacklist.Add(a.Value.Trim());
@@ -283,9 +281,9 @@ namespace SVNHistorySearcher.Models {
 			Directory.CreateDirectory(CachePath);
 			Directory.CreateDirectory(TempPath);
 			Directory.CreateDirectory(RepositoriesFolder);
-			if (SubversionSearcher.DEBUGMODE) {
-				Directory.CreateDirectory(BadDiffStreamsPath);
-			}
+#if DEBUG
+			Directory.CreateDirectory(BadDiffStreamsPath);
+#endif
 		}
 
 

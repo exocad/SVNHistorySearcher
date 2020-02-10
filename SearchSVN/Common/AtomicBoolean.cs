@@ -2,8 +2,10 @@
 using System.Runtime.CompilerServices;
 using System.Threading;
 
-namespace SVNHistorySearcher.Common {
-	public class AtomicBoolean {
+namespace SVNHistorySearcher.Common
+{
+	public class AtomicBoolean
+	{
 		private const int True = 1;
 		private const int False = 0;
 		private int _value;

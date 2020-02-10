@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime.Serialization;
 using System.IO;
+using System.Runtime.Serialization;
 
-namespace SVNHistorySearcher.Models {
+namespace SVNHistorySearcher.Models
+{
 
 	[Serializable]
-	public class CommitInfo : ISerializable{
+	public class CommitInfo : ISerializable
+	{
 		long _revision;
 		string _logMessage;
 		string _author;
@@ -36,17 +34,17 @@ namespace SVNHistorySearcher.Models {
 
 		public CommitInfo(BinaryReader binaryReader) {
 			_revision = binaryReader.ReadInt64();
-			if(binaryReader.ReadBoolean()) {
+			if (binaryReader.ReadBoolean()) {
 				_logMessage = binaryReader.ReadString();
 			} else { _logMessage = null; }
 			if (binaryReader.ReadBoolean()) {
 				_author = binaryReader.ReadString();
 			} else { _author = null; }
-			
+
 			_time = new DateTime(binaryReader.ReadInt64());
 		}
 
-		public virtual void GetObjectData(SerializationInfo info, StreamingContext context) { 
+		public virtual void GetObjectData(SerializationInfo info, StreamingContext context) {
 			info.AddValue("rev", _revision);
 			info.AddValue("msg", _logMessage);
 			info.AddValue("auth", _author);

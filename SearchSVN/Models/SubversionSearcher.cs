@@ -208,27 +208,26 @@ The tool "SVNHistorySearcher" was developed in the company exocad GmbH by the au
 
 */
 
-using System;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading;
-using System.IO;
-using System.Diagnostics;
 using SharpSvn;
 using SharpSvn.Security;
-using System.Collections;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.Serialization;
-using System.Security.Cryptography;
 using SVNHistorySearcher.Common;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace SVNHistorySearcher.Models {
-	public partial class SubversionSearcher {
+namespace SVNHistorySearcher.Models
+{
+	public partial class SubversionSearcher
+	{
 
 		long totalBytesDownloaded = 0;
 
@@ -240,17 +239,11 @@ namespace SVNHistorySearcher.Models {
 		private HashSet<DiffInfo> totalExpected;
 
 		public const string DEBUGFOLDER = @"debug";
-		public const bool DEBUGMODE = true;
-
-		string _repositoryUrl;
-		private long _headRevision = 0;
-
 		string username;
 		string password;
 		bool useCredentials;
-
 		int maxThreads;
-		
+
 		/// <summary>
 		/// Threads involved in searching (loadDiffs, takeRelevant) use this flag
 		/// </summary>
@@ -273,11 +266,11 @@ namespace SVNHistorySearcher.Models {
 		/// <summary>
 		/// Root path of the repository with trailing '/'
 		/// </summary>
-		public string RepositoryUrl { get { return _repositoryUrl; } }
+		public string RepositoryUrl { get; }
 		/// <summary>
 		/// Latest Revision in this repository
 		/// </summary>
-		public long HeadRevision { get { return _headRevision; } }
+		public long HeadRevision { get; private set; } = 0;
 
 		/// <summary>
 		/// File extensions that should not be searched or downloaded. (probably because they are binary)
@@ -320,7 +313,7 @@ namespace SVNHistorySearcher.Models {
 				FiletypeBlacklist.Add(s);
 			}
 
-			_repositoryUrl = GetRepositoryBase(rawUrl);
+			RepositoryUrl = GetRepositoryBase(rawUrl);
 
 			Thread t = new Thread(() => { LoadRepositoryStructure(client); });
 			t.Start();
@@ -329,7 +322,7 @@ namespace SVNHistorySearcher.Models {
 			bool initIndexerSuccess = true;
 			Thread tt = new Thread(() => {
 				try {
-					indexer = new LuceneIndexer(_repositoryUrl);
+					indexer = new LuceneIndexer(RepositoryUrl);
 				} catch (Exception ex) {
 					initIndexerSuccess = false;
 					Progress.ErrorLog(ex);
@@ -374,7 +367,7 @@ namespace SVNHistorySearcher.Models {
 		/// <returns>Corrected Head node path. (relative to repository root path.</returns>
 		/// <exception cref="System.Exception">If the path does not start with this SubversionSearcher's RepositoryUrl</exception>
 		public string GetLowestExistingHeadNodePath(string rawUrl, long revision) {
-			if(RepositoryUrl.Trim('/').Length+1 >= rawUrl.Trim('/').Length) {
+			if (RepositoryUrl.Trim('/').Length + 1 >= rawUrl.Trim('/').Length) {
 				// the URL that was typed in in the same as the rawUrl
 				return "";
 			}
@@ -393,7 +386,7 @@ namespace SVNHistorySearcher.Models {
 			string[] nodes = expectedHeadNode.Split('/');
 			for (int i = 0; i < nodes.Length; i++) {
 				string parentPath = String.Join("/", nodes, 0, i);
-				string currentPath = String.Join("/", nodes, 0, i+1);
+				string currentPath = String.Join("/", nodes, 0, i + 1);
 
 				if (GetNodeAtTime(currentPath, revision) == null) {
 
@@ -460,7 +453,8 @@ namespace SVNHistorySearcher.Models {
 
 
 
-		private class StreamDisposingConcurrentQueue : ConcurrentQueue<Tuple<Stream, DiffRequest>> {
+		private class StreamDisposingConcurrentQueue : ConcurrentQueue<Tuple<Stream, DiffRequest>>
+		{
 			~StreamDisposingConcurrentQueue() {
 				foreach (var t in this) {
 					if (t != null && t.Item1 != null)
@@ -476,8 +470,8 @@ namespace SVNHistorySearcher.Models {
 		/// </summary>
 		/// <param name="forceSingleRequests">does not try to make large request that contain multiple diffs</param>
 		/// <returns>true if successful. falses if not</returns>
-		bool Load(SearchOptions searchOptions, 
-			ref IDictionary<string, IList<MovementInfo>> movementInfos, 
+		bool Load(SearchOptions searchOptions,
+			ref IDictionary<string, IList<MovementInfo>> movementInfos,
 			ref IDictionary<DiffInfo, IList<string>> diffInfoFileRelation,
 			bool forceSingleRequests = false) {
 
@@ -521,7 +515,7 @@ namespace SVNHistorySearcher.Models {
 						complete = false;
 					}
 				}
-				if(complete) {
+				if (complete) {
 					Progress.DebugLog("DiffRequests seem to contain every desired diff");
 				}
 
@@ -553,7 +547,7 @@ namespace SVNHistorySearcher.Models {
 
 				AtomicBoolean stillFetching = new AtomicBoolean(true);
 
-				int takeRelevantThreadAmout = Math.Max(1, ldThreadAmount/5);
+				int takeRelevantThreadAmout = Math.Max(1, ldThreadAmount / 5);
 				for (int i = 0; i < takeRelevantThreadAmout; i++) {
 					Thread t = new Thread(() => { TakeRelevantTask(stillFetching, takeRelevantQueue, somethingInTakeRelevantQueue); });
 					runningThreads.Add(t);
@@ -618,7 +612,7 @@ namespace SVNHistorySearcher.Models {
 		/// </summary>
 		/// <returns></returns>
 		private static FileStream GetTempFile() {
-			while(true) {
+			while (true) {
 				int number = Interlocked.Increment(ref currentUsedFileNumber);
 				string fname = string.Format("tmpstr{0}.tmp", number);
 
@@ -730,52 +724,6 @@ namespace SVNHistorySearcher.Models {
 
 
 		/// <summary>
-		/// Generates fake Diff content for testing purposes
-		/// </summary>
-		/// <param name="diffQueue">input queue</param>
-		/// <param name="takeRelevantQueue">output queue</param>
-		/// <param name="somethingInTakeRelevantQueue">ManualResetEvent that is set when something was pushed to takeRelevantQueue</param>
-		void LoadDiffsFake(
-			ConcurrentQueue<DiffRequest> diffQueue, 
-			ConcurrentQueue<Tuple<Stream, DiffRequest>> takeRelevantQueue, 
-			ManualResetEvent somethingInTakeRelevantQueue) {
-
-			DiffRequest diffRequest;
-
-			while (diffQueue.TryDequeue(out diffRequest)) {
-
-				IDictionary<string, DiffInfo> contained = new Dictionary<string, DiffInfo>();
-
-				foreach (var c in diffRequest.ContainedDiffs) {
-					if(c.Path == diffRequest.Path) {
-						contained.Add(Path.GetFileName(c.Path), c); 
-					} else if(diffRequest.Path == "") {
-						contained.Add(c.Path, c);
-					} else {
-						string path = c.Path.Substring(diffRequest.Path.Length + 1, c.Path.Length - diffRequest.Path.Length - 1);
-						contained.Add(path, c);
-					}
-				}
-
-				Stream stream = GetTempFile();
-				StreamWriter writer = new StreamWriter(stream) { AutoFlush = true };
-
-				foreach(var kv in contained) {
-					writer.WriteLine("Index: {0}\r\nThis is fake content\r\nDiffInfo:\r\n{1}\r\nUsed DiffRequest:\r\n{2}", kv.Key, kv.Value, diffRequest);
-				}
-
-				takeRelevantQueue.Enqueue(new Tuple<Stream, DiffRequest>(stream, diffRequest));
-				somethingInTakeRelevantQueue.Set();
-
-				if (!InSearch) {
-					break;
-				}
-			}
-		}
-
-
-
-		/// <summary>
 		/// worker that parses combined diffs from queue and stores diffs in Indexer
 		/// </summary>
 		/// <param name="stillFetching">has to be set when diffs are still downloading</param>
@@ -783,7 +731,7 @@ namespace SVNHistorySearcher.Models {
 		/// <param name="somethingNewInQueue">Is reset if queue is empty</param>
 		private void TakeRelevantTask(AtomicBoolean stillFetching, ConcurrentQueue<Tuple<Stream, DiffRequest>> queue, ManualResetEvent somethingNewInQueue) {
 			try {
-				while (InSearch && (stillFetching.Get() || queue.Count > 0) ) {
+				while (InSearch && (stillFetching.Get() || queue.Count > 0)) {
 
 					while (!somethingNewInQueue.WaitOne(200) && stillFetching.Get()) {
 						if (!InSearch) {
@@ -829,7 +777,7 @@ namespace SVNHistorySearcher.Models {
 		/// <param name="fullStream"></param>
 		/// <param name="diffRequest"></param>
 		private void TakeRelevant(Stream fullStream, DiffRequest diffRequest) {
-			
+
 			if (diffRequest.ContainedDiffs.Count == 0) {
 				return;
 			}
@@ -838,9 +786,9 @@ namespace SVNHistorySearcher.Models {
 
 			foreach (var c in diffRequest.ContainedDiffs) {
 
-				if(c.Path == diffRequest.Path) {
-					contained.Add(Path.GetFileName(c.Path), c); 
-				} else if(diffRequest.Path == "") {
+				if (c.Path == diffRequest.Path) {
+					contained.Add(Path.GetFileName(c.Path), c);
+				} else if (diffRequest.Path == "") {
 					contained.Add(c.Path, c);
 				} else {
 					string path = c.Path.Substring(diffRequest.Path.Length + 1, c.Path.Length - diffRequest.Path.Length - 1);
@@ -865,9 +813,9 @@ namespace SVNHistorySearcher.Models {
 			});
 
 			string line;
-			while((line = reader.ReadLine()) != null) {
-				
-				if(line.Length > "Index: ".Length && line.StartsWith("Index: ")) {
+			while ((line = reader.ReadLine()) != null) {
+
+				if (line.Length > "Index: ".Length && line.StartsWith("Index: ")) {
 					foundFiles++;
 
 					if (currentDiff != null) {
@@ -895,7 +843,7 @@ namespace SVNHistorySearcher.Models {
 					}
 				}
 
-				if(smallWriter != null) {
+				if (smallWriter != null) {
 					smallWriter.WriteLine(line);
 				}
 			}
@@ -903,28 +851,30 @@ namespace SVNHistorySearcher.Models {
 			if (currentDiff != null) {
 				addCurrent(currentDiff, currentDiffStream);
 			}
-			
+
 			if (contained.Count != 0) {
-				if (DEBUGMODE) {
-					Progress.DebugLog("Amount of files found differs from the expected amount, read at: {0}.txt", contained.GetHashCode());
-					using (Stream fs = new FileStream(Utils.JoinPathsWin(DataSaver.BadDiffStreamsPath, contained.GetHashCode().ToString() + ".txt"), FileMode.Create, FileAccess.Write)) {
-						StreamWriter wri = new StreamWriter(fs) { AutoFlush = true };
-						foreach (var c in diffRequest.ContainedDiffs) {
-							wri.WriteLine(c);
-						}
-						wri.WriteLine("Stream Length: {0}", fullStream.Length);
-						fullStream.Position = 0;
-						fullStream.CopyTo(fs);
+#if DEBUG
+				Progress.DebugLog("Amount of files found differs from the expected amount, read at: {0}.txt", contained.GetHashCode());
+				using (Stream fs = new FileStream(Utils.JoinPathsWin(DataSaver.BadDiffStreamsPath, contained.GetHashCode().ToString() + ".txt"), FileMode.Create, FileAccess.Write)) {
+					StreamWriter wri = new StreamWriter(fs) { AutoFlush = true };
+					foreach (var c in diffRequest.ContainedDiffs) {
+						wri.WriteLine(c);
 					}
+					wri.WriteLine("Stream Length: {0}", fullStream.Length);
+					fullStream.Position = 0;
+					fullStream.CopyTo(fs);
 				}
+#endif
 				Progress.AddFailedRequest();
 			}
 
-			if (foundFiles > initialContained * 3 && SubversionSearcher.DEBUGMODE) {
+#if DEBUG
+			if (foundFiles > initialContained * 3) {
 				Utils.WriteStreamToFile(Utils.JoinPathsWin(DataSaver.BadDiffStreamsPath, String.Format("r_{0}_{1}_{2}.txt", diffRequest.RevB, foundFiles, initialContained)), fullStream);
 			}
+#endif
 
-			string toLog = String.Format("Stream Length: {0,11}  Found Files: {1,5}  Useful Files: {2,5}   {3,7}   Revision: {4,5}  {5}", 
+			string toLog = String.Format("Stream Length: {0,11}  Found Files: {1,5}  Useful Files: {2,5}   {3,7}   Revision: {4,5}  {5}",
 				fullStream.Length, foundFiles, initialContained, contained.Count != 0 ? "ERROR" : "SUCCESS", diffRequest.RevB, diffRequest.Path);
 			Console.WriteLine(toLog);
 			Progress.DebugLog(toLog);
@@ -933,7 +883,8 @@ namespace SVNHistorySearcher.Models {
 
 		#region Create Diff queue
 
-		private class SingleSpan {
+		private class SingleSpan
+		{
 			public int Start = 0;
 			public int Length = 0;
 
@@ -957,9 +908,9 @@ namespace SVNHistorySearcher.Models {
 		/// <param name="notrash"></param>
 		/// <param name="forceSingeleRequests"></param>
 		private void CreateDiffQueue(
-			IDictionary<DiffInfo, IList<string>> diffInfoFileRelation, 
-			out ConcurrentQueue<DiffRequest> diffQueue, 
-			bool notrash, 
+			IDictionary<DiffInfo, IList<string>> diffInfoFileRelation,
+			out ConcurrentQueue<DiffRequest> diffQueue,
+			bool notrash,
 			bool forceSingeleRequests = false) {
 
 			totalExpected = new HashSet<DiffInfo>();
@@ -980,7 +931,7 @@ namespace SVNHistorySearcher.Models {
 			foreach (var kv in diffInfoFileRelation) {
 
 				if (!indexer.HasDiff(kv.Key)) {
-					
+
 					IList<DiffInfo> li;
 					if (!diffInfoByRevision.TryGetValue(kv.Key.RevB, out li)) {
 						diffInfoByRevision[kv.Key.RevB] = li = new List<DiffInfo>();
@@ -1087,7 +1038,7 @@ namespace SVNHistorySearcher.Models {
 
 				}
 
-				
+
 				IList<DiffRequest> res;
 				if (notrash) {
 					res = Rigatoni(diffAxis, breadBase, tree, nodeToSpan, table, kv.Key, "", 1f, 0);
@@ -1138,7 +1089,7 @@ namespace SVNHistorySearcher.Models {
 			float binaryFileWeight = 0.3f;
 
 			SingleSpan mt;
-			if(nodeToSpan.TryGetValue(new Tuple<long,string>(revision, path), out mt) && mt.Length > 0) {
+			if (nodeToSpan.TryGetValue(new Tuple<long, string>(revision, path), out mt) && mt.Length > 0) {
 				NodeDiffAmount nda = table.GetNodeDiffAmount(revision, path);
 
 				IList<DiffRequest> result = new List<DiffRequest>();
@@ -1155,7 +1106,7 @@ namespace SVNHistorySearcher.Models {
 						contained.Add(breadBase[k]);
 					}
 
-					result.Add(new DiffRequest(path, revision-1, revision, contained));
+					result.Add(new DiffRequest(path, revision - 1, revision, contained));
 				} else {
 
 					foreach (var n in children) {
@@ -1207,7 +1158,7 @@ namespace SVNHistorySearcher.Models {
 					writer.Write(taggedAsFolder.Count);
 
 
-					foreach(var item in commitInfos) {
+					foreach (var item in commitInfos) {
 						item.AddSelfToStream(writer);
 					}
 					foreach (var item in changeItems) {
@@ -1251,15 +1202,15 @@ namespace SVNHistorySearcher.Models {
 			}
 			try {
 				using (var fs = new FileStream(filename, FileMode.Open, FileAccess.ReadWrite)) {
-					if(fs.Length > 32) {
+					if (fs.Length > 32) {
 						byte[] readHash = new byte[32];
 						fs.Position = 0;
 						fs.Read(readHash, 0, readHash.Length);
 						fs.Position = readHash.Length;
 						SHA256 sha = SHA256.Create();
 						byte[] calculated = sha.ComputeHash(fs);
-						
-						if(!calculated.SequenceEqual(readHash)) {
+
+						if (!calculated.SequenceEqual(readHash)) {
 							fs.SetLength(0);
 							return 0;
 						}
@@ -1287,7 +1238,7 @@ namespace SVNHistorySearcher.Models {
 				Progress.Log("finished loading log from file");
 				Progress.DebugLog("Loading log from file time: {0}ms", sw.Elapsed.TotalMilliseconds);
 
-				if(revisions.Count > 0) {
+				if (revisions.Count > 0) {
 					return revisions[revisions.Count - 1].Revision;
 				} else {
 					return 0;
@@ -1312,7 +1263,7 @@ namespace SVNHistorySearcher.Models {
 			SvnLogArgs args = new SvnLogArgs() {
 				StrictNodeHistory = false,
 				Range = new SvnRevisionRange(new SvnRevision(cachedLogUntil), SvnRevision.Head),
-				
+
 			};
 
 			Progress.Log("Fetching log...");
@@ -1359,13 +1310,13 @@ namespace SVNHistorySearcher.Models {
 		SvnClient GetFreshSvnClient() {
 			SvnClient result = new SvnClient();
 
-			
+
 			if (useCredentials) {
 				result.Authentication.Clear();
 				result.Authentication.DefaultCredentials = new System.Net.NetworkCredential(username, password);
 			}
 
-			result.Authentication.SslServerTrustHandlers += delegate(object sender, SvnSslServerTrustEventArgs e) {
+			result.Authentication.SslServerTrustHandlers += delegate (object sender, SvnSslServerTrustEventArgs e) {
 				e.AcceptedFailures = e.Failures;
 				e.Save = true;
 			};
@@ -1419,13 +1370,13 @@ namespace SVNHistorySearcher.Models {
 						}
 					}
 
-					Vardump<DiffInfo>(String.Format("missing_retriesLeft{0}.txt", retriesLeft), missing, (d) => d.ToString());
+					Utils.Vardump<DiffInfo>(String.Format("missing_retriesLeft{0}.txt", retriesLeft), missing, (d) => d.ToString());
 
 				} else {
 					isComplete = false;
 				}
 
-				if(isComplete) {
+				if (isComplete) {
 					break;
 				} else {
 					if (retriesLeft-- > 0) {
@@ -1444,7 +1395,7 @@ namespace SVNHistorySearcher.Models {
 				return null;
 			}
 
-			
+
 
 			ISet<string> filesContainingTextInFileName = new HashSet<string>();
 			Task t = new Task(() => {
@@ -1529,10 +1480,10 @@ namespace SVNHistorySearcher.Models {
 
 		private IList<FoundFile> GetFoundFiles(
 			SearchOptions searchOptions,
-			IDictionary<DiffInfo, IList<string>> diffInfoFileRelations, 
+			IDictionary<DiffInfo, IList<string>> diffInfoFileRelations,
 			IDictionary<string, IList<MovementInfo>> movementInfos,
-			ISet<string> filesContainingTextInFileName, 
-			ConcurrentDictionary<DiffInfo, int> filesContainingTextInContent, 
+			ISet<string> filesContainingTextInFileName,
+			ConcurrentDictionary<DiffInfo, int> filesContainingTextInContent,
 			out int count) {
 
 			count = 0;
@@ -1555,7 +1506,7 @@ namespace SVNHistorySearcher.Models {
 							foreach (string file in filesReferencingDI) {
 
 								IList<MovementInfo> mis = null;
-								if(!movementInfos.TryGetValue(file, out mis)){
+								if (!movementInfos.TryGetValue(file, out mis)) {
 									mis = GetMovementInfos(file);
 								}
 
@@ -1604,80 +1555,6 @@ namespace SVNHistorySearcher.Models {
 			return ffiles.OrderBy(t => Path.GetFileName(t.Key)).ToDictionary((keyItem) => keyItem.Key, (valueItem) => valueItem.Value).Values.ToList();
 		}
 
-		/// <summary>
-		/// Testbench for hierarchy building by SvnLog
-		/// </summary>
-		/// <param name="revision"></param>
-		/// <returns></returns>
-		public bool TestFastListing(long revision) {
-			Queue<string> queue = new Queue<string>();
-			queue.Enqueue("");
-
-			bool result = true;
-
-			var slowTree = GetPartialHierarchyFromFolderTree(revision);
-
-			while (queue.Count > 0) {
-				var path = queue.Dequeue();
-
-				//var slow = GetPartialHierarchyFromFolder(path, revision);
-				IList<string> slow;
-				if (!slowTree.TryGetValue(path, out slow)) {
-					result = false;
-					Progress.DebugLog("Dictionary does not contain {0}@{1}", path, revision);
-					continue;
-				}
-				var fast = GetChildrenInHierarchy(path, revision);
-
-				if (slow.Count != fast.Count) {
-					result = false;
-				}
-
-				int hcfast = 0;
-				int hcslow = 0;
-
-				for (int i = 0; i < slow.Count; i++) {
-					hcfast += fast[i].Item1.GetHashCode();
-					hcslow += slow[i].GetHashCode();
-				}
-
-				if (hcfast != hcslow) {
-					result = false;
-				}
-
-				if (result == false) {
-					HashSet<string> inFast = new HashSet<string>();
-					foreach (var e in fast) { inFast.Add(e.Item1); }
-					HashSet<string> notInFast = new HashSet<string>();
-					HashSet<string> notInSlow = new HashSet<string>();
-					HashSet<string> inBoth = new HashSet<string>();
-					foreach (var e in slow) {
-						if (inFast.Contains(e)) {
-							inBoth.Add(e);
-						} else {
-							notInFast.Add(e);
-							Progress.DebugLog("Fast does not contain {0}@{1}", e, revision);
-						}
-					}
-					foreach (var e in inFast) {
-						if (!inBoth.Contains(e)) {
-							notInSlow.Add(e);
-							Progress.DebugLog("Slow does not contain {0}@{1}", e, revision);
-						}
-					}
-
-					//return false;
-				}
-
-				foreach (var t in fast) {
-					var p = t.Item1;
-					queue.Enqueue(p);
-				}
-			}
-
-			return result;
-		}
-
 		private IDictionary<string, IList<string>> GetPartialHierarchyFromFolderTree(long revision) {
 			var result = new Dictionary<string, IList<string>>();
 
@@ -1691,7 +1568,7 @@ namespace SVNHistorySearcher.Models {
 				while ((line = reader.ReadLine()) != null) {
 					var path = line.Trim('/');
 					var split = path.Split('/');
-					var parent = String.Join("/", split, 0, split.Length-1);
+					var parent = String.Join("/", split, 0, split.Length - 1);
 					IList<string> li;
 					if (!result.TryGetValue(parent, out li)) {
 						Progress.ErrorLog("this should never happen");
@@ -1701,29 +1578,6 @@ namespace SVNHistorySearcher.Models {
 				}
 			}
 			return result;
-		}
-
-		private IList<string> GetPartialHierarchyFromFolder(string path, long revision) {
-			using (var stream = new FileStream(String.Format(@"C:\Users\iop\Desktop\testHie\revision{0}.txt", revision), FileMode.Open, FileAccess.Read)) {
-				string line;
-				stream.Position = 0;
-				var reader = new StreamReader(stream, Encoding.GetEncoding(1252));
-
-
-				int pathsteps = path == "" ? 0 : path.Split('/').Length;
-
-				List<string> result = new List<string>();
-				while ((line = reader.ReadLine()) != null) {
-					if (path == "" || line.StartsWith(path + '/')) {
-						var split = line.Trim('/').Split('/');
-
-						if (split.Length == pathsteps + 1) {
-							result.Add(String.Join("/", split, 0, pathsteps+1));
-						}
-					}
-				}
-				return result;
-			}
 		}
 
 		/// <summary>
@@ -1826,7 +1680,7 @@ namespace SVNHistorySearcher.Models {
 			return GetNodeAtTime(path, revision) != null;
 		}
 
-		
+
 		/// <summary>
 		/// Checks out a file from the subversion server and saves it to the cache path
 		/// </summary>
@@ -1902,101 +1756,9 @@ namespace SVNHistorySearcher.Models {
 					} else {
 						Progress.DebugLog("{0} was not found at revision {1}", n.Item1, revision);
 					}
-					
+
 				}
 				result.Add(n.Item1);
-			}
-
-			return result;
-		}
-
-
-		IList<string> GetFilesInDir(IList<string> dirs) {
-			IList<string> result = new List<string>();
-
-			SvnClient client = GetFreshSvnClient();
-
-			SvnListArgs args = new SvnListArgs();
-			args.Depth = SvnDepth.Infinity;
-
-			EventHandler<SvnListEventArgs> listHandler = new EventHandler<SvnListEventArgs>((object o, SvnListEventArgs a) => {
-				result.Add(a.Uri.AbsoluteUri);
-			});
-
-			foreach (string d in dirs) {
-				client.List(SvnTarget.FromString(d), args, listHandler);
-			}
-
-			return result;
-		}
-
-
-		// lists all file extentions that are used for binary files in this repository. It assumes that a file extention is not used for both binary and non-binary files
-		public IList<string> ListBinaryExtentions(string location) {
-			string searchFor = "Cannot display:";
-
-			IDictionary<string, int> bins = new Dictionary<string, int>();
-			IDictionary<string, int> nonbins = new Dictionary<string, int>();
-
-			IList<string> l = GetFilesInDir(new List<string>() { location });
-
-			Console.WriteLine("Listed");
-
-			SvnClient client = GetFreshSvnClient();
-
-			SvnDiffArgs args = new SvnDiffArgs();
-			args.Depth = SvnDepth.Empty;
-
-			for (int i = 0; i < l.Count; i++) {
-
-				string ext = Path.GetExtension(l[i]).ToLower();
-
-				if (bins.ContainsKey(ext)) {
-					bins[ext]++;
-				} else if (nonbins.ContainsKey(ext)) {
-					nonbins[ext]++;
-				} else {
-
-					Stream str = new MemoryStream();
-
-					SvnTarget t = SvnTarget.FromUri(new Uri(l[i]));
-
-					Collection<SvnLogEventArgs> revs;
-					SvnLogArgs logArgs = new SvnLogArgs();
-					logArgs.StrictNodeHistory = true;
-					client.GetLog(new Uri(l[i]), logArgs, out revs);
-
-					client.Diff(t, new SvnRevisionRange(0, revs[0].Revision), args, str);
-
-					Stream s2 = new MemoryStream();
-					str.Position = 0;
-					StreamReader re = new StreamReader(str);
-					StreamWriter wr2 = new StreamWriter(s2) { AutoFlush = true };
-
-					string line;
-					while ((line = re.ReadLine()) != null) {
-						wr2.WriteLine(line);
-
-						if (line.StartsWith(searchFor)) {
-							// file is binary
-							bins[ext] = 1;
-							goto close;
-						}
-					}
-
-					nonbins[ext] = 1;
-
-				close:
-					str.Close();
-					s2.Close();
-
-				}
-			}
-
-			IList<string> result = new List<string>();
-
-			foreach (var item in bins.OrderByDescending(key => key.Value)) {
-				result.Add(item.Key);
 			}
 
 			return result;
@@ -2068,7 +1830,8 @@ namespace SVNHistorySearcher.Models {
 		}
 
 
-		public enum AuthenticationInfo {
+		public enum AuthenticationInfo
+		{
 			Successful,
 			NoSuchUser,
 			PasswordDeclined,
@@ -2084,7 +1847,7 @@ namespace SVNHistorySearcher.Models {
 				client.Authentication.Clear();
 				client.Authentication.DefaultCredentials = new System.Net.NetworkCredential(username, password);
 
-				client.Authentication.SslServerTrustHandlers += delegate(object sender, SvnSslServerTrustEventArgs e) {
+				client.Authentication.SslServerTrustHandlers += delegate (object sender, SvnSslServerTrustEventArgs e) {
 					e.AcceptedFailures = e.Failures;
 					e.Save = true;
 				};
@@ -2118,7 +1881,7 @@ namespace SVNHistorySearcher.Models {
 
 			try {
 				SvnClient client = new SvnClient();
-				client.Authentication.SslServerTrustHandlers += delegate(object sender, SvnSslServerTrustEventArgs e) {
+				client.Authentication.SslServerTrustHandlers += delegate (object sender, SvnSslServerTrustEventArgs e) {
 					e.AcceptedFailures = e.Failures;
 					e.Save = true;
 				};
@@ -2154,30 +1917,10 @@ namespace SVNHistorySearcher.Models {
 		}
 
 
-		public static bool Vardump<T>(string filename, IEnumerable<T> variable, Func<T, string> outputFunction) {
-			if (DEBUGMODE && variable != null) {
-				try {
-					string outputPath = DEBUGFOLDER + @"\vardump";
-					Directory.CreateDirectory(outputPath);
-					using (var str = new FileStream(outputPath + @"\" + filename, FileMode.Create, FileAccess.Write)) {
-						var sw = new StreamWriter(str);
-						foreach (T element in variable) {
-							sw.WriteLine(outputFunction(element));
-						}
-					}
-				} catch (Exception ex) {
-					Progress.ErrorLog(ex);
-					return false;
-				}
-			}
-			return true;
-		}
-
-
 		void TagFolder(DiffInfo diffInfo) {
 			Progress.DebugLog("Tagged folder: {0}@{1}", diffInfo.Path, diffInfo.RevB);
 			IList<NodeAtTime> li;
-			if(nodes.TryGetValue(diffInfo.Path, out li)) {
+			if (nodes.TryGetValue(diffInfo.Path, out li)) {
 				for (int i = li.Count - 1; i >= 0; i--) {
 					if (li[i].AddRevision > diffInfo.RevB) {
 						continue;
@@ -2191,36 +1934,31 @@ namespace SVNHistorySearcher.Models {
 		}
 
 
-		class DiffRequest {
-			string _rootPath;
-			long _revA;
-			long _revB;
-			ICollection<DiffInfo> _containedDiffs;
-			bool _copiesAsAdd;
-			bool _mightHaveIssue;
-			public string Path { get { return _rootPath; } }
-			public long RevA { get { return _revA; } }
-			public long RevB { get { return _revB; } }
-			public ICollection<DiffInfo> ContainedDiffs { get { return _containedDiffs; } }
-			public bool CopiesAsAdd { get { return _copiesAsAdd; } }
-			public bool MightHaveIssue { get { return _mightHaveIssue; } set { _mightHaveIssue = value; } }
+		class DiffRequest
+		{
+			public string Path { get; }
+			public long RevA { get; }
+			public long RevB { get; }
+			public ICollection<DiffInfo> ContainedDiffs { get; }
+			public bool CopiesAsAdd { get; }
+			public bool MightHaveIssue { get; set; }
 
 			public DiffRequest(string path, long revA, long revB, ICollection<DiffInfo> containedDiffs, bool copiesAsAdd = true) {
-				_rootPath = path; _revA = revA; _revB = revB; _containedDiffs = containedDiffs; _copiesAsAdd = copiesAsAdd; _mightHaveIssue = false;
+				Path = path; RevA = revA; RevB = revB; ContainedDiffs = containedDiffs; CopiesAsAdd = copiesAsAdd; MightHaveIssue = false;
 			}
 
 			public IList<KeyValuePair<string, DiffInfo>> GetRelativePaths() {
 				IList<KeyValuePair<string, DiffInfo>> result = new List<KeyValuePair<string, DiffInfo>>();
 
-				foreach (DiffInfo d in _containedDiffs) {
-					string relativePath = d.Path.Substring(_rootPath.Length, d.Path.Length - _rootPath.Length);
+				foreach (DiffInfo d in ContainedDiffs) {
+					string relativePath = d.Path.Substring(Path.Length, d.Path.Length - Path.Length);
 					result.Add(new KeyValuePair<string, DiffInfo>(relativePath, d));
 				}
 				return result;
 			}
 
 			public override string ToString() {
-				return String.Format("Path: {0} r{1}:{2}, CopiesAsAdds: {3}, diffs: {4}", Path, RevA, RevB, _copiesAsAdd, _containedDiffs.Count);
+				return String.Format("Path: {0} r{1}:{2}, CopiesAsAdds: {3}, diffs: {4}", Path, RevA, RevB, CopiesAsAdd, ContainedDiffs.Count);
 			}
 		}
 
@@ -2232,5 +1970,54 @@ namespace SVNHistorySearcher.Models {
 		public static bool IsReady(SubversionSearcher subversionSearcher) {
 			return subversionSearcher != null && !subversionSearcher.Disposed;
 		}
+
+
+		#region testing methods
+
+		/// <summary>
+		/// Generates fake Diff content for testing purposes
+		/// </summary>
+		/// <param name="diffQueue">input queue</param>
+		/// <param name="takeRelevantQueue">output queue</param>
+		/// <param name="somethingInTakeRelevantQueue">ManualResetEvent that is set when something was pushed to takeRelevantQueue</param>
+		void LoadDiffsFake(
+			ConcurrentQueue<DiffRequest> diffQueue,
+			ConcurrentQueue<Tuple<Stream, DiffRequest>> takeRelevantQueue,
+			ManualResetEvent somethingInTakeRelevantQueue) {
+
+			DiffRequest diffRequest;
+
+			while (diffQueue.TryDequeue(out diffRequest)) {
+
+				IDictionary<string, DiffInfo> contained = new Dictionary<string, DiffInfo>();
+
+				foreach (var c in diffRequest.ContainedDiffs) {
+					if (c.Path == diffRequest.Path) {
+						contained.Add(Path.GetFileName(c.Path), c);
+					} else if (diffRequest.Path == "") {
+						contained.Add(c.Path, c);
+					} else {
+						string path = c.Path.Substring(diffRequest.Path.Length + 1, c.Path.Length - diffRequest.Path.Length - 1);
+						contained.Add(path, c);
+					}
+				}
+
+				Stream stream = GetTempFile();
+				StreamWriter writer = new StreamWriter(stream) { AutoFlush = true };
+
+				foreach (var kv in contained) {
+					writer.WriteLine("Index: {0}\r\nThis is fake content\r\nDiffInfo:\r\n{1}\r\nUsed DiffRequest:\r\n{2}", kv.Key, kv.Value, diffRequest);
+				}
+
+				takeRelevantQueue.Enqueue(new Tuple<Stream, DiffRequest>(stream, diffRequest));
+				somethingInTakeRelevantQueue.Set();
+
+				if (!InSearch) {
+					break;
+				}
+			}
+		}
+
+		#endregion
 	}
 }

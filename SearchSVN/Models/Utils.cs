@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Security.Cryptography;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 
-namespace SVNHistorySearcher.Models {
-	public static class Utils {
+namespace SVNHistorySearcher.Models
+{
+	public static class Utils
+	{
 		public static string CalculateMD5Hash(string input) {
 			MD5 md5 = System.Security.Cryptography.MD5.Create();
 			byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
@@ -25,7 +25,7 @@ namespace SVNHistorySearcher.Models {
 			byte[] buffer = new byte[32768];
 			int read;
 			while (bytes > 0 &&
-				   (read = input.Read(buffer, 0, Math.Min(buffer.Length, (int)(bytes%int.MaxValue)))) > 0) {
+				   (read = input.Read(buffer, 0, Math.Min(buffer.Length, (int)(bytes % int.MaxValue)))) > 0) {
 				output.Write(buffer, 0, read);
 				bytes -= read;
 			}
@@ -38,15 +38,6 @@ namespace SVNHistorySearcher.Models {
 				   (read = input.Read(buffer, 0, Math.Min(buffer.Length, bytes))) > 0) {
 				output.Write(buffer, 0, read);
 				bytes -= read;
-			}
-		}
-
-		static string CalculateMD5(string filename) {
-			using (var md5 = MD5.Create()) {
-				using (var stream = File.OpenRead(filename)) {
-					var hash = md5.ComputeHash(stream);
-					return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-				}
 			}
 		}
 
@@ -74,7 +65,7 @@ namespace SVNHistorySearcher.Models {
 				long prevPos = stream.Position;
 				stream.Position = 0;
 
-				using(var fs = new FileStream(filename, FileMode.Create, FileAccess.ReadWrite)) {
+				using (var fs = new FileStream(filename, FileMode.Create, FileAccess.ReadWrite)) {
 					StreamWriter writer = new StreamWriter(fs) {
 						AutoFlush = true
 					};
@@ -88,7 +79,7 @@ namespace SVNHistorySearcher.Models {
 						checksum = BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
 					}
 				}
-				
+
 				stream.Position = prevPos;
 			} catch {
 				checksum = null;
@@ -119,23 +110,21 @@ namespace SVNHistorySearcher.Models {
 		}
 
 
-		public static bool Vardump<T>(string filename, IEnumerable<T> variable, Func<T, string> outputFunction, bool debugModeOnly = true) {
-			if (SubversionSearcher.DEBUGMODE || !debugModeOnly) {
-				try {
-					string outputPath = SubversionSearcher.DEBUGFOLDER + @"\vardump";
-					Directory.CreateDirectory(outputPath);
-					using (var str = new FileStream(outputPath + @"\" + filename, FileMode.Create, FileAccess.Write)) {
-						var sw = new StreamWriter(str);
-						foreach (T element in variable) {
-							sw.WriteLine(outputFunction(element));
-						}
+		public static void Vardump<T>(string filename, IEnumerable<T> variable, Func<T, string> outputFunction) {
+#if DEBUG
+			try {
+				string outputPath = SubversionSearcher.DEBUGFOLDER + @"\vardump";
+				Directory.CreateDirectory(outputPath);
+				using (var str = new FileStream(outputPath + @"\" + filename, FileMode.Create, FileAccess.Write)) {
+					var sw = new StreamWriter(str);
+					foreach (T element in variable) {
+						sw.WriteLine(outputFunction(element));
 					}
-				} catch (Exception ex) {
-					Progress.ErrorLog(ex);
-					return false;
 				}
+			} catch (Exception ex) {
+				Progress.ErrorLog(ex);
 			}
-			return true;
+#endif
 		}
 
 		/// <summary>
@@ -177,8 +166,8 @@ namespace SVNHistorySearcher.Models {
 			using (var reader = new StringReader(text)) {
 				String line;
 
-				while((line = reader.ReadLine()) != null) {
-					if(line.Length != 0 && (line[0] == '+' || line[0] == '-') && pattern.IsMatch(line, 1)) {
+				while ((line = reader.ReadLine()) != null) {
+					if (line.Length != 0 && (line[0] == '+' || line[0] == '-') && pattern.IsMatch(line, 1)) {
 						return true;
 					}
 				}
@@ -271,7 +260,7 @@ namespace SVNHistorySearcher.Models {
 		/// <returns>parent path</returns>
 		public static string GetParentPath(string path) {
 			for (int i = path.Length - 2; i > 0; i--) {
-				if(path[i] == '/') {
+				if (path[i] == '/') {
 					return path.Substring(0, i);
 				}
 			}

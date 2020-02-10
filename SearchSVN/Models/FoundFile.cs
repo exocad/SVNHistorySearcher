@@ -1,20 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace SVNHistorySearcher.Models {
-
-	// A file
-	public class FoundFile : IViewable{
-		string _name;
-		string _fullPath;
+namespace SVNHistorySearcher.Models
+{
+	public class FoundFile : IViewable
+	{
 		IList<FoundDiff> _revisions;
 		IList<MovementInfo> movementInfos;
 		bool isFolder = false;
 		string _cachedContent = null;
-		bool _foundResultInFileNames = false;
 
 		public bool IsExpanded { get; set; }
 		public long PrevRevision { get { return 0; } }
@@ -22,7 +17,7 @@ namespace SVNHistorySearcher.Models {
 		public string Author { get { return ""; } }
 		public string Message { get { return ""; } }
 		public DateTime? Date { get { return DateTime.Now; } }
-		public string Content { 
+		public string Content {
 			get {
 				if (_cachedContent != null) {
 					return _cachedContent;
@@ -80,17 +75,13 @@ namespace SVNHistorySearcher.Models {
 		}
 
 
-		public string Name {
-			get { return _name; }
-		}
-		public string FullPath {
-			get { return _fullPath; }
-		}
+		public string Name { get; }
+		public string FullPath { get; }
 		public IList<FoundDiffWithColorSolution> Items {
 			get {
 				IList<FoundDiffWithColorSolution> res = new List<FoundDiffWithColorSolution>();
 				for (int i = 0; i < _revisions.Count; i++) {
-					res.Add(new FoundDiffWithColorSolution(_revisions[i], _fullPath));
+					res.Add(new FoundDiffWithColorSolution(_revisions[i], FullPath));
 				}
 				return res;
 			}
@@ -100,18 +91,10 @@ namespace SVNHistorySearcher.Models {
 		}
 		public string ResultCountString {
 			get {
-				//return String.Format("{0} result{1} in {2}{1} ", _revisions.Count(), (_revisions.Count() > 1 ? "s" : ""), FoundResultInFileNames ? "name" : "revision");
 				return "";
 			}
 		}
-		public bool FoundResultInFileNames {
-			get {
-				return _foundResultInFileNames;
-			}
-			set {
-				_foundResultInFileNames = value;
-			}
-		}
+		public bool FoundResultInFileNames { get; set; } = false;
 		public System.Windows.Media.Brush TextColor {
 			get {
 				if (FoundResultInFileNames) {
@@ -133,8 +116,8 @@ namespace SVNHistorySearcher.Models {
 		}
 
 		public FoundFile(string name, string repositoryUrl, string fullPath, IList<MovementInfo> movementInfos, bool isFolder) {
-			this._name = name;
-			this._fullPath = fullPath;
+			this.Name = name;
+			this.FullPath = fullPath;
 			this._revisions = new List<FoundDiff>();
 			this.movementInfos = movementInfos;
 			this.isFolder = isFolder;

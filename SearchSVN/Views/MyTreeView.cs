@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.ComponentModel;
-using System.Windows.Input;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace SVNHistorySearcher.Views {
-	public class MyTreeView : TreeView, INotifyPropertyChanged {
+namespace SVNHistorySearcher.Views
+{
+	public class MyTreeView : TreeView, INotifyPropertyChanged
+	{
 		public static readonly DependencyProperty SelectedItemsProperty = DependencyProperty.Register("SelectedItem", typeof(Object), typeof(MyTreeView), new PropertyMetadata(null));
 		public new Object SelectedItem {
 			get { return (Object)GetValue(SelectedItemProperty); }
@@ -30,7 +27,7 @@ namespace SVNHistorySearcher.Views {
 
 		public event PropertyChangedEventHandler PropertyChanged;
 		private void NotifyPropertyChanged(String aPropertyName) {
-			if(PropertyChanged != null)
+			if (PropertyChanged != null)
 				PropertyChanged(this, new PropertyChangedEventArgs(aPropertyName));
 		}
 	}

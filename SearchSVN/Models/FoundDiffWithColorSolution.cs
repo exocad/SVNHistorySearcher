@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace SVNHistorySearcher.Models {
+namespace SVNHistorySearcher.Models
+{
 
 	// this class is meant as a quick fix for color coding whether a FoundDiff has another path
-	public class FoundDiffWithColorSolution {
-		FoundDiff foundDiff;
+	public class FoundDiffWithColorSolution
+	{
 		bool hasOtherPath;
 
 		public System.Windows.Media.Brush TextColor {
@@ -22,48 +19,46 @@ namespace SVNHistorySearcher.Models {
 		}
 
 		public string Name {
-			get { return foundDiff.Name; }
+			get { return FoundDiff.Name; }
 		}
 		public string FullPath {
-			get { return foundDiff.FullPath; }
+			get { return FoundDiff.FullPath; }
 		}
 		public long PrevRevision {
-			get { return foundDiff.PrevRevision; }
+			get { return FoundDiff.PrevRevision; }
 		}
 		public long Revision {
-			get { return foundDiff.Revision; }
+			get { return FoundDiff.Revision; }
 		}
 		public string Author {
-			get { return foundDiff.Author; }
+			get { return FoundDiff.Author; }
 		}
 		public string Message {
-			get { return foundDiff.Message; }
+			get { return FoundDiff.Message; }
 		}
 		public DateTime? Date {
-			get { return foundDiff.Date; }
+			get { return FoundDiff.Date; }
 		}
 		public string Content {
-			get { return foundDiff.Content; }
-			set { foundDiff.Content = value; }
+			get { return FoundDiff.Content; }
+			set { FoundDiff.Content = value; }
 		}
 		public int ResultCount {
-			get { return foundDiff.ResultCount; }
+			get { return FoundDiff.ResultCount; }
 		}
 		public string ResultCountString {
 			get {
-				return foundDiff.ResultCountString;
+				return FoundDiff.ResultCountString;
 			}
 		}
 		public DiffInfo DiffInfo {
-			get { return foundDiff.DiffInfo; }
+			get { return FoundDiff.DiffInfo; }
 		}
-		public FoundDiff FoundDiff {
-			get { return foundDiff; }
-		}
+		public FoundDiff FoundDiff { get; }
 		public bool IsExpanded { get; set; }
 
-		public FoundDiffWithColorSolution(FoundDiff fd, string foundFilePath){
-			foundDiff = fd;
+		public FoundDiffWithColorSolution(FoundDiff fd, string foundFilePath) {
+			FoundDiff = fd;
 			if (foundFilePath == fd.FullPath) {
 				hasOtherPath = false;
 			} else {

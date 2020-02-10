@@ -1,61 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace SVNHistorySearcher.Models {
-	public class SearchResults {
+namespace SVNHistorySearcher.Models
+{
+	public class SearchResults
+	{
+		public double TotalTime { get; set; } = -1;
+		public double DownloadingTime { get; set; } = -1;
+		public int ResultCount { get; }
+		public string ErrorPath { get; private set; } = "";
+		public bool Successful { get; private set; }
 
-		/// <summary>
-		/// Unit should be milliseconds
-		/// </summary>
-		private double _totalTime = -1;
-		public double TotalTime { get { return _totalTime; } set { _totalTime = value; } }
-
-		/// <summary>
-		/// Unit should be milliseconds
-		/// </summary>
-		private double _downloadingTime = -1;
-		public double DownloadingTime { get { return _downloadingTime; } set { _downloadingTime = value; } }
-
-		private int _resultCount;
-		public int ResultCount { get { return _resultCount; } }
-
-		private string _errorPath = "";
-		public string ErrorPath { get { return _errorPath; } }
-
-		private bool _successful;
-		public bool Successful { get { return _successful; } }
-
-		private SearchOptions _searchOptions;
+		public SearchOptions SearchOptions { get; private set }
 		public string SearchString {
-			get { return _searchOptions.Text; }
+			get { return SearchOptions.Text; }
 		}
 
 		public bool UseRegex {
-			get { return _searchOptions.UseRegex; }
+			get { return SearchOptions.UseRegex; }
 		}
 
-		IList<FoundFile> _files;
-		public IList<FoundFile> Files {
-			get { return _files; }
-		}
+		public IList<FoundFile> Files { get; }
 
 		public SearchResults(IList<FoundFile> files, SearchOptions searchOptions, int resultCount, bool successful = true, string errorsPath = "") {
-			_successful = successful;
-			_files = files;
-			_searchOptions = searchOptions;
-			_errorPath = errorsPath;
-			_resultCount = resultCount;
+			Successful = successful;
+			Files = files;
+			SearchOptions = searchOptions;
+			ErrorPath = errorsPath;
+			ResultCount = resultCount;
 		}
 
 		public void SetStillMissing(string pathToFile) {
-			_errorPath = pathToFile;
+			ErrorPath = pathToFile;
 		}
 
 		public void SetFailed() {
-			_successful = false;
+			Successful = false;
 		}
 	}
 }

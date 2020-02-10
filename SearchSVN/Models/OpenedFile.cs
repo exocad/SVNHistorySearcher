@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace SVNHistorySearcher.Models {
-	public class OpenedFile {
+namespace SVNHistorySearcher.Models
+{
+	public class OpenedFile
+	{
 		IViewable _viewable;
 		int _caretOffset;
 
@@ -25,9 +23,9 @@ namespace SVNHistorySearcher.Models {
 			get { return _viewable.Message; }
 		}
 		public string Date {
-			get { 
-				if(_viewable.Date != null)
- 					return ((DateTime)_viewable.Date).ToString("dd.MM.yyyy H:mm");
+			get {
+				if (_viewable.Date != null)
+					return ((DateTime)_viewable.Date).ToString("dd.MM.yyyy H:mm");
 				else
 					return "";
 			}

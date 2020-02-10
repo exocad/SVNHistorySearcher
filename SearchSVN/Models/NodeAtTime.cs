@@ -1,12 +1,13 @@
-﻿using System;
+﻿using SharpSvn;
+using System;
 using System.Collections.Generic;
-using SharpSvn;
 
 namespace SVNHistorySearcher.Models
 {
 
 	[Serializable]
-	public struct NodeAction {
+	public struct NodeAction
+	{
 		public long Revision;
 		public bool Added;
 		public bool Modified;
@@ -17,51 +18,49 @@ namespace SVNHistorySearcher.Models
 	}
 
 	[Serializable]
-	public class AncestorRelation {
-		NodeAtTime _ancestor;
-		long _copiedAtRevision;
-		public NodeAtTime Ancestor { get { return _ancestor; } }
-		public long CopiedAtRevision { get { return _copiedAtRevision; } }
+	public class AncestorRelation
+	{
+		public NodeAtTime Ancestor { get; }
+		public long CopiedAtRevision { get; }
 
 		public AncestorRelation(NodeAtTime ancestor, long copiedAtRevision) {
-			_ancestor = ancestor;
-			_copiedAtRevision = copiedAtRevision;
+			Ancestor = ancestor;
+			CopiedAtRevision = copiedAtRevision;
 		}
 
 		public override bool Equals(object obj) {
-			return ReferenceEquals(obj, _ancestor);
+			return ReferenceEquals(obj, Ancestor);
 		}
 
 		public override int GetHashCode() {
-			return _ancestor.GetHashCode();
+			return Ancestor.GetHashCode();
 		}
 	}
 
 	[Serializable]
-	public class NodeAtTime {
-		string _path;
-		IList<NodeAction> _actions;
-		AncestorRelation _ancestor;
-		long? _deleteRevision;
-		IList<NodeAtTime> _children;
-		bool _isFolder = false;   // true means that it's proved to be a folder, false means we don't know
-		bool _isFile = false;   // true means that it's proved to be a file, false means we don't know
-
-		public string Path { get { return _path; } }
-		public string Name { get { return System.IO.Path.GetFileName(_path); } }
-		public IList<NodeAtTime> Children { get { return _children; } }
-		public bool IsFolder { get { return _isFolder; } }
-		public bool IsFile { get { return _isFile; } }
-		public IList<NodeAction> Actions { get { return _actions; } }
-		public long AddRevision { get { return _actions[0].Revision; } }
-		public long? DeleteRevision { get { return _deleteRevision; } }
-		public AncestorRelation Ancestor { get { return _ancestor; } }
+	public class NodeAtTime
+	{
+		public string Path { get; }
+		public string Name { get { return System.IO.Path.GetFileName(Path); } }
+		public IList<NodeAtTime> Children { get; }
+		/// <summary>
+		/// true means that it's proved to be a folder, false means we don't know
+		/// </summary>
+		public bool IsFolder { get; private set; } = false;
+		/// <summary>
+		/// true means that it's proved to be a file, false means we don't know
+		/// </summary>
+		public bool IsFile { get; private set; } = false;
+		public IList<NodeAction> Actions { get; }
+		public long AddRevision { get { return Actions[0].Revision; } }
+		public long? DeleteRevision { get; private set; }
+		public AncestorRelation Ancestor { get; }
 
 		public SvnNodeKind NodeKind {
 			get {
-				if(_isFolder) {
+				if (IsFolder) {
 					return SvnNodeKind.Directory;
-				} else if (_isFile) {
+				} else if (IsFile) {
 					return SvnNodeKind.File;
 				} else {
 					return SvnNodeKind.Unknown;
@@ -70,19 +69,19 @@ namespace SVNHistorySearcher.Models
 		}
 
 		public NodeAtTime(string path, long revision, AncestorRelation ancestor) {
-			_path = path;
-			_actions = new List<NodeAction> { new NodeAction(revision, true, false)};
-			_deleteRevision = null;
-			_ancestor = ancestor;
-			_children = new List<NodeAtTime>();
+			Path = path;
+			Actions = new List<NodeAction> { new NodeAction(revision, true, false) };
+			DeleteRevision = null;
+			Ancestor = ancestor;
+			Children = new List<NodeAtTime>();
 		}
 
 		public NodeAtTime(string path, long revision) {
-			_path = path;
-			_actions = new List<NodeAction> { new NodeAction(revision, true, false) };
-			_deleteRevision = null;
-			_ancestor = null;
-			_children = new List<NodeAtTime>();
+			Path = path;
+			Actions = new List<NodeAction> { new NodeAction(revision, true, false) };
+			DeleteRevision = null;
+			Ancestor = null;
+			Children = new List<NodeAtTime>();
 		}
 
 		public void AddModification(long revision) {
@@ -94,8 +93,8 @@ namespace SVNHistorySearcher.Models
 		}
 
 		public void SetDeleted(long revision) {
-			_deleteRevision = revision;
-			foreach (NodeAtTime n in _children) {
+			DeleteRevision = revision;
+			foreach (NodeAtTime n in Children) {
 				if (n.DeleteRevision > revision) {
 					n.SetDeleted(revision);
 				}
@@ -104,27 +103,27 @@ namespace SVNHistorySearcher.Models
 
 
 		public void AddChild(NodeAtTime child) {
-			_children.Add(child);
+			Children.Add(child);
 			SetIsFolder();
 		}
 
 
 		public void SetIsFolder(bool wholeAncestry = true) {
-			if (!_isFolder) {
-				_isFolder = true;
+			if (!IsFolder) {
+				IsFolder = true;
 
-				if (_ancestor != null && wholeAncestry) {
-					_ancestor.Ancestor.SetIsFolder();
+				if (Ancestor != null && wholeAncestry) {
+					Ancestor.Ancestor.SetIsFolder();
 				}
 			}
 		}
 
 		public void SetIsFile(bool wholeAncestry = true) {
-			if (!_isFile) {
-				_isFile = true;
+			if (!IsFile) {
+				IsFile = true;
 
-				if (_ancestor != null && wholeAncestry) {
-					_ancestor.Ancestor.SetIsFile();
+				if (Ancestor != null && wholeAncestry) {
+					Ancestor.Ancestor.SetIsFile();
 				}
 			}
 		}

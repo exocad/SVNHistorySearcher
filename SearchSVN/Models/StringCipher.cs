@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Security.Cryptography;
 using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 
-namespace SVNHistorySearcher.Models {
-	public static class StringCipher {
+namespace SVNHistorySearcher.Models
+{
+	public static class StringCipher
+	{
 		// This constant is used to determine the keysize of the encryption algorithm in bits.
 		// We divide this by 8 within the code below to get the equivalent number of bytes.
 		private const int Keysize = 256;

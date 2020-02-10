@@ -14,11 +14,13 @@ using System.Windows.Shapes;
 using SVNHistorySearcher.ViewModels;
 
 
-namespace SVNHistorySearcher.Views {
+namespace SVNHistorySearcher.Views
+{
 	/// <summary>
 	/// Interaction logic for SetCredentialsWindow.xaml
 	/// </summary>
-	public partial class SetCredentialsWindow : Window {
+	public partial class SetCredentialsWindow : Window
+	{
 		MainViewModel mvm;
 
 		Action OnRespond;

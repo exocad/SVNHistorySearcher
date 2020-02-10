@@ -219,12 +219,14 @@ using System.Windows;
 
 using SVNHistorySearcher.ViewModels;
 
-namespace SVNHistorySearcher {
+namespace SVNHistorySearcher
+{
 	/// <summary>
 	/// Interaction logic for App.xaml
 	/// </summary>
 
-	public partial class App : Application {
+	public partial class App : Application
+	{
 
 		MainViewModel MainViewModel;
 
@@ -232,16 +234,15 @@ namespace SVNHistorySearcher {
 
 		}
 
-        private void Application_Startup(object sender, StartupEventArgs e)
-        {
+		private void Application_Startup(object sender, StartupEventArgs e) {
 
-            MainWindow mainWindow = new MainWindow();
+			MainWindow mainWindow = new MainWindow();
 
 			MainViewModel = new MainViewModel();
-            mainWindow.DataContext = MainViewModel;
-            mainWindow.Show();
+			mainWindow.DataContext = MainViewModel;
+			mainWindow.Show();
 			MainViewModel.Initialize();
-        }
+		}
 
 	}
 }

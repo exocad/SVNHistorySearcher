@@ -1,16 +1,11 @@
-﻿using System;
+﻿using SVNHistorySearcher.Models;
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using SVNHistorySearcher.Models;
 
-namespace SVNHistorySearcher.ViewModels {
-	public class RepositoryOverviewViewModel : ViewModel {
+namespace SVNHistorySearcher.ViewModels
+{
+	public class RepositoryOverviewViewModel : ViewModel
+	{
 		MainViewModel mainViewModel;
 
 		IList<CheckableItem> _items;
@@ -59,7 +54,7 @@ namespace SVNHistorySearcher.ViewModels {
 				return;
 			}
 
-			if (revision == currentTreeRevision && path == currentTreeHeadPath && 
+			if (revision == currentTreeRevision && path == currentTreeHeadPath &&
 				object.ReferenceEquals(currentSubversionSearcherUsedForTree, subversionSearcher) &&
 				this.Items != null && this.Items.Count != 0) {
 				return;
@@ -71,7 +66,7 @@ namespace SVNHistorySearcher.ViewModels {
 				return;
 			}
 
-			
+
 			IList<string> expandedNodes = new List<string>();
 			IList<string> checkedNodes = new List<string>();
 
@@ -98,7 +93,7 @@ namespace SVNHistorySearcher.ViewModels {
 				} else {
 					expandedNodes.Add("");
 				}
-			
+
 				// keeping the nodes that were checked
 				if (this.Items != null && this.Items.Count > 0) {
 					Queue<CheckableItem> togo = new Queue<CheckableItem>();

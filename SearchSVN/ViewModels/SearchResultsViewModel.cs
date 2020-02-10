@@ -1,16 +1,12 @@
-﻿using System;
+﻿using SVNHistorySearcher.Models;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.ComponentModel;
 using System.Windows.Input;
-using System.Windows;
-using System.Windows.Controls;
-using SVNHistorySearcher.Models;
 
-namespace SVNHistorySearcher.ViewModels {
-	public class SearchResultsViewModel : ViewModel {
+namespace SVNHistorySearcher.ViewModels
+{
+	public class SearchResultsViewModel : ViewModel
+	{
 
 		MainViewModel mainViewModel;
 
@@ -18,7 +14,7 @@ namespace SVNHistorySearcher.ViewModels {
 		private Object _selectedItem = null;
 		SearchResults _searchResults;
 
-		public IList<FoundFile> Items { 
+		public IList<FoundFile> Items {
 			get {
 				return SearchResults != null ? SearchResults.Files : null;
 			}
@@ -39,7 +35,7 @@ namespace SVNHistorySearcher.ViewModels {
 				RaisePropertyChanged("Items");
 			}
 		}
-		
+
 		public ICommand ChangedSelection {
 			get { return _selectionChanged; }
 			set { _selectionChanged = value; }

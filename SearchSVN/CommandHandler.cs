@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace SVNHistorySearcher {
-	public class CommandHandler : ICommand {
+namespace SVNHistorySearcher
+{
+	public class CommandHandler : ICommand
+	{
 		private Action<object> _action;
 		private bool _canExecute;
 		public CommandHandler(Action<object> action, bool canExecute) {

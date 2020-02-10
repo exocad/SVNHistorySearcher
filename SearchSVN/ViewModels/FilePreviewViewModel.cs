@@ -8,8 +8,10 @@ using System.IO;
 using SVNHistorySearcher.Models;
 using ICSharpCode.AvalonEdit;
 
-namespace SVNHistorySearcher.ViewModels {
-	public class FilePreviewViewModel : ViewModel {
+namespace SVNHistorySearcher.ViewModels
+{
+	public class FilePreviewViewModel : ViewModel
+	{
 
 		MainViewModel mainViewModel;
 
@@ -21,7 +23,7 @@ namespace SVNHistorySearcher.ViewModels {
 
 		public string FileContent {
 			get {
-				if(_openedFile != null) {
+				if (_openedFile != null) {
 					return _openedFile.Content;
 				} else {
 					return "";

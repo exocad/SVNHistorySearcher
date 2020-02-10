@@ -1,12 +1,10 @@
-﻿using System;
+﻿using SharpSvn;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SharpSvn;
 
-namespace SVNHistorySearcher.Models {
-	public class SearchOptions {
+namespace SVNHistorySearcher.Models
+{
+	public class SearchOptions
+	{
 		public IList<string> Files = new List<string>(); // contains folders aswell
 		public IList<string> Authors = new List<string>();
 		public SvnRevision SearchFromRevision;
@@ -46,18 +44,18 @@ namespace SVNHistorySearcher.Models {
 			result += 3 * (TreeRevision != null ? TreeRevision.GetHashCode() : 1);
 			result += 5 * (Repository != null ? Repository.GetHashCode() : 1);
 			result += 7 * (FilenameSubstring != null ? FilenameSubstring.GetHashCode() : 1);
-			result += 11*(SearchInContent.GetHashCode() + 1);
-			result += 13*(StopOnCopy.GetHashCode() + 1);
-			result += 17*(ExcludeAuthors.GetHashCode() + 1);
+			result += 11 * (SearchInContent.GetHashCode() + 1);
+			result += 13 * (StopOnCopy.GetHashCode() + 1);
+			result += 17 * (ExcludeAuthors.GetHashCode() + 1);
 			return result;
 		}
 
 
-		public int GetHashCode() {
+		public override int GetHashCode() {
 			int result = GetHashCodeReloadRelevant();
-			result += 19*(Text != null ? Text.GetHashCode() : 1);
-			result += 23*(CaseSensitive.GetHashCode() + 1);
-			result += 29*(SearchInRenames.GetHashCode() + 1);
+			result += 19 * (Text != null ? Text.GetHashCode() : 1);
+			result += 23 * (CaseSensitive.GetHashCode() + 1);
+			result += 29 * (SearchInRenames.GetHashCode() + 1);
 			result += 31 * (UseRegex.GetHashCode() + 1);
 			return result;
 		}

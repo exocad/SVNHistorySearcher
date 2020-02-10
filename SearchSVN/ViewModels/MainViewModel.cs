@@ -209,29 +209,30 @@ The tool "SVNHistorySearcher" was developed in the company exocad GmbH by the au
 */
 
 
+using SVNHistorySearcher.Common;
+using SVNHistorySearcher.Models;
+using SVNHistorySearcher.Views;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Globalization;
-using System.Windows.Input;
-using System.Windows;
-using System.Diagnostics;
-using System.Threading;
 using System.Collections.ObjectModel;
-using SVNHistorySearcher.Views;
-using SVNHistorySearcher.Models;
-using SVNHistorySearcher.Common;
+using System.Diagnostics;
+using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
 
-namespace SVNHistorySearcher.ViewModels {
-	public class MainViewModel : ViewModel {
+namespace SVNHistorySearcher.ViewModels
+{
+	public class MainViewModel : ViewModel
+	{
 
 		SearchResultsViewModel _searchResultsViewModel;
 		FilePreviewViewModel _filePreviewViewModel;
 		RepositoryOverviewViewModel _repositoryOverviewViewModel;
-		
+
 		private SubversionSearcher subversionSearcher;
 		public SetCredentialsWindow SetCredentialsWindow;
 		Task searchTask;
@@ -254,7 +255,7 @@ namespace SVNHistorySearcher.ViewModels {
 				return _filePreviewViewModel ?? (_filePreviewViewModel = new FilePreviewViewModel(this));
 			}
 		}
-		
+
 		public RepositoryOverviewViewModel RepositoryOverview {
 			get {
 				return _repositoryOverviewViewModel ?? (_repositoryOverviewViewModel = new RepositoryOverviewViewModel(this));
@@ -359,7 +360,7 @@ namespace SVNHistorySearcher.ViewModels {
 
 			set {
 				var a = value.Trim();
-				
+
 				long rev;
 				if (!long.TryParse(a, out rev)) {
 					rev = long.MaxValue;
@@ -383,7 +384,7 @@ namespace SVNHistorySearcher.ViewModels {
 				return _headNodePath;
 			}
 		}
-		
+
 		private string _searchString = "";
 		public string SearchString {
 			get { return _searchString ?? ""; }
@@ -537,7 +538,7 @@ namespace SVNHistorySearcher.ViewModels {
 			get {
 				return _progressPercentage;
 			}
-			set{
+			set {
 				_progressPercentage = value;
 				RaisePropertyChanged("ProgressPercentage");
 			}
@@ -699,12 +700,12 @@ namespace SVNHistorySearcher.ViewModels {
 
 			repoUrl = repoUrl.TrimEnd('/') + '/';
 
-			if(SubversionSearcher.IsReady(subversionSearcher) && repoUrl.StartsWith(subversionSearcher.RepositoryUrl)) {
+			if (SubversionSearcher.IsReady(subversionSearcher) && repoUrl.StartsWith(subversionSearcher.RepositoryUrl)) {
 				// were just in another directory of the same repository
 				//_headNodePath = subversionSearcher.GetLowestExistingHeadNodePath(repoUrl, subversionSearcher.HeadRevision);
-				App.Current.Dispatcher.Invoke( () => MakeTreeAndUpdateRepoUrl(subversionSearcher, repoUrl) );
+				App.Current.Dispatcher.Invoke(() => MakeTreeAndUpdateRepoUrl(subversionSearcher, repoUrl));
 			} else {
-				
+
 				// load other repository
 
 				// close the old one
@@ -764,7 +765,7 @@ namespace SVNHistorySearcher.ViewModels {
 						await Task.Run(() => {
 							try {
 								subversionSearcher = new SubversionSearcher(RepositoryUrl, _username, _password);
-							} catch(Exception ex) {
+							} catch (Exception ex) {
 								Progress.Log("Failed to initialize. See error.log");
 								Progress.ErrorLog(ex);
 							}
@@ -782,7 +783,7 @@ namespace SVNHistorySearcher.ViewModels {
 					}
 
 					App.Current.Dispatcher.Invoke(() => MakeTreeAndUpdateRepoUrl(subversionSearcher, repoUrl));
-					
+
 				}
 			}
 
@@ -860,7 +861,7 @@ namespace SVNHistorySearcher.ViewModels {
 				IList<bool> hasChildList;
 				var children = subversionSearcher.GetChildrenInHierarchy(url, revision, out hasChildList, true);
 				if (children != null) {
-					for (int i=0; i<children.Count; i++) {
+					for (int i = 0; i < children.Count; i++) {
 						result.Add(new CheckableItem(parent, children[i].Item1, revision, children[i].Item2, this, hasChildList[i]));
 					}
 				}
@@ -903,7 +904,7 @@ namespace SVNHistorySearcher.ViewModels {
 					return;
 				}
 
-				if(UseRegex) {
+				if (UseRegex) {
 					try {
 						Regex rx = new Regex(_searchString);
 					} catch (ArgumentException) {
@@ -940,7 +941,7 @@ namespace SVNHistorySearcher.ViewModels {
 					files = previousNodeList = subversionSearcher.GetFullNodeList(nod, TreeRevision);
 				}
 
-				SearchOptions options = new SearchOptions() { 
+				SearchOptions options = new SearchOptions() {
 					CaseSensitive = _caseSensitive,
 					UseRegex = _useRegex,
 					SearchFromRevision = useDateForStart ? new SharpSvn.SvnRevision(searchFromDate.Date) : new SharpSvn.SvnRevision(searchFromRevision),
@@ -962,7 +963,7 @@ namespace SVNHistorySearcher.ViewModels {
 				if (results == null) {
 					return;
 				}
-				
+
 				if (!results.Successful) {
 					string caption = "Search incomplete";
 					string text = "Result might be incomplete. Some diffs could not be searched for whatever reason.\r\nWould you like to see the list of diffs that are still missing?";
@@ -1000,8 +1001,8 @@ namespace SVNHistorySearcher.ViewModels {
 					}
 				}
 
-				
-				Progress.Log(String.Format("Search finished after {0:F2}s", results.TotalTime/1000));
+
+				Progress.Log(String.Format("Search finished after {0:F2}s", results.TotalTime / 1000));
 
 			} else {
 				Progress.Log("Search text can not be empty");
@@ -1052,7 +1053,7 @@ namespace SVNHistorySearcher.ViewModels {
 				Progress.Log("Could not fetch file from subversion server.");
 				return;
 			}
-			
+
 			try {
 				System.Diagnostics.Process.Start(System.IO.Path.GetDirectoryName(filePath));
 			} catch (Exception ex) {

@@ -1,20 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
-namespace SVNHistorySearcher.Models {
+namespace SVNHistorySearcher.Models
+{
 	[Serializable]
-	public class DiffInfo {
+	public class DiffInfo
+	{
 		string _path;
 		long _revA;
 		long _revB = -1;
 		long _revC = long.MinValue;
 		CommitInfo _revBRevision;
 		public bool CanBeEmpty = false;
-		[NonSerialized]	NodeAtTime _nodeAtTime;
+		[NonSerialized] NodeAtTime _nodeAtTime;
 
 		public NodeAtTime NodeAtTime { get { return _nodeAtTime; } }
 		public string Path { get { return _path; } }
@@ -72,7 +70,7 @@ namespace SVNHistorySearcher.Models {
 			_revC = revC;
 		}
 
-		public DiffInfo(string path, long revB) : this (path, -1, revB, -1){
+		public DiffInfo(string path, long revB) : this(path, -1, revB, -1) {
 			_path = path;
 			_revB = revB;
 		}

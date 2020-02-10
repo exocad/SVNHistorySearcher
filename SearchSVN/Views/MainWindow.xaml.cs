@@ -21,11 +21,13 @@ using ICSharpCode.AvalonEdit.Search;
 using SVNHistorySearcher.Models;
 using SVNHistorySearcher.ViewModels;
 
-namespace SVNHistorySearcher {
+namespace SVNHistorySearcher
+{
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class MainWindow : Window {
+	public partial class MainWindow : Window
+	{
 
 		public MainWindow() {
 			InitializeComponent();

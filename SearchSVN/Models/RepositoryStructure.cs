@@ -1,22 +1,19 @@
-﻿using System;
+﻿using SharpSvn;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using SharpSvn;
-using System.IO;
-using System.Text;
 using System.Diagnostics;
-using System.Security.Cryptography;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
+using System.Linq;
 
 namespace SVNHistorySearcher.Models
 {
-	public partial class SubversionSearcher {
-		IDictionary<long, CommitInfo> revisions;
+	public partial class SubversionSearcher
+	{
 		IDictionary<string, IList<NodeAtTime>> nodes;
 		IDictionary<NodeAtTime, ISet<NodeAtTime>> equalAdds; // this stores which nodes have the same content when created
 		Table table;
 
-		public IDictionary<long, CommitInfo> Revisions { get { return revisions; } }
+		public IDictionary<long, CommitInfo> Revisions { get; private set; }
 
 		private bool savedTaggedFolders = true;
 		ISet<Tuple<string, long>> NodesTaggedAsFolder = new HashSet<Tuple<string, long>>();
@@ -25,9 +22,8 @@ namespace SVNHistorySearcher.Models
 		IList<CommitInfo> RepositoryRevisions = null;
 		// --
 
-
 		private void BuildRepositoryStructure(IList<CommitInfo> revs, IList<SimplifiedSvnChangeItem> changeItems) {
-			revisions = new Dictionary<long, CommitInfo>();
+			Revisions = new Dictionary<long, CommitInfo>();
 			nodes = new Dictionary<string, IList<NodeAtTime>>();
 			equalAdds = new Dictionary<NodeAtTime, ISet<NodeAtTime>>();
 			table = new Table(this);
@@ -35,10 +31,10 @@ namespace SVNHistorySearcher.Models
 			nodes.Add("", new List<NodeAtTime> { new NodeAtTime("", 0) });
 
 			foreach (var e in revs) {
-				revisions.Add(e.Revision, e);
+				Revisions.Add(e.Revision, e);
 			}
 
-			if (revs.Count > 0) { _headRevision = revs[revs.Count - 1].Revision; }
+			if (revs.Count > 0) { HeadRevision = revs[revs.Count - 1].Revision; }
 
 			Stopwatch sw = Stopwatch.StartNew();
 
@@ -72,7 +68,7 @@ namespace SVNHistorySearcher.Models
 				}
 			}
 
-			
+
 			{
 				IList<string> listsToRemove = new List<string>();
 				// remove nodes with deleteRevision == addRevision, remove nodesPaths with no nodes, add to table
@@ -93,11 +89,11 @@ namespace SVNHistorySearcher.Models
 
 						if (nat.IsFolder) {
 							continue;
-						} else if (NodesTaggedAsFolder.Count > 0 && NodesTaggedAsFolder.Contains(new Tuple<string,long>(nat.Path, nat.AddRevision))) {
+						} else if (NodesTaggedAsFolder.Count > 0 && NodesTaggedAsFolder.Contains(new Tuple<string, long>(nat.Path, nat.AddRevision))) {
 							nat.SetIsFolder();
 						} else {
 							bool isBinary = FiletypeBlacklist.Contains(Path.GetExtension(nat.Path));
-								
+
 							for (int i = nat.Actions.Count - 1; i > 0; i--) {
 								table.AddToDict(nat.Actions[i].Revision, kv.Key, isBinary);
 							}
@@ -159,7 +155,7 @@ namespace SVNHistorySearcher.Models
 		private void AddModification(string nodePath, long revision, bool removeFromSameAdds = false) {
 			NodeAtTime node = GetNodeAtTime(nodePath, revision);
 
-			if(node != null) {
+			if (node != null) {
 				if (removeFromSameAdds) {
 					ISet<NodeAtTime> set;
 					if (equalAdds.TryGetValue(node, out set)) {
@@ -206,11 +202,11 @@ namespace SVNHistorySearcher.Models
 			}
 			//-------
 
-			if(changeItem.CopyFromPath != null) {
+			if (changeItem.CopyFromPath != null) {
 				string cpFromPath = changeItem.CopyFromPath.Length > 1 ? changeItem.CopyFromPath.Substring(1) : "";
 
 				var previousNode = GetNodeAtTime(cpFromPath, changeItem.CopyFromRevision);
-				if(previousNode != null) {
+				if (previousNode != null) {
 					AddCopy(nodePath, previousNode, parent, revision, changeItem.CopyFromRevision, ref filesCopiedThisRevision);
 				} else {
 					Progress.DebugLog("Ancestor of {0}@{1} not found: {2}@{3}", nodePath, revision, cpFromPath, changeItem.CopyFromRevision);
@@ -244,8 +240,8 @@ namespace SVNHistorySearcher.Models
 
 		// creates a new copy of NodeAtTime in this tree an links them  // has to be directory
 		private NodeAtTime AddCopy(
-			string path, NodeAtTime previousNode, NodeAtTime parent, 
-			long currentRevision, long previousRevision, 
+			string path, NodeAtTime previousNode, NodeAtTime parent,
+			long currentRevision, long previousRevision,
 			ref ISet<string> filesCopiedThisRevision) {
 
 			NodeAtTime currentNode;
@@ -309,7 +305,7 @@ namespace SVNHistorySearcher.Models
 		/// <exception cref="System.ArgumentNullException">If path is null</exception>
 		private NodeAtTime GetNodeAtTime(string path, long revision) {
 			IList<NodeAtTime> ancli;
-			if(nodes.TryGetValue(path, out ancli)) {
+			if (nodes.TryGetValue(path, out ancli)) {
 
 				for (int k = ancli.Count - 1; k >= 0; k--) {
 					if (ancli[k].AddRevision <= revision) {
@@ -372,7 +368,7 @@ namespace SVNHistorySearcher.Models
 				}
 			}
 
-			for ( int i=0; i< node.Actions.Count; i++){
+			for (int i = 0; i < node.Actions.Count; i++) {
 				var na = node.Actions[i];
 
 				// revision span
@@ -381,7 +377,7 @@ namespace SVNHistorySearcher.Models
 				} else if (na.Revision > endRevision) {
 					break;
 				}
-				
+
 
 				// ignoring delete revision because we don't diff deletes
 				if (ignoreRevsions.Contains(na.Revision) || node.DeleteRevision.HasValue && na.Revision == node.DeleteRevision) {
@@ -389,8 +385,8 @@ namespace SVNHistorySearcher.Models
 				}
 
 				// finding maximum upper revision
-				if (i < node.Actions.Count - 1 ) {
-					nextRev = node.Actions[i + 1].Revision-1;
+				if (i < node.Actions.Count - 1) {
+					nextRev = node.Actions[i + 1].Revision - 1;
 				} else {
 					nextRev = node.DeleteRevision.HasValue ? node.DeleteRevision.Value - 1 : HeadRevision;
 				}
@@ -462,7 +458,7 @@ namespace SVNHistorySearcher.Models
 
 			if (toSearch != "") {
 				foreach (var kv in nodes) {
-					if(result.ContainsKey(kv.Key)) {
+					if (result.ContainsKey(kv.Key)) {
 						continue;
 					}
 					if (so.HeadNodePath != "" && !kv.Key.StartsWith(so.HeadNodePath + '/')) {
@@ -501,13 +497,13 @@ namespace SVNHistorySearcher.Models
 			return null;
 		}
 
-		
+
 		public IList<MovementInfo> GetMovementInfos(NodeAtTime node) {
 			if (this.Disposed) {
 				Progress.DebugLog("GetMovementInfos called on closed SubversionSearcher");
 				return null;
 			}
-			
+
 			if (node != null) {
 				IList<MovementInfo> result = new List<MovementInfo>();
 				GetMovementInfos(node, HeadRevision, ref result);
@@ -560,7 +556,7 @@ namespace SVNHistorySearcher.Models
 			}
 
 			IList<NodeAtTime> li;
-			if(nodes.TryGetValue(nodeAtTime.Path, out li)) {
+			if (nodes.TryGetValue(nodeAtTime.Path, out li)) {
 				for (int i = li.Count - 1; i >= 0; i--) {
 					if (li[i] != nodeAtTime) {
 						continue;
@@ -577,7 +573,7 @@ namespace SVNHistorySearcher.Models
 			newDI.SetNodeAtTime(nodeAtTime);
 			return newDI;
 		}
-		
+
 
 		/// <summary>
 		/// finds out the path and revision of all diffs needed for this search
@@ -598,13 +594,13 @@ namespace SVNHistorySearcher.Models
 			long endRevisionNumber = long.MaxValue;
 			long treeRevisionNumber = -1;
 
-			if(searchOptions.SearchFromRevision.Revision != -1) {
+			if (searchOptions.SearchFromRevision.Revision != -1) {
 				// revision number was entered
 				startRevisionNumber = searchOptions.SearchFromRevision.Revision;
 			} else {
-				for (int i = 1; i < revisions.Count; i++) {
-					if (revisions[i].Time >= searchOptions.SearchFromRevision.Time) {
-						startRevisionNumber = revisions[i-1].Revision;
+				for (int i = 1; i < Revisions.Count; i++) {
+					if (Revisions[i].Time >= searchOptions.SearchFromRevision.Time) {
+						startRevisionNumber = Revisions[i - 1].Revision;
 						break;
 					}
 				}
@@ -614,9 +610,9 @@ namespace SVNHistorySearcher.Models
 				// revision number was entered
 				endRevisionNumber = searchOptions.SearchToRevision.Revision;
 			} else {
-				for (int i = revisions.Count - 2; i >= 0; i--) {
-					if (revisions[i].Time <= searchOptions.SearchToRevision.Time) {
-						endRevisionNumber = revisions[i+1].Revision;
+				for (int i = Revisions.Count - 2; i >= 0; i--) {
+					if (Revisions[i].Time <= searchOptions.SearchToRevision.Time) {
+						endRevisionNumber = Revisions[i + 1].Revision;
 						break;
 					}
 				}
@@ -631,13 +627,13 @@ namespace SVNHistorySearcher.Models
 
 			ICollection<long> ignoreRevisions = new HashSet<long>();
 			if (searchOptions.Authors.Count > 0) {
-				foreach (CommitInfo r in revisions.Values) {
+				foreach (CommitInfo r in Revisions.Values) {
 					if (r.Author != null && !(searchOptions.Authors.Contains(r.Author.ToLower()) ^ searchOptions.ExcludeAuthors)) {
 						ignoreRevisions.Add(r.Revision);
 					}
 				}
 			}
-			
+
 
 			// adding the files that were selected in the checkbox tree
 			foreach (string fname in filesOfInterest) {
@@ -663,7 +659,7 @@ namespace SVNHistorySearcher.Models
 
 					var stringInFname = searchOptions.FilenameSubstring.ToLower();
 
-					if ((searchOptions.FilenameSubstring == "*" && !FiletypeBlacklist.Contains(Path.GetExtension(kv.Key).ToLower())) || kv.Key.Contains(stringInFname)) { 
+					if ((searchOptions.FilenameSubstring == "*" && !FiletypeBlacklist.Contains(Path.GetExtension(kv.Key).ToLower())) || kv.Key.Contains(stringInFname)) {
 						foreach (NodeAtTime n in kv.Value) {
 							foreach (DiffInfo di in GetFileHistory(n, startRevisionNumber, endRevisionNumber, ignoreRevisions, true)) {
 								IList<string> li;
@@ -677,10 +673,10 @@ namespace SVNHistorySearcher.Models
 						}
 					}
 				}
-				
+
 			}
 
-			Vardump<DiffInfo>("relevantDiffs.txt", diffInfoFileRelations.Keys, (di) => {
+			Utils.Vardump<DiffInfo>("relevantDiffs.txt", diffInfoFileRelations.Keys, (di) => {
 				string result = String.Format("r{0,5} {1}", di.RevB, di.Path);
 				return result;
 			});
@@ -701,7 +697,7 @@ namespace SVNHistorySearcher.Models
 			}
 
 			CommitInfo r;
-			if (revisions.TryGetValue(revision, out r)) {
+			if (Revisions.TryGetValue(revision, out r)) {
 				return r;
 			} else {
 				return null;
@@ -715,28 +711,29 @@ namespace SVNHistorySearcher.Models
 				return null;
 			}
 
-			for (long i = revisions.Count - 1; i >= 0; i--) {
-				if (revisions[i].Time <= date) {
-					return revisions[i];
+			for (long i = Revisions.Count - 1; i >= 0; i--) {
+				if (Revisions[i].Time <= date) {
+					return Revisions[i];
 				}
 			}
 
-			for (long i = 0; i < revisions.Count; i++) {
-				if (revisions[i].Time >= date) {
-					return revisions[i];
+			for (long i = 0; i < Revisions.Count; i++) {
+				if (Revisions[i].Time >= date) {
+					return Revisions[i];
 				}
 			}
 
 			return null;
 		}
 
-		
+
 		private static string GetLogCacheFilename(string repoUrl) {
-			return Utils.JoinPathsWin(DataSaver.GetRepositoryFolder(repoUrl), "svnlog");
+			return Path.Combine(DataSaver.GetRepositoryFolder(repoUrl), "svnlog");
 		}
 
 
-		private class NodeDiffAmount {
+		private class NodeDiffAmount
+		{
 			public int TextFileAmount = 0;
 			public int BinaryFileAmount = 0;
 			public NodeDiffAmount Parent;
@@ -764,7 +761,8 @@ namespace SVNHistorySearcher.Models
 		/// <summary>
 		/// Used for creating diff queue. Contains information about the amount of files that will be in each received when diffing each node at each revision
 		/// </summary>
-		private class Table {
+		private class Table
+		{
 			private Dictionary<Tuple<long, string>, NodeDiffAmount> dict = new Dictionary<Tuple<long, string>, NodeDiffAmount>();
 			private SubversionSearcher subversionSearcher;
 
@@ -791,7 +789,7 @@ namespace SVNHistorySearcher.Models
 
 					} else {
 						dict[new Tuple<long, string>(revision, parentPath)] = parent = new NodeDiffAmount(null);
-						
+
 						previous.Parent = parent;
 						parent.Children.Add(previous);
 						previous = parent;

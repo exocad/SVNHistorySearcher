@@ -1,37 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections.Concurrent;
-using Lucene.Net;
+﻿using Lucene.Net.Analysis;
 using Lucene.Net.Documents;
-using Lucene.Net.Analysis;
-using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Index;
-using Lucene.Net.Store;
 using Lucene.Net.Search;
-using Lucene.Net.QueryParsers;
-using Lucene.Net.Util;
-using Lucene.Net.Support;
-using Lucene.Net.Messages;
-using System.IO;
-using System.Threading;
-using System.Diagnostics;
-using System.Security.Cryptography;
+using Lucene.Net.Store;
 using SVNHistorySearcher.Common;
-
-using Directory = Lucene.Net.Store.Directory;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+using Directory = Lucene.Net.Store.Directory;
 
-namespace SVNHistorySearcher.Models {
+namespace SVNHistorySearcher.Models
+{
 
 	// this Indexer is tied to a repository
-	public class LuceneIndexer : IDisposable{
+	public class LuceneIndexer : IDisposable
+	{
 
 		ConcurrentDictionary<DiffInfo, int> diffsInCache; // contains the diffs that are really saved in cache
 		ConcurrentDictionary<int, IList<DiffInfo>> docIDtoDiffs;
-		
+
 		private int withUnknownDocumentId = 0; /* it's faster to dump the diffsInCache dictionary and load it again with a MatchAllQuery,
 		than trying to get the documentIDs of many files individually*/
 		private int uncommitedDiffs = 0;
@@ -87,8 +80,8 @@ namespace SVNHistorySearcher.Models {
 				Analyzer.Dispose();
 			}
 		}
-		
-		
+
+
 		public ConcurrentDictionary<DiffInfo, int> MultithreadedSearch(SearchOptions searchOptions, ISet<DiffInfo> diffsToSearch, out ConcurrentBag<DiffInfo> notFound) {
 			PresearchCommit();
 			ConcurrentDictionary<DiffInfo, int> result = new ConcurrentDictionary<DiffInfo, int>();
@@ -141,28 +134,28 @@ namespace SVNHistorySearcher.Models {
 
 							if (foundSomething) {
 								IList<DiffInfo> li;
-									if (docIDtoDiffs.TryGetValue(docId, out li)) {
-										foreach (var e in li) {
-											if (!diffsToSearch.Contains(e)) {
-												continue;
-											}
-											if (!result.TryAdd(e, 1) ) {
-												Progress.DebugLog("Failed to add {0} to results", diff.Item1);
-											}
+								if (docIDtoDiffs.TryGetValue(docId, out li)) {
+									foreach (var e in li) {
+										if (!diffsToSearch.Contains(e)) {
+											continue;
 										}
-									} else {
-										Progress.DebugLog("Doc ID {0} was not found in docIDtoDiffs", docId);
+										if (!result.TryAdd(e, 1)) {
+											Progress.DebugLog("Failed to add {0} to results", diff.Item1);
+										}
 									}
+								} else {
+									Progress.DebugLog("Doc ID {0} was not found in docIDtoDiffs", docId);
+								}
 							}
 						}
 					}
 				}
 			};
 
-			
+
 
 			IList<Task> tasks = new List<Task>();
-			int tasksToStart = Math.Max((int)(Math.Min(diffsToSearch.Count / 5, 10)+0.5f), 1);
+			int tasksToStart = Math.Max((int)(Math.Min(diffsToSearch.Count / 5, 10) + 0.5f), 1);
 
 			for (int i = 0; i < tasksToStart; i++) {
 				Task t;
@@ -216,7 +209,7 @@ namespace SVNHistorySearcher.Models {
 
 				long revB = long.Parse(doc.Get("revision"));
 				string path = doc.Get("path");
-				
+
 				DiffInfo di = new DiffInfo(path, revB);
 				result.TryAdd(di, hit.Doc);
 				docidtodiffs.TryAdd(hit.Doc, new List<DiffInfo> { di });
@@ -224,9 +217,9 @@ namespace SVNHistorySearcher.Models {
 
 			IList<DiffInfo> toRemove = new List<DiffInfo>();
 
-			foreach(var kv in equalContent) {
+			foreach (var kv in equalContent) {
 				int did;
-				if(result.TryGetValue(kv.Value, out did)) {
+				if (result.TryGetValue(kv.Value, out did)) {
 					IList<DiffInfo> li;
 					if (docidtodiffs.TryGetValue(did, out li)) {
 						li.Add(kv.Key);
@@ -237,7 +230,7 @@ namespace SVNHistorySearcher.Models {
 				}
 			}
 
-			foreach(var e in toRemove) {
+			foreach (var e in toRemove) {
 				DiffInfo dc;
 				equalContent.TryRemove(e, out dc);
 			}
@@ -259,7 +252,7 @@ namespace SVNHistorySearcher.Models {
 			IndexSearcher searcher = new IndexSearcher(LuceneIndexDirectory, true);
 
 			DiffInfo di;
-			if(!equalContent.TryGetValue(diffInfo, out di)) {
+			if (!equalContent.TryGetValue(diffInfo, out di)) {
 				di = diffInfo;
 			}
 
@@ -336,7 +329,7 @@ namespace SVNHistorySearcher.Models {
 				uncommitedDiffs = 0;
 				Writer.Commit();
 			}
-			
+
 			return docId;
 		}
 
@@ -364,7 +357,7 @@ namespace SVNHistorySearcher.Models {
 
 				if (!alreadyContains) {
 					AddToIndex(inCache = diffInfo, content);
-					
+
 				}
 				foreach (var e in equalDiffs) {
 					if (e != inCache) {
@@ -372,7 +365,7 @@ namespace SVNHistorySearcher.Models {
 					}
 				}
 			}
-			
+
 		}
 
 
@@ -431,7 +424,7 @@ namespace SVNHistorySearcher.Models {
 					BinaryWriter writer = new BinaryWriter(fs);
 					int i;
 					writer.Write(i = equalContent.Count);
-					
+
 					foreach (var kv in equalContent) {
 						if (i-- <= 0) {
 							break;
@@ -452,7 +445,8 @@ namespace SVNHistorySearcher.Models {
 			}
 		}
 
-		private class CaseInsensitiveWhitespaceAnalyzer : Analyzer {
+		private class CaseInsensitiveWhitespaceAnalyzer : Analyzer
+		{
 			public override TokenStream TokenStream(string fieldName, TextReader reader) {
 				TokenStream t = null;
 				t = new WhitespaceTokenizer(reader);

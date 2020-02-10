@@ -1,24 +1,19 @@
-﻿using System;
+﻿using SVNHistorySearcher.ViewModels;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.ComponentModel;
 using System.Collections.ObjectModel;
-using System.Windows;
+using System.Linq;
 using System.Windows.Input;
-using System.IO;
 
-using SVNHistorySearcher.Models;
-using SVNHistorySearcher.ViewModels;
-
-namespace SVNHistorySearcher {
-	public class CheckableItem : ViewModels.ViewModel{
+namespace SVNHistorySearcher
+{
+	public class CheckableItem : ViewModels.ViewModel
+	{
 
 		MainViewModel mainViewModel;
 
 		CheckableItem _parent;
-		public CheckableItem Parent { 
+		public CheckableItem Parent {
 			get {
 				return _parent;
 			}
@@ -78,7 +73,7 @@ namespace SVNHistorySearcher {
 		private bool? _isChecked = false;
 		public bool? IsChecked {
 			get {
-				return _isChecked; 
+				return _isChecked;
 			}
 			set {
 				if (_isChecked != value) {
@@ -154,7 +149,7 @@ namespace SVNHistorySearcher {
 			_revision = revision;
 			_parent = parent;
 			mainViewModel = mvm;
-			
+
 			if (_path == "") {
 				_text = "/";
 			} else {
@@ -183,7 +178,7 @@ namespace SVNHistorySearcher {
 
 		// sets state according to children
 		public void Update() {
-			if(_children != null) {
+			if (_children != null) {
 				bool? val = false;
 				bool first = true;
 
@@ -210,8 +205,8 @@ namespace SVNHistorySearcher {
 					}
 
 					RaisePropertyChanged("IsChecked");
-				}			
-				
+				}
+
 			}
 		}
 
@@ -224,12 +219,12 @@ namespace SVNHistorySearcher {
 
 			var split = relpath.Trim('/').Split('/');
 
-			if(split[0] == "") {
+			if (split[0] == "") {
 				return this;
 			} else {
 				LoadChildrenIfNecessary();
 
-				foreach(var c in Children) {
+				foreach (var c in Children) {
 					if (c.Name == split[0]) {
 						if (split.Length > 1) {
 							return c.GetItemByRelativePath(String.Join("/", split, 1, split.Length - 1));
@@ -257,19 +252,19 @@ namespace SVNHistorySearcher {
 		}
 
 
-		public CheckableItem this[string s]{
-			get{
+		public CheckableItem this[string s] {
+			get {
 				if (_children != null) {
 					foreach (CheckableItem c in _children) {
 						if (c.Text == s) {
 							return c;
 						}
 					}
-				}				
+				}
 
 				return null;
 			}
-			set{
+			set {
 				if (this[s] == null) {
 					if (_children == null) {
 						_children = new ObservableCollection<CheckableItem>();

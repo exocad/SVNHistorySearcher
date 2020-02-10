@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
-namespace SVNHistorySearcher.Models {
-	public static class Progress {
+namespace SVNHistorySearcher.Models
+{
+	public static class Progress
+	{
 
 		static int failedRequests = 0;
 		static int totalWork = 0;
@@ -16,9 +15,12 @@ namespace SVNHistorySearcher.Models {
 		static List<Action> onMajorChange = new List<Action>();
 
 		static Stream errorLog = new FileStream(@"error.log", FileMode.Create, FileAccess.Write);
-		static Stream debugLog = new FileStream(@"debug.log", FileMode.Create, FileAccess.Write);
 		static StreamWriter errorLogWriter = new StreamWriter(errorLog) { AutoFlush = true };
+
+#if DEBUG
+		static Stream debugLog = new FileStream(@"debug.log", FileMode.Create, FileAccess.Write);
 		static StreamWriter debugLogWriter = new StreamWriter(debugLog) { AutoFlush = true };
+#endif
 
 		static int previousFailedRequests = 0;
 		static int previousTotalWork = 0;
@@ -69,13 +71,13 @@ namespace SVNHistorySearcher.Models {
 			}
 		}
 
-		static void RaiseChangeEvent() {			
+		static void RaiseChangeEvent() {
 			foreach (Action a in onMajorChange) {
 				a();
 			}
 		}
 
-		static void RaiseLogEvent() {			
+		static void RaiseLogEvent() {
 			foreach (var a in onLogUpdate) {
 				a(currentLogMessage);
 			}
@@ -134,26 +136,30 @@ namespace SVNHistorySearcher.Models {
 
 
 		public static void DebugLog(object message) {
+#if DEBUG
 			lock (_lock) {
 				debugLogWriter.WriteLine(message);
 			}
+#endif
 		}
 
 		public static void DebugLog(string format, params object[] args) {
+#if DEBUG
 			lock (_lock) {
 				debugLogWriter.WriteLine(format, args);
 			}
+#endif
 		}
 
 
 
 		public static void AddFailedRequest() {
 			AddFailedRequest(1);
-		}		
+		}
 
-		public static void AddTotalWork(){
+		public static void AddTotalWork() {
 			AddTotalWork(1);
-		}		
+		}
 
 		public static void AddFinishedWork() {
 			AddFinishedWork(1);
@@ -198,7 +204,7 @@ namespace SVNHistorySearcher.Models {
 					}
 				} else {
 					return 0;
-				}				
+				}
 			}
 		}
 	}
