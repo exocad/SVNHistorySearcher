@@ -957,6 +957,7 @@ namespace SVNHistorySearcher.ViewModels
 
 			Settings.Instance.RepositoryHistoryLength = Settings.Instance.RepositoryHistoryLength;
 			RecentRepositories = new ObservableCollection<string>(Settings.Instance.RecentRepositories);
+			RaisePropertyChanged("RecentRepositories");
 
 			Progress.RegisterCallbackOnMajorChange(() =>
 			{
