@@ -29,28 +29,36 @@ namespace SVNHistorySearcher
 	public partial class MainWindow : Window
 	{
 
-		public MainWindow() {
+		public MainWindow()
+		{
 			InitializeComponent();
 		}
 
-		private void TextBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e) {
+		private void TextBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+		{
 			SelectAll(sender);
 		}
-		private void TextBox_GotMouseCapture(object sender, MouseEventArgs e) {
+		private void TextBox_GotMouseCapture(object sender, MouseEventArgs e)
+		{
 			SelectAll(sender);
 		}
-		private void SelectAll(object sender) {
-			if (sender is TextBox) {
+		private void SelectAll(object sender)
+		{
+			if (sender is TextBox)
+			{
 				((TextBox)sender).SelectAll();
 			}
 		}
 
-		private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+		private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+		{
 			((ViewModels.MainViewModel)DataContext).TryShutdown();
 		}
 
-		private void FoundDiff_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
-			try {
+		private void FoundDiff_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+		{
+			try
+			{
 				ContentControl cc = (ContentControl)sender;
 				WrapPanel wp = (WrapPanel)cc.Content;
 				var fd = (FoundDiffWithColorSolution)cc.DataContext;
@@ -59,18 +67,23 @@ namespace SVNHistorySearcher
 				OpenedFile of = new OpenedFile(fd.FoundDiff, 0);
 				mvm.OpenInTortoise(of, true);
 				mvm.OpenFile(of);
-			} catch {
+			}
+			catch
+			{
 
 			}
 		}
 
-		private void TextBox_KeyDown(object sender, KeyEventArgs e) {
-			if (e.Key == Key.Enter || e.Key == Key.Tab) {
+		private void TextBox_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.Key == Key.Enter || e.Key == Key.Tab)
+			{
 				ApplyRevisionTextChanged((TextBox)sender);
 			}
 		}
 
-		private void ApplyRevisionTextChanged(TextBox sender) {
+		private void ApplyRevisionTextChanged(TextBox sender)
+		{
 			var mvm = ((ViewModels.MainViewModel)DataContext);
 			mvm.TreeRevisionText = sender.Text;
 		}

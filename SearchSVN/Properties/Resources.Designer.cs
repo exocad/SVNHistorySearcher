@@ -31,16 +31,20 @@ namespace SVNHistorySearcher.Properties
 		private static global::System.Globalization.CultureInfo resourceCulture;
 
 		[global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		internal Resources() {
+		internal Resources()
+		{
 		}
 
 		/// <summary>
 		///   Returns the cached ResourceManager instance used by this class.
 		/// </summary>
 		[global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-		internal static global::System.Resources.ResourceManager ResourceManager {
-			get {
-				if (object.ReferenceEquals(resourceMan, null)) {
+		internal static global::System.Resources.ResourceManager ResourceManager
+		{
+			get
+			{
+				if (object.ReferenceEquals(resourceMan, null))
+				{
 					global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SVNHistorySearcher.Properties.Resources", typeof(Resources).Assembly);
 					resourceMan = temp;
 				}
@@ -53,11 +57,14 @@ namespace SVNHistorySearcher.Properties
 		///   resource lookups using this strongly typed resource class.
 		/// </summary>
 		[global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-		internal static global::System.Globalization.CultureInfo Culture {
-			get {
+		internal static global::System.Globalization.CultureInfo Culture
+		{
+			get
+			{
 				return resourceCulture;
 			}
-			set {
+			set
+			{
 				resourceCulture = value;
 			}
 		}

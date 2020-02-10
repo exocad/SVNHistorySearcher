@@ -10,7 +10,8 @@ namespace SVNHistorySearcher.Common
 		private const int False = 0;
 		private int _value;
 
-		public AtomicBoolean(bool initialValue) {
+		public AtomicBoolean(bool initialValue)
+		{
 			Interlocked.Exchange(ref _value, initialValue ? True : False);
 		}
 
@@ -21,7 +22,8 @@ namespace SVNHistorySearcher.Common
 		/// <param name="newValue">The new value.</param>
 		/// <returns>True in case the expected value was equal to the actual value at the time of the comparison.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool CompareAndSet(bool expectedValue, bool newValue) {
+		public bool CompareAndSet(bool expectedValue, bool newValue)
+		{
 			var newValueInt = ToInt(newValue);
 			var comparandInt = ToInt(expectedValue);
 
@@ -29,23 +31,28 @@ namespace SVNHistorySearcher.Common
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Get() {
+		public bool Get()
+		{
 			return ToBool(Volatile.Read(ref _value));
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Set(bool value) {
+		public void Set(bool value)
+		{
 			Volatile.Write(ref this._value, ToInt(value));
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static implicit operator bool(AtomicBoolean value) {
+		public static implicit operator bool(AtomicBoolean value)
+		{
 			return value.Get();
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private static bool ToBool(int value) {
-			if (value != False && value != True) {
+		private static bool ToBool(int value)
+		{
+			if (value != False && value != True)
+			{
 				throw new ArgumentOutOfRangeException(value.ToString());
 				// originally: throw new ArgumentOutOfRangeException(nameof(value));
 			}
@@ -53,7 +60,8 @@ namespace SVNHistorySearcher.Common
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private static int ToInt(bool value) {
+		private static int ToInt(bool value)
+		{
 			return value ? True : False;
 		}
 	}

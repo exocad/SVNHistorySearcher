@@ -25,7 +25,8 @@ namespace SVNHistorySearcher.Views
 
 		Action OnRespond;
 
-		public SetCredentialsWindow(MainViewModel mvm, string username, string password, Action onRespond = null) {
+		public SetCredentialsWindow(MainViewModel mvm, string username, string password, Action onRespond = null)
+		{
 			InitializeComponent();
 
 			this.mvm = mvm;
@@ -35,26 +36,32 @@ namespace SVNHistorySearcher.Views
 			TB_password.Password = password;
 		}
 
-		private void ButtonCancel_Click(object sender, RoutedEventArgs e) {
+		private void ButtonCancel_Click(object sender, RoutedEventArgs e)
+		{
 			mvm.SetCredentialsWindow = null;
 			this.Close();
 		}
 
-		private void ButtonOk_Click(object sender, RoutedEventArgs e) {
+		private void ButtonOk_Click(object sender, RoutedEventArgs e)
+		{
 			mvm.CredentialsWindowResponse(this, TB_username.Text, TB_password.Password, OnRespond);
 		}
 
-		private void TB_password_GotFocus(object sender, KeyboardFocusChangedEventArgs e) {
+		private void TB_password_GotFocus(object sender, KeyboardFocusChangedEventArgs e)
+		{
 			TB_password.SelectAll();
 		}
-		private void TB_password_GotFocus(object sender, MouseEventArgs e) {
+		private void TB_password_GotFocus(object sender, MouseEventArgs e)
+		{
 			TB_password.SelectAll();
 		}
 
-		private void TB_username_GotFocus(object sender, KeyboardFocusChangedEventArgs e) {
+		private void TB_username_GotFocus(object sender, KeyboardFocusChangedEventArgs e)
+		{
 			TB_username.SelectAll();
 		}
-		private void TB_username_GotFocus(object sender, MouseEventArgs e) {
+		private void TB_username_GotFocus(object sender, MouseEventArgs e)
+		{
 			TB_username.SelectAll();
 		}
 	}

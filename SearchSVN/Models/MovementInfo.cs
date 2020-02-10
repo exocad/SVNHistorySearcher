@@ -23,7 +23,8 @@ namespace SVNHistorySearcher.Models
 		public long OldRevision { get; }
 		public long NewRevision { get; }
 
-		public MovementInfo(MovementAction action, string oldPath, string newPath, long oldRevision, long newRevision) {
+		public MovementInfo(MovementAction action, string oldPath, string newPath, long oldRevision, long newRevision)
+		{
 			Action = action;
 			OldPath = oldPath;
 			NewPath = newPath;

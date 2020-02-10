@@ -12,7 +12,8 @@ namespace SVNHistorySearcher.Models
 		public bool Added;
 		public bool Modified;
 
-		public NodeAction(long rev, bool added, bool modified) {
+		public NodeAction(long rev, bool added, bool modified)
+		{
 			Revision = rev; Added = added; Modified = modified;
 		}
 	}
@@ -23,16 +24,19 @@ namespace SVNHistorySearcher.Models
 		public NodeAtTime Ancestor { get; }
 		public long CopiedAtRevision { get; }
 
-		public AncestorRelation(NodeAtTime ancestor, long copiedAtRevision) {
+		public AncestorRelation(NodeAtTime ancestor, long copiedAtRevision)
+		{
 			Ancestor = ancestor;
 			CopiedAtRevision = copiedAtRevision;
 		}
 
-		public override bool Equals(object obj) {
+		public override bool Equals(object obj)
+		{
 			return ReferenceEquals(obj, Ancestor);
 		}
 
-		public override int GetHashCode() {
+		public override int GetHashCode()
+		{
 			return Ancestor.GetHashCode();
 		}
 	}
@@ -56,19 +60,27 @@ namespace SVNHistorySearcher.Models
 		public long? DeleteRevision { get; private set; }
 		public AncestorRelation Ancestor { get; }
 
-		public SvnNodeKind NodeKind {
-			get {
-				if (IsFolder) {
+		public SvnNodeKind NodeKind
+		{
+			get
+			{
+				if (IsFolder)
+				{
 					return SvnNodeKind.Directory;
-				} else if (IsFile) {
+				}
+				else if (IsFile)
+				{
 					return SvnNodeKind.File;
-				} else {
+				}
+				else
+				{
 					return SvnNodeKind.Unknown;
 				}
 			}
 		}
 
-		public NodeAtTime(string path, long revision, AncestorRelation ancestor) {
+		public NodeAtTime(string path, long revision, AncestorRelation ancestor)
+		{
 			Path = path;
 			Actions = new List<NodeAction> { new NodeAction(revision, true, false) };
 			DeleteRevision = null;
@@ -76,7 +88,8 @@ namespace SVNHistorySearcher.Models
 			Children = new List<NodeAtTime>();
 		}
 
-		public NodeAtTime(string path, long revision) {
+		public NodeAtTime(string path, long revision)
+		{
 			Path = path;
 			Actions = new List<NodeAction> { new NodeAction(revision, true, false) };
 			DeleteRevision = null;
@@ -84,45 +97,59 @@ namespace SVNHistorySearcher.Models
 			Children = new List<NodeAtTime>();
 		}
 
-		public void AddModification(long revision) {
-			if (revision == AddRevision) {
+		public void AddModification(long revision)
+		{
+			if (revision == AddRevision)
+			{
 				Actions[0] = new NodeAction(revision, true, true);
-			} else {
+			}
+			else
+			{
 				Actions.Add(new NodeAction(revision, false, true));
 			}
 		}
 
-		public void SetDeleted(long revision) {
+		public void SetDeleted(long revision)
+		{
 			DeleteRevision = revision;
-			foreach (NodeAtTime n in Children) {
-				if (n.DeleteRevision > revision) {
+			foreach (NodeAtTime n in Children)
+			{
+				if (n.DeleteRevision > revision)
+				{
 					n.SetDeleted(revision);
 				}
 			}
 		}
 
 
-		public void AddChild(NodeAtTime child) {
+		public void AddChild(NodeAtTime child)
+		{
 			Children.Add(child);
 			SetIsFolder();
 		}
 
 
-		public void SetIsFolder(bool wholeAncestry = true) {
-			if (!IsFolder) {
+		public void SetIsFolder(bool wholeAncestry = true)
+		{
+			if (!IsFolder)
+			{
 				IsFolder = true;
 
-				if (Ancestor != null && wholeAncestry) {
+				if (Ancestor != null && wholeAncestry)
+				{
 					Ancestor.Ancestor.SetIsFolder();
 				}
 			}
 		}
 
-		public void SetIsFile(bool wholeAncestry = true) {
-			if (!IsFile) {
+		public void SetIsFile(bool wholeAncestry = true)
+		{
+			if (!IsFile)
+			{
 				IsFile = true;
 
-				if (Ancestor != null && wholeAncestry) {
+				if (Ancestor != null && wholeAncestry)
+				{
 					Ancestor.Ancestor.SetIsFile();
 				}
 			}
@@ -133,7 +160,8 @@ namespace SVNHistorySearcher.Models
 		/// </summary>
 		/// <param name="revision"></param>
 		/// <returns>True if it was deleted. False if not.</returns>
-		public bool DeletedAt(long revision) {
+		public bool DeletedAt(long revision)
+		{
 			return DeleteRevision.HasValue && DeleteRevision <= revision;
 		}
 
@@ -142,7 +170,8 @@ namespace SVNHistorySearcher.Models
 		/// </summary>
 		/// <param name="revision"></param>
 		/// <returns>True if it exists. False if not.</returns>
-		public bool ExistsAtRevision(long revision) {
+		public bool ExistsAtRevision(long revision)
+		{
 			return revision >= AddRevision && (!DeleteRevision.HasValue || revision < DeleteRevision);
 		}
 	}

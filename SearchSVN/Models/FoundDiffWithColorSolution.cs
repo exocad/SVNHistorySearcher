@@ -8,60 +8,81 @@ namespace SVNHistorySearcher.Models
 	{
 		bool hasOtherPath;
 
-		public System.Windows.Media.Brush TextColor {
-			get {
-				if (hasOtherPath) {
+		public System.Windows.Media.Brush TextColor
+		{
+			get
+			{
+				if (hasOtherPath)
+				{
 					return new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Blue);
-				} else {
+				}
+				else
+				{
 					return new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Black);
 				}
 			}
 		}
 
-		public string Name {
+		public string Name
+		{
 			get { return FoundDiff.Name; }
 		}
-		public string FullPath {
+		public string FullPath
+		{
 			get { return FoundDiff.FullPath; }
 		}
-		public long PrevRevision {
+		public long PrevRevision
+		{
 			get { return FoundDiff.PrevRevision; }
 		}
-		public long Revision {
+		public long Revision
+		{
 			get { return FoundDiff.Revision; }
 		}
-		public string Author {
+		public string Author
+		{
 			get { return FoundDiff.Author; }
 		}
-		public string Message {
+		public string Message
+		{
 			get { return FoundDiff.Message; }
 		}
-		public DateTime? Date {
+		public DateTime? Date
+		{
 			get { return FoundDiff.Date; }
 		}
-		public string Content {
+		public string Content
+		{
 			get { return FoundDiff.Content; }
 			set { FoundDiff.Content = value; }
 		}
-		public int ResultCount {
+		public int ResultCount
+		{
 			get { return FoundDiff.ResultCount; }
 		}
-		public string ResultCountString {
-			get {
+		public string ResultCountString
+		{
+			get
+			{
 				return FoundDiff.ResultCountString;
 			}
 		}
-		public DiffInfo DiffInfo {
+		public DiffInfo DiffInfo
+		{
 			get { return FoundDiff.DiffInfo; }
 		}
 		public FoundDiff FoundDiff { get; }
 		public bool IsExpanded { get; set; }
 
-		public FoundDiffWithColorSolution(FoundDiff fd, string foundFilePath) {
+		public FoundDiffWithColorSolution(FoundDiff fd, string foundFilePath)
+		{
 			FoundDiff = fd;
-			if (foundFilePath == fd.FullPath) {
+			if (foundFilePath == fd.FullPath)
+			{
 				hasOtherPath = false;
-			} else {
+			}
+			else
+			{
 				hasOtherPath = true;
 			}
 		}

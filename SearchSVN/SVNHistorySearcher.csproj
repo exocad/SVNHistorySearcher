@@ -93,6 +93,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -111,7 +112,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Common\AtomicBoolean.cs" />
-    <Compile Include="Models\DataSaver.cs" />
+    <Compile Include="Models\Settings.cs" />
     <Compile Include="Models\DiffInfo.cs" />
     <Compile Include="Models\FoundDiff.cs" />
     <Compile Include="Models\FoundDiffWithColorSolution.cs" />
@@ -125,7 +126,6 @@
     <Compile Include="Models\SearchOptions.cs" />
     <Compile Include="Models\SearchResults.cs" />
     <Compile Include="Models\SimplifiedLogClasses.cs" />
-    <Compile Include="Models\StringCipher.cs" />
     <Compile Include="Models\SubversionSearcher.cs" />
     <Compile Include="Models\Utils.cs" />
     <Compile Include="Views\MyTreeView.cs" />
@@ -207,7 +207,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="settings.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>

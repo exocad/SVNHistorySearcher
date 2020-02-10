@@ -6,10 +6,12 @@ namespace SVNHistorySearcher.ViewModels
 	{
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		protected void RaisePropertyChanged(string propertyName) {
+		protected void RaisePropertyChanged(string propertyName)
+		{
 			// take a copy to prevent thread issues
 			PropertyChangedEventHandler handler = PropertyChanged;
-			if (handler != null) {
+			if (handler != null)
+			{
 				handler(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}

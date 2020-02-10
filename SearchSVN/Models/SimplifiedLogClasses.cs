@@ -19,17 +19,20 @@ namespace SVNHistorySearcher.Models
 		public long CopyFromRevision { get; } = 0;
 		public SvnNodeKind NodeKind { get; }
 
-		public SimplifiedSvnChangeItem(long revision, string path, SvnChangeAction action, SvnNodeKind nodeKind) {
+		public SimplifiedSvnChangeItem(long revision, string path, SvnChangeAction action, SvnNodeKind nodeKind)
+		{
 			Revision = revision; Path = path; Action = action; NodeKind = nodeKind;
 		}
 
 		public SimplifiedSvnChangeItem(long revision, string path, SvnChangeAction action, SvnNodeKind nodeKind, string copyFromPath, long copyFromRevision)
-			: this(revision, path, action, nodeKind) {
+			: this(revision, path, action, nodeKind)
+		{
 			CopyFromPath = copyFromPath;
 			CopyFromRevision = copyFromRevision;
 		}
 
-		protected SimplifiedSvnChangeItem(SerializationInfo info, StreamingContext context) {
+		protected SimplifiedSvnChangeItem(SerializationInfo info, StreamingContext context)
+		{
 			Revision = info.GetInt64("rev");
 			CopyFromRevision = info.GetInt64("cfr");
 			Path = info.GetString("path");
@@ -37,7 +40,8 @@ namespace SVNHistorySearcher.Models
 			byte nodki = info.GetByte("nodki");
 			byte act = info.GetByte("act");
 
-			switch (nodki) {
+			switch (nodki)
+			{
 				case 1: NodeKind = SvnNodeKind.Directory; break;
 				case 2: NodeKind = SvnNodeKind.File; break;
 				case 3: NodeKind = SvnNodeKind.SymbolicLink; break;
@@ -46,7 +50,8 @@ namespace SVNHistorySearcher.Models
 				default: NodeKind = SvnNodeKind.Unknown; break;
 			}
 
-			switch (act) {
+			switch (act)
+			{
 				case 1: Action = SvnChangeAction.Add; break;
 				case 2: Action = SvnChangeAction.Modify; break;
 				case 3: Action = SvnChangeAction.Replace; break;
@@ -55,7 +60,8 @@ namespace SVNHistorySearcher.Models
 			}
 		}
 
-		public SimplifiedSvnChangeItem(BinaryReader binaryReader) {
+		public SimplifiedSvnChangeItem(BinaryReader binaryReader)
+		{
 			Revision = binaryReader.ReadInt64();
 			if (binaryReader.ReadBoolean()) { Path = binaryReader.ReadString(); } else { Path = null; }
 			if (binaryReader.ReadBoolean()) { CopyFromPath = binaryReader.ReadString(); } else { CopyFromPath = null; }
@@ -63,7 +69,8 @@ namespace SVNHistorySearcher.Models
 			byte act = binaryReader.ReadByte();
 			byte nodki = binaryReader.ReadByte();
 
-			switch (nodki) {
+			switch (nodki)
+			{
 				case 1: NodeKind = SvnNodeKind.Directory; break;
 				case 2: NodeKind = SvnNodeKind.File; break;
 				case 3: NodeKind = SvnNodeKind.SymbolicLink; break;
@@ -72,7 +79,8 @@ namespace SVNHistorySearcher.Models
 				default: NodeKind = SvnNodeKind.Unknown; break;
 			}
 
-			switch (act) {
+			switch (act)
+			{
 				case 1: Action = SvnChangeAction.Add; break;
 				case 2: Action = SvnChangeAction.Modify; break;
 				case 3: Action = SvnChangeAction.Replace; break;
@@ -81,10 +89,12 @@ namespace SVNHistorySearcher.Models
 			}
 		}
 
-		public virtual void GetObjectData(SerializationInfo info, StreamingContext context) {
+		public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
 
 			byte nodki = 0;
-			switch (NodeKind) {
+			switch (NodeKind)
+			{
 				case SvnNodeKind.Directory: nodki = 1; break;
 				case SvnNodeKind.File: nodki = 2; break;
 				case SvnNodeKind.SymbolicLink: nodki = 3; break;
@@ -93,7 +103,8 @@ namespace SVNHistorySearcher.Models
 			}
 
 			byte act = 0;
-			switch (Action) {
+			switch (Action)
+			{
 				case SvnChangeAction.Add: act = 1; break;
 				case SvnChangeAction.Modify: act = 2; break;
 				case SvnChangeAction.Replace: act = 3; break;
@@ -108,9 +119,11 @@ namespace SVNHistorySearcher.Models
 			info.AddValue("nodki", nodki);
 		}
 
-		public void AddSelfToStream(BinaryWriter binaryWriter) {
+		public void AddSelfToStream(BinaryWriter binaryWriter)
+		{
 			byte nodki = 0;
-			switch (NodeKind) {
+			switch (NodeKind)
+			{
 				case SvnNodeKind.Directory: nodki = 1; break;
 				case SvnNodeKind.File: nodki = 2; break;
 				case SvnNodeKind.SymbolicLink: nodki = 3; break;
@@ -119,7 +132,8 @@ namespace SVNHistorySearcher.Models
 			}
 
 			byte act = 0;
-			switch (Action) {
+			switch (Action)
+			{
 				case SvnChangeAction.Add: act = 1; break;
 				case SvnChangeAction.Modify: act = 2; break;
 				case SvnChangeAction.Replace: act = 3; break;

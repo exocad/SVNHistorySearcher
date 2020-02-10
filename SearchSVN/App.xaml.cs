@@ -230,11 +230,13 @@ namespace SVNHistorySearcher
 
 		MainViewModel MainViewModel;
 
-		public App() {
+		public App()
+		{
 
 		}
 
-		private void Application_Startup(object sender, StartupEventArgs e) {
+		private void Application_Startup(object sender, StartupEventArgs e)
+		{
 
 			MainWindow mainWindow = new MainWindow();
 

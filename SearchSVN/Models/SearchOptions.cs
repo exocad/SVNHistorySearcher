@@ -27,15 +27,20 @@ namespace SVNHistorySearcher.Models
 		public bool ExcludeAuthors = false;
 
 
-		public int GetHashCodeReloadRelevant() {
+		public int GetHashCodeReloadRelevant()
+		{
 			int result = 11;
-			if (Files != null) {
-				foreach (var f in Files) {
+			if (Files != null)
+			{
+				foreach (var f in Files)
+				{
 					result += f.GetHashCode();
 				}
 			}
-			if (Authors != null) {
-				foreach (var f in Authors) {
+			if (Authors != null)
+			{
+				foreach (var f in Authors)
+				{
 					result += f.GetHashCode();
 				}
 			}
@@ -51,7 +56,8 @@ namespace SVNHistorySearcher.Models
 		}
 
 
-		public override int GetHashCode() {
+		public override int GetHashCode()
+		{
 			int result = GetHashCodeReloadRelevant();
 			result += 19 * (Text != null ? Text.GetHashCode() : 1);
 			result += 23 * (CaseSensitive.GetHashCode() + 1);

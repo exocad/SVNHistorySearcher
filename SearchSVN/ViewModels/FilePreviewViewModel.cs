@@ -17,112 +17,160 @@ namespace SVNHistorySearcher.ViewModels
 
 		OpenedFile _openedFile;
 
-		public FilePreviewViewModel(MainViewModel mainViewModel) {
+		public FilePreviewViewModel(MainViewModel mainViewModel)
+		{
 			this.mainViewModel = mainViewModel;
 		}
 
-		public string FileContent {
-			get {
-				if (_openedFile != null) {
+		public string FileContent
+		{
+			get
+			{
+				if (_openedFile != null)
+				{
 					return _openedFile.Content;
-				} else {
+				}
+				else
+				{
 					return "";
 				}
 			}
 		}
 
-		public string FileName {
-			get {
-				if (_openedFile != null) {
+		public string FileName
+		{
+			get
+			{
+				if (_openedFile != null)
+				{
 					return _openedFile.FileName;
-				} else {
+				}
+				else
+				{
 					return "";
 				}
 			}
 		}
 
-		public string FilePath {
-			get {
-				if (_openedFile != null) {
+		public string FilePath
+		{
+			get
+			{
+				if (_openedFile != null)
+				{
 					return _openedFile.FullPath;
-				} else {
+				}
+				else
+				{
 					return "";
 				}
 			}
 		}
 
-		public string FileLanguage {
-			get {
+		public string FileLanguage
+		{
+			get
+			{
 				return ".diff";
 			}
 		}
 
-		public string HighlightedString {
-			get {
+		public string HighlightedString
+		{
+			get
+			{
 				return mainViewModel.SearchResults.SearchResults != null ? mainViewModel.SearchResults.SearchResults.SearchString : "";
 			}
-			set {
+			set
+			{
 				RaisePropertyChanged("HighlightedString");
 			}
 		}
 
-		public bool UseRegex {
-			get {
+		public bool UseRegex
+		{
+			get
+			{
 				return mainViewModel.SearchResults.SearchResults != null && mainViewModel.SearchResults.SearchResults.UseRegex;
 			}
-			set {
+			set
+			{
 				RaisePropertyChanged("UseRegex");
 			}
 		}
 
-		public string Author {
-			get {
-				if (_openedFile != null) {
+		public string Author
+		{
+			get
+			{
+				if (_openedFile != null)
+				{
 					return _openedFile.Author;
-				} else {
+				}
+				else
+				{
 					return "";
 				}
 			}
 		}
 
-		public string Date {
-			get {
-				if (_openedFile != null) {
+		public string Date
+		{
+			get
+			{
+				if (_openedFile != null)
+				{
 					return _openedFile.Date;
-				} else {
+				}
+				else
+				{
 					return "";
 				}
 			}
 		}
 
-		public string Message {
-			get {
-				if (_openedFile != null) {
+		public string Message
+		{
+			get
+			{
+				if (_openedFile != null)
+				{
 					return _openedFile.Message;
-				} else {
+				}
+				else
+				{
 					return "";
 				}
 			}
 		}
 
-		public int CaretOffset {
-			get {
-				if (_openedFile != null) {
+		public int CaretOffset
+		{
+			get
+			{
+				if (_openedFile != null)
+				{
 					return _openedFile.CaretOffset;
-				} else {
+				}
+				else
+				{
 					return 0;
 				}
 			}
-			set {
-				if (_openedFile != null) {
+			set
+			{
+				if (_openedFile != null)
+				{
 					_openedFile.CaretOffset = value;
 				}
 			}
 		}
 
-		public OpenedFile OpenedFile {
+		public OpenedFile OpenedFile
+		{
 			get { return _openedFile; }
-			set {
+			set
+			{
 				_openedFile = value;
 
 				RaisePropertyChanged("FileContent");
@@ -139,7 +187,8 @@ namespace SVNHistorySearcher.ViewModels
 			}
 		}
 
-		public void Reset() {
+		public void Reset()
+		{
 			OpenedFile = null;
 		}
 	}
