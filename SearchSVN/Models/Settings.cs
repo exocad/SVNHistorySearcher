@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Xml.Linq;
 using System.IO;
-using System.Security;
-using System.Collections;
-using System.Xml.Serialization;
-using System.Xml;
-using System.Xml.Schema;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security;
 using System.Security.Cryptography;
 using System.Text;
+using System.Xml.Serialization;
 
 namespace SVNHistorySearcher.Models
 {
@@ -37,12 +33,18 @@ namespace SVNHistorySearcher.Models
 		public static readonly string SettingsFilePath = Utils.JoinPathsWin(SavingPath, "settings.xml");
 
 		public bool LoadPreviousRepositoryOnStartup { get; set; }
-		public string PreviousRepositoryUrl { get; set; }
+		public string RepositoryUrl { get; set; }
 		public int RepositoryHistoryLength { get; set; }
 		public List<string> RecentRepositories { get; set; }
 		public string TortoisePath { get; set; }
 		public int MaxThreads { get; set; }
 		public List<string> FileExtensionBlacklist { get; set; }
+		public SearchOptions PreviousSearchOptions { get; set; }
+		public double WindowHeight { get; set; }
+		public double WindowWidth { get; set; }
+		public double ColumnOneWidth { get; set; }
+		public double ColumnTwoWidth { get; set; }
+
 		public string Username { get; set; }
 		
 		[XmlIgnore]

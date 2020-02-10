@@ -286,4 +286,8 @@
 		<string>.zip</string>
 		<string>.zipx</string>
 	</FileExtensionBlacklist>
+  <ColumnOneWidth>250</ColumnOneWidth>
+  <ColumnTwoWidth>250</ColumnTwoWidth>
+  <WindowHeight>724</WindowHeight>
+  <WindowWidth>1118</WindowWidth>
 </Settings>

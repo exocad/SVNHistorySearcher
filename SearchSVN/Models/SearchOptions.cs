@@ -1,22 +1,31 @@
 ﻿using SharpSvn;
 using System.Collections.Generic;
+using System.Linq;
+using System.Xml.Serialization;
 
 namespace SVNHistorySearcher.Models
 {
 	public class SearchOptions
 	{
-		public IList<string> Files = new List<string>(); // contains folders aswell
-		public IList<string> Authors = new List<string>();
+		[XmlIgnore]
+		public List<string> Files = new List<string>(); // contains folders as well
+		public List<string> Authors = new List<string>();
+		[XmlIgnore]
 		public SvnRevision SearchFromRevision;
+		[XmlIgnore]
 		public SvnRevision SearchToRevision;
+		[XmlIgnore]
 		public SvnRevision TreeRevision;
+		[XmlIgnore]
 		public string Text = "";
+		[XmlIgnore]
 		public string Repository = "";
 
 		/// <summary>
 		/// The path relative to the repository root, in which to search in all files containing
 		/// FilenameSubstring
 		/// </summary>
+		[XmlIgnore]
 		public string HeadNodePath = "";
 		public string FilenameSubstring = "";
 		public bool CaseSensitive = false;
@@ -26,6 +35,12 @@ namespace SVNHistorySearcher.Models
 		public bool StopOnCopy = false;
 		public bool ExcludeAuthors = false;
 
+
+		public SearchOptions()
+		{
+			SearchFromRevision = new SvnRevision(1);
+			SearchToRevision = new SvnRevision(SvnRevisionType.Head);
+		}
 
 		public int GetHashCodeReloadRelevant()
 		{
@@ -63,6 +78,13 @@ namespace SVNHistorySearcher.Models
 			result += 23 * (CaseSensitive.GetHashCode() + 1);
 			result += 29 * (SearchInRenames.GetHashCode() + 1);
 			result += 31 * (UseRegex.GetHashCode() + 1);
+			return result;
+		}
+
+		public SearchOptions DeepCopy() {
+			SearchOptions result = (SearchOptions)this.MemberwiseClone();
+			result.Authors = (from a in Authors select a).ToList();
+			result.Files = Files = (from a in Files select a).ToList();
 			return result;
 		}
 	}

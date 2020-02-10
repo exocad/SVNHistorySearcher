@@ -460,7 +460,7 @@ namespace SVNHistorySearcher.Models
 					}
 					if (j-- > 0)
 					{
-						prevRev = li[j].DeleteRevision.Value;
+						prevRev = li[j].DeleteRevision == null ? long.MaxValue : li[j].DeleteRevision.Value;
 					}
 					break;
 				}
