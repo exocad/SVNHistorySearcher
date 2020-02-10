@@ -244,29 +244,37 @@ namespace SVNHistorySearcher.ViewModels
 
 		Dictionary<string, ICommand> _buttonCommands = new Dictionary<string, ICommand>();
 
-		public SearchResultsViewModel SearchResults {
-			get {
+		public SearchResultsViewModel SearchResults
+		{
+			get
+			{
 				return _searchResultsViewModel ?? (_searchResultsViewModel = new SearchResultsViewModel(this));
 			}
 		}
 
-		public FilePreviewViewModel FilePreview {
-			get {
+		public FilePreviewViewModel FilePreview
+		{
+			get
+			{
 				return _filePreviewViewModel ?? (_filePreviewViewModel = new FilePreviewViewModel(this));
 			}
 		}
 
-		public RepositoryOverviewViewModel RepositoryOverview {
-			get {
+		public RepositoryOverviewViewModel RepositoryOverview
+		{
+			get
+			{
 				return _repositoryOverviewViewModel ?? (_repositoryOverviewViewModel = new RepositoryOverviewViewModel(this));
 			}
 		}
 
 
 		private string _windowCaption = "SVNHistorySearcher";
-		public string WindowCaption {
+		public string WindowCaption
+		{
 			get { return _windowCaption; }
-			set {
+			set
+			{
 				_windowCaption = value;
 				RaisePropertyChanged("WindowCaption");
 			}
@@ -274,52 +282,65 @@ namespace SVNHistorySearcher.ViewModels
 		#region Search options
 
 		private bool _caseSensitive = false;
-		public bool CaseSensitive {
+		public bool CaseSensitive
+		{
 			get { return _caseSensitive; }
-			set {
+			set
+			{
 				_caseSensitive = value;
 				RaisePropertyChanged("CaseSensitive");
 			}
 		}
 		private bool _useRegex = false;
-		public bool UseRegex {
+		public bool UseRegex
+		{
 			get { return _useRegex; }
-			set {
+			set
+			{
 				_useRegex = value;
 				RaisePropertyChanged("UseRegex");
 			}
 		}
 		private bool _stopOnCopy = false;
-		public bool StopOnCopy {
+		public bool StopOnCopy
+		{
 			get { return _stopOnCopy; }
-			set {
+			set
+			{
 				_stopOnCopy = value;
 				RaisePropertyChanged("StopOnCopy");
 			}
 		}
 		private bool _searchInRenames = true;
-		public bool SearchInRenames {
+		public bool SearchInRenames
+		{
 			get { return _searchInRenames; }
-			set {
+			set
+			{
 				_searchInRenames = value;
 				RaisePropertyChanged("SearchInRenames");
 			}
 		}
 		private bool _searchInContent = true;
-		public bool SearchInContent {
+		public bool SearchInContent
+		{
 			get { return _searchInContent; }
-			set {
+			set
+			{
 				_searchInContent = value;
 				RaisePropertyChanged("SearchInContent");
 			}
 		}
 
 		private string _filenameRegex = "";
-		public string FilenameRegex {
-			get {
+		public string FilenameRegex
+		{
+			get
+			{
 				return _filenameRegex;
 			}
-			set {
+			set
+			{
 				_filenameRegex = value;
 				RaisePropertyChanged("FilenameSubstring");
 			}
@@ -328,17 +349,22 @@ namespace SVNHistorySearcher.ViewModels
 		#endregion
 
 		private long _treeRevision = 0;
-		public long TreeRevision {
-			get {
+		public long TreeRevision
+		{
+			get
+			{
 				return _treeRevision;
 			}
-			set {
-				if (subversionSearcher != null) {
+			set
+			{
+				if (subversionSearcher != null)
+				{
 
 					long willSet = Math.Max(Math.Min(subversionSearcher.HeadRevision, value), 1);
 					bool hasChanged = willSet != _treeRevision;
 					_treeRevision = willSet;
-					if (hasChanged) {
+					if (hasChanged)
+					{
 						RaisePropertyChanged("TreeRevisionText");
 
 						RepositoryOverview.BuildRepositoryOverview(subversionSearcher, HeadNodePath, TreeRevision);
@@ -346,30 +372,42 @@ namespace SVNHistorySearcher.ViewModels
 				}
 			}
 		}
-		public string TreeRevisionText {
-			get {
-				if (_treeRevision == 0 || !SubversionSearcher.IsReady(subversionSearcher)) {
+		public string TreeRevisionText
+		{
+			get
+			{
+				if (_treeRevision == 0 || !SubversionSearcher.IsReady(subversionSearcher))
+				{
 					return "";
-				} else {
-					if (_treeRevision >= subversionSearcher.HeadRevision) {
+				}
+				else
+				{
+					if (_treeRevision >= subversionSearcher.HeadRevision)
+					{
 						return String.Format("{0}(HEAD)", subversionSearcher.HeadRevision);
 					}
 				}
 				return _treeRevision.ToString();
 			}
 
-			set {
+			set
+			{
 				var a = value.Trim();
 
 				long rev;
-				if (!long.TryParse(a, out rev)) {
+				if (!long.TryParse(a, out rev))
+				{
 					rev = long.MaxValue;
 				}
 
-				if (subversionSearcher != null) {
-					if (rev > subversionSearcher.HeadRevision) {
+				if (subversionSearcher != null)
+				{
+					if (rev > subversionSearcher.HeadRevision)
+					{
 						TreeRevision = subversionSearcher.HeadRevision;
-					} else {
+					}
+					else
+					{
 						TreeRevision = Math.Max(1, rev);
 					}
 					RaisePropertyChanged("TreeRevisionText");
@@ -379,16 +417,20 @@ namespace SVNHistorySearcher.ViewModels
 
 
 		private string _headNodePath = "";
-		public string HeadNodePath {
-			get {
+		public string HeadNodePath
+		{
+			get
+			{
 				return _headNodePath;
 			}
 		}
 
 		private string _searchString = "";
-		public string SearchString {
+		public string SearchString
+		{
 			get { return _searchString ?? ""; }
-			set {
+			set
+			{
 				_searchString = value;
 				RaisePropertyChanged("SearchString");
 			}
@@ -398,26 +440,34 @@ namespace SVNHistorySearcher.ViewModels
 		#region Author stuff
 
 		private IList<string> _authors = new List<string>();
-		public string AuthorsString {
-			get {
-				if (_authors.Count > 0) {
+		public string AuthorsString
+		{
+			get
+			{
+				if (_authors.Count > 0)
+				{
 					int i = 0;
 					string result = _authors[i++];
-					for (; i < _authors.Count; i++) {
+					for (; i < _authors.Count; i++)
+					{
 						result += ", " + _authors[i];
 					}
 					return result;
-				} else { return ""; }
+				}
+				else { return ""; }
 			}
-			set {
+			set
+			{
 				_authors = new List<string>();
 
 				string[] split = value.Split(',');
 
-				foreach (string s in split) {
+				foreach (string s in split)
+				{
 					string st = s.Trim().ToLower();
 
-					if (st != "" && _authors.Contains(st) == false) {
+					if (st != "" && _authors.Contains(st) == false)
+					{
 						_authors.Add(st);
 						Console.WriteLine(st);
 					}
@@ -428,12 +478,16 @@ namespace SVNHistorySearcher.ViewModels
 		}
 
 		private bool _excludeAuthors = false;
-		public bool ExcludeAuthors {
-			get {
+		public bool ExcludeAuthors
+		{
+			get
+			{
 				return _excludeAuthors;
 			}
-			set {
-				if (_excludeAuthors != value) {
+			set
+			{
+				if (_excludeAuthors != value)
+				{
 					_excludeAuthors = value;
 					RaisePropertyChanged("ExcludeAuthors");
 				}
@@ -452,42 +506,60 @@ namespace SVNHistorySearcher.ViewModels
 		private bool useDateForStart = true;
 		private bool useDateForEnd = false;
 
-		public string StartRevisionText {
-			get {
+		public string StartRevisionText
+		{
+			get
+			{
 				return useDateForStart ? searchFromDate.ToString(dateFormat) : searchFromRevision.ToString();
 			}
-			set {
+			set
+			{
 				long res;
 				DateTime dt;
-				if (long.TryParse(value, out res)) {
+				if (long.TryParse(value, out res))
+				{
 					searchFromRevision = res;
 					useDateForStart = false;
-				} else if (DateTime.TryParseExact(value, dateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out dt)) {
+				}
+				else if (DateTime.TryParseExact(value, dateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
+				{
 					searchFromDate = dt;
 					useDateForStart = true;
-				} else {
+				}
+				else
+				{
 					MessageBox.Show(String.Format("Date or revision is in the wrong format.\nPlease enter an integer or a date in the following format: \"{0}\"", dateFormat));
 				}
 			}
 		}
 
-		public string EndRevisionText {
-			get {
+		public string EndRevisionText
+		{
+			get
+			{
 				return useDateForEnd ? searchToDate.ToString(dateFormat) : (searchToRevision == long.MaxValue ? "HEAD" : searchToRevision.ToString());
 			}
-			set {
+			set
+			{
 				long res;
 				DateTime dt;
-				if (value.ToLower() == "head") {
+				if (value.ToLower() == "head")
+				{
 					searchToRevision = long.MaxValue;
 					useDateForEnd = false;
-				} else if (long.TryParse(value, out res)) {
+				}
+				else if (long.TryParse(value, out res))
+				{
 					searchToRevision = res;
 					useDateForEnd = false;
-				} else if (DateTime.TryParseExact(value, dateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out dt)) {
+				}
+				else if (DateTime.TryParseExact(value, dateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
+				{
 					searchToDate = dt;
 					useDateForEnd = true;
-				} else {
+				}
+				else
+				{
 					MessageBox.Show(String.Format("Date or revision is in the wrong format.\nPlease enter an integer or a date in the following format: \"{0}\"", dateFormat));
 				}
 			}
@@ -497,35 +569,44 @@ namespace SVNHistorySearcher.ViewModels
 
 		private int _repositoryHistoryLength = 6;
 		private ObservableCollection<string> _recentRepositories;
-		public ObservableCollection<string> RecentRepositories {
+		public ObservableCollection<string> RecentRepositories
+		{
 			get { return _recentRepositories; }
-			set {
+			set
+			{
 				_recentRepositories = value;
 				RaisePropertyChanged("RecentRepositories");
 			}
 		}
 
 		private string _repositoryUrl = "";
-		public string RepositoryUrl {
-			get {
+		public string RepositoryUrl
+		{
+			get
+			{
 				return _repositoryUrl;
 			}
-			private set {
+			private set
+			{
 				_repositoryUrl = value;
 				RaisePropertyChanged("RepositoryUrl");
 			}
 		}
 
 		private string _username = "";
-		public string Username {
-			get {
+		public string Username
+		{
+			get
+			{
 				return _username;
 			}
 		}
 
 		private string _password = "";
-		public string Password {
-			get {
+		public string Password
+		{
+			get
+			{
 				return _password;
 			}
 		}
@@ -534,22 +615,28 @@ namespace SVNHistorySearcher.ViewModels
 		#region Progress Stuff
 
 		private int _progressPercentage = 0;
-		public int ProgressPercentage {
-			get {
+		public int ProgressPercentage
+		{
+			get
+			{
 				return _progressPercentage;
 			}
-			set {
+			set
+			{
 				_progressPercentage = value;
 				RaisePropertyChanged("ProgressPercentage");
 			}
 		}
 
 		private string _logMessage = "";
-		public string LogMessage {
-			get {
+		public string LogMessage
+		{
+			get
+			{
 				return _logMessage;
 			}
-			set {
+			set
+			{
 				_logMessage = value;
 				RaisePropertyChanged("LogMessage");
 			}
@@ -560,9 +647,12 @@ namespace SVNHistorySearcher.ViewModels
 
 		#region Button Commands
 
-		public ICommand ButtonChangeRepository {
-			get {
-				return _buttonCommands.ContainsKey("repositoryChange") ? _buttonCommands["repositoryChange"] : (_buttonCommands["repositoryChange"] = new CommandHandler((obj) => {
+		public ICommand ButtonChangeRepository
+		{
+			get
+			{
+				return _buttonCommands.ContainsKey("repositoryChange") ? _buttonCommands["repositoryChange"] : (_buttonCommands["repositoryChange"] = new CommandHandler((obj) =>
+				{
 					Task t = new Task(() => { TryLoadRepository(RepositoryUrl); });
 					t.Start();
 				}, true));
@@ -570,12 +660,17 @@ namespace SVNHistorySearcher.ViewModels
 		}
 
 
-		public ICommand ButtonSearchCommand {
-			get {
-				return _buttonCommands.ContainsKey("search") ? _buttonCommands["search"] : (_buttonCommands["search"] = new CommandHandler((obj) => {
-					if (searchTask != null && !searchTask.IsCompleted) {
+		public ICommand ButtonSearchCommand
+		{
+			get
+			{
+				return _buttonCommands.ContainsKey("search") ? _buttonCommands["search"] : (_buttonCommands["search"] = new CommandHandler((obj) =>
+				{
+					if (searchTask != null && !searchTask.IsCompleted)
+					{
 						// cancelling
-						if (subversionSearcher != null) {
+						if (subversionSearcher != null)
+						{
 							subversionSearcher.CancelSearch();
 						}
 					}
@@ -586,11 +681,15 @@ namespace SVNHistorySearcher.ViewModels
 		}
 
 
-		public ICommand ButtonOpenInTortoise {
-			get {
-				return _buttonCommands.ContainsKey("openInTortoise") ? _buttonCommands["openInTortoise"] : (_buttonCommands["openInTortoise"] = new CommandHandler((obj) => {
+		public ICommand ButtonOpenInTortoise
+		{
+			get
+			{
+				return _buttonCommands.ContainsKey("openInTortoise") ? _buttonCommands["openInTortoise"] : (_buttonCommands["openInTortoise"] = new CommandHandler((obj) =>
+				{
 
-					if (FilePreview.OpenedFile != null) {
+					if (FilePreview.OpenedFile != null)
+					{
 						OpenInTortoise(FilePreview.OpenedFile, true);
 					}
 
@@ -598,17 +697,23 @@ namespace SVNHistorySearcher.ViewModels
 			}
 		}
 
-		public ICommand ButtonPreRevCommand {
-			get {
-				return new CommandHandler((obj) => {
+		public ICommand ButtonPreRevCommand
+		{
+			get
+			{
+				return new CommandHandler((obj) =>
+				{
 					TreeRevision -= 1;
 				}, true);
 			}
 		}
 
-		public ICommand ButtonNextRevCommand {
-			get {
-				return new CommandHandler((obj) => {
+		public ICommand ButtonNextRevCommand
+		{
+			get
+			{
+				return new CommandHandler((obj) =>
+				{
 					TreeRevision += 1;
 				}, true);
 			}
@@ -623,39 +728,47 @@ namespace SVNHistorySearcher.ViewModels
 		/// Builds the RepositoryOverview
 		/// This method has to be called from the main thread.
 		/// </summary>
-		void MakeTreeAndUpdateRepoUrl(SubversionSearcher subversionSearcher, string repoUrl) {
-			if (SubversionSearcher.IsReady(subversionSearcher)) {
+		void MakeTreeAndUpdateRepoUrl(SubversionSearcher subversionSearcher, string repoUrl)
+		{
+			if (SubversionSearcher.IsReady(subversionSearcher))
+			{
 				string repositoryUrlcp = repoUrl;
 
-				try {
+				try
+				{
 					string newHeadNodePath = subversionSearcher.GetLowestExistingHeadNodePath(repoUrl, subversionSearcher.HeadRevision);
 					_headNodePath = newHeadNodePath;
 					repositoryUrlcp = Utils.JoinPaths(subversionSearcher.RepositoryUrl, newHeadNodePath);
 
 					RepositoryOverview.BuildRepositoryOverview(subversionSearcher, HeadNodePath, subversionSearcher.HeadRevision);
 
-				} catch (Exception ex) {
+				}
+				catch (Exception ex)
+				{
 					Progress.ErrorLog(ex);
 					MessageBox.Show(String.Format("Error: {0}", ex.Message));
 				}
 
-				if (RecentRepositories.Contains(repositoryUrlcp)) {
+				if (RecentRepositories.Contains(repositoryUrlcp))
+				{
 					RecentRepositories.Remove(repositoryUrlcp);
 				}
 
 				RecentRepositories.Insert(0, repositoryUrlcp);
-				while (RecentRepositories.Count > _repositoryHistoryLength) {
+				while (RecentRepositories.Count > _repositoryHistoryLength)
+				{
 					RecentRepositories.RemoveAt(RecentRepositories.Count - 1);
 				}
 
 				RaisePropertyChanged("RecentRepositories");
 
-				DataSaver.RecentRepositories = RecentRepositories.ToList();
-				DataSaver.PreviousRepositoryUrl = repositoryUrlcp;
+				Settings.Instance.RecentRepositories = RecentRepositories.ToList();
+				Settings.Instance.PreviousRepositoryUrl = repositoryUrlcp;
 
 				RepositoryUrl = repositoryUrlcp;
 
-				if (subversionSearcher.InSearch) {
+				if (subversionSearcher.InSearch)
+				{
 					Progress.Log("Building repository overview..");
 					TreeRevision = subversionSearcher.HeadRevision;
 					RepositoryOverview.BuildRepositoryOverview(subversionSearcher, HeadNodePath, TreeRevision);
@@ -670,7 +783,8 @@ namespace SVNHistorySearcher.ViewModels
 		/// </summary>
 		/// <param name="path"></param>
 		/// <param name="revision"></param>
-		public void SwitchTreeRoot(string path, long revision) {
+		public void SwitchTreeRoot(string path, long revision)
+		{
 			RepositoryOverview.BuildRepositoryOverview(subversionSearcher, path, revision);
 			_headNodePath = path;
 			RepositoryUrl = subversionSearcher.RepositoryUrl + path;
@@ -681,8 +795,10 @@ namespace SVNHistorySearcher.ViewModels
 		/// Has to run asyncronously because it invokes methods in main thread
 		/// </summary>
 		/// <param name="repoUrl"></param>
-		async void TryLoadRepository(string repoUrl) {
-			if (!currentlyLoadingRepository.CompareAndSet(false, true)) {
+		async void TryLoadRepository(string repoUrl)
+		{
+			if (!currentlyLoadingRepository.CompareAndSet(false, true))
+			{
 				return; // do nothing because one repository is already loading
 			}
 
@@ -690,8 +806,10 @@ namespace SVNHistorySearcher.ViewModels
 			_repositoryOverviewViewModel.Reset();
 			_filePreviewViewModel.Reset();
 
-			if (repoUrl == null || repoUrl.Length == 0) {
-				if (subversionSearcher != null) {
+			if (repoUrl == null || repoUrl.Length == 0)
+			{
+				if (subversionSearcher != null)
+				{
 					subversionSearcher.Close();
 					subversionSearcher = null;
 				}
@@ -700,16 +818,20 @@ namespace SVNHistorySearcher.ViewModels
 
 			repoUrl = repoUrl.TrimEnd('/') + '/';
 
-			if (SubversionSearcher.IsReady(subversionSearcher) && repoUrl.StartsWith(subversionSearcher.RepositoryUrl)) {
+			if (SubversionSearcher.IsReady(subversionSearcher) && repoUrl.StartsWith(subversionSearcher.RepositoryUrl))
+			{
 				// were just in another directory of the same repository
 				//_headNodePath = subversionSearcher.GetLowestExistingHeadNodePath(repoUrl, subversionSearcher.HeadRevision);
 				App.Current.Dispatcher.Invoke(() => MakeTreeAndUpdateRepoUrl(subversionSearcher, repoUrl));
-			} else {
+			}
+			else
+			{
 
 				// load other repository
 
 				// close the old one
-				if (SubversionSearcher.IsReady(subversionSearcher)) {
+				if (SubversionSearcher.IsReady(subversionSearcher))
+				{
 					subversionSearcher.Close();
 					Progress.Log("Switching Repository...");
 				}
@@ -720,29 +842,41 @@ namespace SVNHistorySearcher.ViewModels
 				Progress.Log("Finding credentials...");
 				bool useCredentials = true;
 				SubversionSearcher.AuthenticationInfo info = SubversionSearcher.HasCredentials(repoUrl);
-				for (int i = 0; i < 4; i++) {
+				for (int i = 0; i < 4; i++)
+				{
 
-					if (info == SubversionSearcher.AuthenticationInfo.Successful) {
-						if (i == 0) {
+					if (info == SubversionSearcher.AuthenticationInfo.Successful)
+					{
+						if (i == 0)
+						{
 							useCredentials = false;
 						}
 						break;
-					} else if (info == SubversionSearcher.AuthenticationInfo.UnknownError) {
+					}
+					else if (info == SubversionSearcher.AuthenticationInfo.UnknownError)
+					{
 						Progress.Log("An error has occured. Read error.log for more details");
 						break;
 
-					} else if (info == SubversionSearcher.AuthenticationInfo.RepositoryDoesNotExist) {
+					}
+					else if (info == SubversionSearcher.AuthenticationInfo.RepositoryDoesNotExist)
+					{
 						Progress.Log("The requested repository could not be found");
 						break;
 
-					} else if (
-						info == SubversionSearcher.AuthenticationInfo.PasswordDeclined ||
-						info == SubversionSearcher.AuthenticationInfo.NoSuchUser ||
-						info == SubversionSearcher.AuthenticationInfo.NoMoreCredentialsOrTriedToManyTimes) {
+					}
+					else if (
+					  info == SubversionSearcher.AuthenticationInfo.PasswordDeclined ||
+					  info == SubversionSearcher.AuthenticationInfo.NoSuchUser ||
+					  info == SubversionSearcher.AuthenticationInfo.NoMoreCredentialsOrTriedToManyTimes)
+					{
 
-						if (i == 0) {
+						if (i == 0)
+						{
 							info = SubversionSearcher.CheckCredentials(repoUrl, _username, _password);
-						} else {
+						}
+						else
+						{
 							Progress.Log("Wrong credentials");
 							var mrse = new ManualResetEvent(false);
 							App.Current.Dispatcher.Invoke(() => { OpenCredentialsWindow(() => { mrse.Set(); }); });
@@ -757,25 +891,37 @@ namespace SVNHistorySearcher.ViewModels
 				// END trying  to find credentials
 
 
-				if (info == SubversionSearcher.AuthenticationInfo.Successful) {
+				if (info == SubversionSearcher.AuthenticationInfo.Successful)
+				{
 					Progress.Log("Loading Repository");
 
-					if (useCredentials) {
+					if (useCredentials)
+					{
 						// Use credentials from credentials window or file
-						await Task.Run(() => {
-							try {
+						await Task.Run(() =>
+						{
+							try
+							{
 								subversionSearcher = new SubversionSearcher(RepositoryUrl, _username, _password);
-							} catch (Exception ex) {
+							}
+							catch (Exception ex)
+							{
 								Progress.Log("Failed to initialize. See error.log");
 								Progress.ErrorLog(ex);
 							}
 						});
-					} else {
+					}
+					else
+					{
 						// Use credentials from tortoise
-						await Task.Run(() => {
-							try {
+						await Task.Run(() =>
+						{
+							try
+							{
 								subversionSearcher = new SubversionSearcher(RepositoryUrl);
-							} catch (Exception ex) {
+							}
+							catch (Exception ex)
+							{
 								Progress.Log("Failed to initialize. See error.log");
 								Progress.ErrorLog(ex);
 							}
@@ -787,7 +933,8 @@ namespace SVNHistorySearcher.ViewModels
 				}
 			}
 
-			if (!currentlyLoadingRepository.CompareAndSet(true, false)) {
+			if (!currentlyLoadingRepository.CompareAndSet(true, false))
+			{
 				// should never happen
 			}
 		}
@@ -800,68 +947,83 @@ namespace SVNHistorySearcher.ViewModels
 		/// <param name="username">typed in username</param>
 		/// <param name="password">typed in password</param>
 		/// <param name="onRespond">will be called at the end of this method</param>
-		public void CredentialsWindowResponse(SetCredentialsWindow crw, string username, string password, Action onRespond = null) {
+		public void CredentialsWindowResponse(SetCredentialsWindow crw, string username, string password, Action onRespond = null)
+		{
 			crw.Close();
 			SetCredentialsWindow = null;
-			if (username.Length == 0) {
+			if (username.Length == 0)
+			{
 				_username = "";
 				_password = "";
-			} else if (username != _username || password != _password) {
+			}
+			else if (username != _username || password != _password)
+			{
 				_username = username;
 				_password = password;
 			}
 
-			DataSaver.Username = _username;
-			DataSaver.Password = _password;
+			Settings.Instance.Username = _username;
+			Settings.Instance.Password = _password;
 
 			if (onRespond != null)
 				onRespond();
 		}
 
 
-		public void Initialize() {
+		public void Initialize()
+		{
 
-			_repositoryHistoryLength = DataSaver.RepositoryHistoryLength;
-			RecentRepositories = new ObservableCollection<string>(DataSaver.RecentRepositories);
+			_repositoryHistoryLength = Settings.Instance.RepositoryHistoryLength;
+			RecentRepositories = new ObservableCollection<string>(Settings.Instance.RecentRepositories);
 
-			_username = DataSaver.Username;
-			_password = DataSaver.Password;
+			_username = Settings.Instance.Username;
+			_password = Settings.Instance.Password;
 
-			Progress.RegisterCallbackOnMajorChange(() => {
+			Progress.RegisterCallbackOnMajorChange(() =>
+			{
 				ProgressPercentage = Progress.GetProgressPercentage();
 			});
 
-			Progress.RegisterCallbackOnLogUpdate((message) => {
+			Progress.RegisterCallbackOnLogUpdate((message) =>
+			{
 				LogMessage = message;
 			});
 
 
-			if ((RepositoryUrl = DataSaver.PreviousRepositoryUrl) != "") {
-				if (DataSaver.LoadPreviousRepositoryOnStartup) {
+			if ((RepositoryUrl = Settings.Instance.PreviousRepositoryUrl) != "")
+			{
+				if (Settings.Instance.LoadPreviousRepositoryOnStartup)
+				{
 					Task t = new Task(() => { TryLoadRepository(RepositoryUrl); });
 					t.Start();
 				}
 			}
 		}
 
-		public MainViewModel() {
+		public MainViewModel()
+		{
 
 		}
 
-		~MainViewModel() {
-			DataSaver.ClearTemporaryFiles();
+		~MainViewModel()
+		{
+			Settings.ClearTemporaryFiles();
 		}
 
 
-		public IList<CheckableItem> LoadHierarchy(string url, long revision, CheckableItem parent) {
+		public IList<CheckableItem> LoadHierarchy(string url, long revision, CheckableItem parent)
+		{
 
 			IList<CheckableItem> result = new List<CheckableItem>();
 
-			if (subversionSearcher != null) {
+			if (subversionSearcher != null)
+			{
 				IList<bool> hasChildList;
 				var children = subversionSearcher.GetChildrenInHierarchy(url, revision, out hasChildList, true);
-				if (children != null) {
-					for (int i = 0; i < children.Count; i++) {
+				if (children != null)
+				{
+					for (int i = 0; i < children.Count; i++)
+					{
 						result.Add(new CheckableItem(parent, children[i].Item1, revision, children[i].Item2, this, hasChildList[i]));
 					}
 				}
@@ -870,44 +1032,56 @@ namespace SVNHistorySearcher.ViewModels
 			return result;
 		}
 
-		public void OpenFile(OpenedFile file) {
+		public void OpenFile(OpenedFile file)
+		{
 			_filePreviewViewModel.OpenedFile = file;
 		}
 
 
-		void OpenCredentialsWindow(Action onRespond = null) {
-			if (SetCredentialsWindow != null && SetCredentialsWindow.IsActive == false) {
+		void OpenCredentialsWindow(Action onRespond = null)
+		{
+			if (SetCredentialsWindow != null && SetCredentialsWindow.IsActive == false)
+			{
 				SetCredentialsWindow.Close();
 				SetCredentialsWindow = null;
 			}
-			if (SetCredentialsWindow == null) {
+			if (SetCredentialsWindow == null)
+			{
 				SetCredentialsWindow = new SetCredentialsWindow(this, "", "", onRespond);
 				SetCredentialsWindow.DataContext = this;
 				SetCredentialsWindow.Show();
 			}
 		}
 
-		public void Search() {
+		public void Search()
+		{
 
-			if (!SubversionSearcher.IsReady(subversionSearcher)) {
+			if (!SubversionSearcher.IsReady(subversionSearcher))
+			{
 				Progress.Log("Repository not loaded");
 				return;
 			}
 
-			if (_searchString != "") {
+			if (_searchString != "")
+			{
 
 				IList<string> files;
 
 				IList<Tuple<string, bool>> nod = RepositoryOverview.GetSelectedNodes();
-				if (nod.Count == 0 && FilenameRegex == "") {
+				if (nod.Count == 0 && FilenameRegex == "")
+				{
 					Progress.Log("No files specified");
 					return;
 				}
 
-				if (UseRegex) {
-					try {
+				if (UseRegex)
+				{
+					try
+					{
 						Regex rx = new Regex(_searchString);
-					} catch (ArgumentException) {
+					}
+					catch (ArgumentException)
+					{
 						Progress.Log("Invalid regex");
 						return;
 					}
@@ -917,31 +1091,41 @@ namespace SVNHistorySearcher.ViewModels
 
 				ISet<string> recursivlyAdded = new HashSet<string>();
 
-				if (previousSelectedList != null) {
+				if (previousSelectedList != null)
+				{
 					int hashCode = 0;
-					foreach (Tuple<string, bool> t in previousSelectedList) {
+					foreach (Tuple<string, bool> t in previousSelectedList)
+					{
 						hashCode += t.Item1.GetHashCode() + t.Item2.GetHashCode();
 					}
-					foreach (Tuple<string, bool> t in nod) {
+					foreach (Tuple<string, bool> t in nod)
+					{
 						hashCode -= t.Item1.GetHashCode() + t.Item2.GetHashCode();
 
-						if (t.Item2) {
+						if (t.Item2)
+						{
 							recursivlyAdded.Add(t.Item1);
 						}
 					}
 
-					if (hashCode != 0) {
+					if (hashCode != 0)
+					{
 						previousSelectedList = nod;
 						files = previousNodeList = subversionSearcher.GetFullNodeList(nod, TreeRevision);
-					} else {
+					}
+					else
+					{
 						files = previousNodeList;
 					}
-				} else {
+				}
+				else
+				{
 					previousSelectedList = nod;
 					files = previousNodeList = subversionSearcher.GetFullNodeList(nod, TreeRevision);
 				}
 
-				SearchOptions options = new SearchOptions() {
+				SearchOptions options = new SearchOptions()
+				{
 					CaseSensitive = _caseSensitive,
 					UseRegex = _useRegex,
 					SearchFromRevision = useDateForStart ? new SharpSvn.SvnRevision(searchFromDate.Date) : new SharpSvn.SvnRevision(searchFromRevision),
@@ -960,26 +1144,35 @@ namespace SVNHistorySearcher.ViewModels
 
 				SearchResults results = subversionSearcher.Search(options);
 
-				if (results == null) {
+				if (results == null)
+				{
 					return;
 				}
 
-				if (!results.Successful) {
+				if (!results.Successful)
+				{
 					string caption = "Search incomplete";
 					string text = "Result might be incomplete. Some diffs could not be searched for whatever reason.\r\nWould you like to see the list of diffs that are still missing?";
 					MessageBoxButton button = MessageBoxButton.YesNo;
 					MessageBoxImage icon = MessageBoxImage.Warning;
 
 					MessageBoxResult mbs = MessageBox.Show(text, caption, button, icon);
-					if (mbs == MessageBoxResult.Yes) {
-						try {
+					if (mbs == MessageBoxResult.Yes)
+					{
+						try
+						{
 							string filepath = results.ErrorPath;
-							if (System.IO.File.Exists(filepath)) {
+							if (System.IO.File.Exists(filepath))
+							{
 								Process.Start(filepath);
-							} else {
+							}
+							else
+							{
 
 							}
-						} catch (Exception e) {
+						}
+						catch (Exception e)
+						{
 							Progress.ErrorLog(e.ToString());
 							MessageBox.Show("Something went wrong.. See error.log");
 						}
@@ -987,24 +1180,30 @@ namespace SVNHistorySearcher.ViewModels
 				}
 				Progress.Log("Loading {0} results..", results.Files.Count);
 
-				if (results.Files.Count <= 250) {
+				if (results.Files.Count <= 250)
+				{
 					_searchResultsViewModel.SearchResults = results;
-				} else {
+				}
+				else
+				{
 					string caption = "Many results";
 					string text = String.Format("There are results in {0} Files. You might want to specify your search.\r\nWould you like to load the results anyway? (could freeze the GUI for a while)", results.Files.Count);
 					MessageBoxButton button = MessageBoxButton.YesNo;
 					MessageBoxImage icon = MessageBoxImage.Warning;
 
 					MessageBoxResult mbs = MessageBox.Show(text, caption, button, icon);
-					if (mbs == MessageBoxResult.Yes) {
+					if (mbs == MessageBoxResult.Yes)
+					{
 						_searchResultsViewModel.SearchResults = results;
 					}
 				}
 
 
-				Progress.Log(String.Format("Search finished after {0:F2}s", results.TotalTime / 1000));
+				Progress.Log(String.Format("Search finished after {0:F2}s", results.TotalTime.HasValue ? (results.TotalTime.Value / 1000).ToString() : "undefined"));
 
-			} else {
+			}
+			else
+			{
 				Progress.Log("Search text can not be empty");
 			}
 		}
@@ -1015,62 +1214,79 @@ namespace SVNHistorySearcher.ViewModels
 		/// </summary>
 		/// <param name="fd"></param>
 		/// <returns></returns>
-		public string GetFileContent(FoundDiff fd) {
+		public string GetFileContent(FoundDiff fd)
+		{
 			return subversionSearcher.ReadSingleDiff(fd.DiffInfo);
 		}
 
 
-		public void OpenFileFromTree(string path, long revision, bool openOpenWithWindow) {
-			if (!SubversionSearcher.IsReady(subversionSearcher) || !subversionSearcher.PathExistsAtRevision(path, revision)) {
+		public void OpenFileFromTree(string path, long revision, bool openOpenWithWindow)
+		{
+			if (!SubversionSearcher.IsReady(subversionSearcher) || !subversionSearcher.PathExistsAtRevision(path, revision))
+			{
 				Progress.Log("Could not open File");
 				return;
 			}
 
 			string filePath;
-			if (!subversionSearcher.GetFileAtRevision(path, revision, out filePath)) {
+			if (!subversionSearcher.GetFileAtRevision(path, revision, out filePath))
+			{
 				Progress.Log("Could not fetch file from subversion server.");
 				return;
 			}
 
-			if (!openOpenWithWindow) {
-				try {
+			if (!openOpenWithWindow)
+			{
+				try
+				{
 					Process.Start(filePath);
-				} catch (Exception ex) {
+				}
+				catch (Exception ex)
+				{
 					Progress.Log("Could not open file. see error.log");
 					Progress.ErrorLog(ex);
 				}
 			}
 		}
 
-		public void OpenParentInExplorer(string path, long revision) {
-			if (!SubversionSearcher.IsReady(subversionSearcher) || !subversionSearcher.PathExistsAtRevision(path, revision)) {
+		public void OpenParentInExplorer(string path, long revision)
+		{
+			if (!SubversionSearcher.IsReady(subversionSearcher) || !subversionSearcher.PathExistsAtRevision(path, revision))
+			{
 				Progress.Log("Could not open File");
 				return;
 			}
 
 			string filePath;
-			if (!subversionSearcher.GetFileAtRevision(path, revision, out filePath)) {
+			if (!subversionSearcher.GetFileAtRevision(path, revision, out filePath))
+			{
 				Progress.Log("Could not fetch file from subversion server.");
 				return;
 			}
 
-			try {
+			try
+			{
 				System.Diagnostics.Process.Start(System.IO.Path.GetDirectoryName(filePath));
-			} catch (Exception ex) {
+			}
+			catch (Exception ex)
+			{
 				Progress.Log("Could not open file. see error.log");
 				Progress.ErrorLog(ex);
 			}
 		}
 
 
-		public void OpenInTortoise(OpenedFile openedFile, bool otherTask = false) {
-			Action<OpenedFile> act = (of) => {
+		public void OpenInTortoise(OpenedFile openedFile, bool otherTask = false)
+		{
+			Action<OpenedFile> act = (of) =>
+			{
 				// implement check whether tortoise is installed and find out where
 
-				string tortoisemerge = Utils.JoinPathsWin(DataSaver.TortoisePath, "TortoiseMerge.exe");
+				string tortoisemerge = Utils.JoinPathsWin(Settings.Instance.TortoisePath, "TortoiseMerge.exe");
 
-				if (System.IO.File.Exists(tortoisemerge) == false) {
-					MessageBox.Show(String.Format("Tortoise was not found in {0} :(\nYou can change the path of your TortoiseMerge executable in the settings file ({1})", tortoisemerge, DataSaver.SettingsFilePath));
+				if (System.IO.File.Exists(tortoisemerge) == false)
+				{
+					MessageBox.Show(String.Format("Tortoise was not found in {0} :(\nYou can change the path of your TortoiseMerge executable in the settings file ({1})", tortoisemerge, Settings.SettingsFilePath));
 					return;
 				}
 
@@ -1081,7 +1297,8 @@ namespace SVNHistorySearcher.ViewModels
 				long leftRevision = Math.Max(Math.Max(of.Revision - 1, 0), of.PrevRevision);
 				long rightRevision = of.Revision;
 
-				try {
+				try
+				{
 
 					string leftFilePath;
 					bool leftExisting = subversionSearcher.GetFileAtRevision(filePath, leftRevision, out leftFilePath);
@@ -1105,7 +1322,9 @@ namespace SVNHistorySearcher.ViewModels
 
 					Process.Start(psi);
 
-				} catch (Exception ex) {
+				}
+				catch (Exception ex)
+				{
 					Progress.ErrorLog(ex);
 					MessageBox.Show(ex.Message);
 				}
@@ -1113,22 +1332,27 @@ namespace SVNHistorySearcher.ViewModels
 				Progress.Log("");
 			};
 
-			if (otherTask) {
+			if (otherTask)
+			{
 				Task t = new Task(() => { act(openedFile); });
 				t.Start();
-			} else {
+			}
+			else
+			{
 				act(openedFile);
 			}
 		}
 
 
-		public bool TryShutdown() {
+		public bool TryShutdown()
+		{
 			Progress.Log("Shutting down...");
-			if (subversionSearcher != null) {
+			if (subversionSearcher != null)
+			{
 				subversionSearcher.Close();
 			}
 
-			DataSaver.Save();
+			Settings.Save();
 			return true;
 		}
 	}
