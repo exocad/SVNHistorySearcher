@@ -55,7 +55,7 @@
 
         <TextBox TextWrapping="Wrap" Text="{Binding AuthorsString}" ToolTip="Type in Authors, split by a comma. ( au, tho, rs )" Margin="71,190,75,0" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Height="23" VerticalAlignment="Top"/>
         <Label Content="Authors" HorizontalAlignment="Left" Width="56" Grid.Row="0" Margin="10,190,0,0" Height="26" VerticalAlignment="Top"/>
-        <CheckBox Content="Exclude" IsChecked="{Binding ExcludeAuthors}" HorizontalAlignment="Right" Width="60" Grid.Row="0" Grid.Column="1" Margin="0,196,10,0" Height="15" VerticalAlignment="Top"/>
+        <CheckBox Content="Exclude" IsChecked="{Binding ExcludeAuthors}" HorizontalAlignment="Right" Width="60" Grid.Row="0" Grid.Column="1" Margin="0,193,10,0" Height="15" VerticalAlignment="Top"/>
         <Label Content="Filename" Margin="10,221,0,0" Grid.Row="0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Width="104" Grid.RowSpan="2" />
         <TextBox Height="23" TextWrapping="Wrap" Text="{Binding FilenameRegex}" ToolTip="Type &quot;config.xml&quot; to search in all files that contain &quot;config.xml&quot; in name. You can type in &quot;*&quot; to search in all files." Grid.Row="0" Grid.ColumnSpan="2" VerticalAlignment="Top" Margin="71,223,10,0"/>
 
