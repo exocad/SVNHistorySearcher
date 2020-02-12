@@ -834,9 +834,9 @@ namespace SVNHistorySearcher.Models
 						continue;
 					}
 
-					var stringInFname = searchOptions.FilenameSubstring.ToLower();
+					var stringInFname = searchOptions.FilenameSubstring.ToUpperInvariant();
 
-					if ((searchOptions.FilenameSubstring == "*" && !FiletypeBlacklist.Contains(Path.GetExtension(kv.Key).ToLower())) || kv.Key.Contains(stringInFname))
+					if ((searchOptions.FilenameSubstring == "*" && !FiletypeBlacklist.Contains(Path.GetExtension(kv.Key).ToLower())) || kv.Key.ToUpperInvariant().Contains(stringInFname))
 					{
 						foreach (NodeAtTime n in kv.Value)
 						{

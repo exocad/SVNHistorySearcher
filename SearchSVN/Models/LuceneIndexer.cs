@@ -97,11 +97,7 @@ namespace SVNHistorySearcher.Models
 
 			ConcurrentBag<DiffInfo> notFoundPrep = new ConcurrentBag<DiffInfo>();
 
-			Regex pattern = null;
-
-			// regex instantiation should never fail because it was tested before
-			if (searchOptions.UseRegex)
-				pattern = new Regex(searchOptions.Text, searchOptions.CaseSensitive ? 0 : RegexOptions.IgnoreCase);
+			Regex pattern = new Regex(searchOptions.UseRegex ? searchOptions.Text : Regex.Escape(searchOptions.Text), searchOptions.CaseSensitive ? 0 : RegexOptions.IgnoreCase);
 
 			long searchedTrough = 0;
 
@@ -146,10 +142,7 @@ namespace SVNHistorySearcher.Models
 
 							Interlocked.Add(ref searchedTrough, 1);
 
-
-							bool foundSomething = searchOptions.UseRegex ?
-								Utils.BestSearch(text, pattern) :
-								Utils.BestSearch(text, searchOptions.Text, searchOptions.CaseSensitive);
+							bool foundSomething = SearchInDiff(text, pattern);
 
 							if (foundSomething)
 							{
@@ -534,6 +527,49 @@ namespace SVNHistorySearcher.Models
 				return t;
 			}
 		}
+
+		/// <summary>
+		/// Searches for a string inside a text. Ignores lines that don't start with '+' or '-'
+		/// </summary>
+		/// <param name="text">text to search in</param>
+		/// <param name="pattern">string to search for</param>
+		/// <returns></returns>
+		public static bool SearchInDiff(string text, Regex pattern)
+		{
+			int backtrackTo = 0;
+			foreach (Match moo in pattern.Matches(text))
+			{
+				bool expectNewLine = false;
+				// backtracking to start of line
+				for (int j = moo.Index - 1; j >= backtrackTo; j--)
+				{
+					char c = text[j];
+
+					if (c == '+' || c == '-')
+					{
+						expectNewLine = true;
+					}
+					else if (c == '\n')
+					{
+						if (expectNewLine)
+						{
+							return true;
+						}
+						else
+						{
+							return false;
+						}
+					}
+					else
+					{
+						expectNewLine = false;
+					}
+				}
+				backtrackTo = moo.Index + moo.Value.Length;
+			}
+			return false;
+		}
+
 
 	}
 }
