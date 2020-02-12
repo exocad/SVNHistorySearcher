@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security;
 using System.Security.Cryptography;
 using System.Text;
 using System.Xml.Serialization;
@@ -190,20 +188,6 @@ namespace SVNHistorySearcher.Models
 			return successful;
 		}
 
-		String SecureStringToString(SecureString value)
-		{
-			IntPtr valuePtr = IntPtr.Zero;
-			try
-			{
-				valuePtr = Marshal.SecureStringToGlobalAllocUnicode(value);
-				return Marshal.PtrToStringUni(valuePtr);
-			}
-			finally
-			{
-				Marshal.ZeroFreeGlobalAllocUnicode(valuePtr);
-			}
-		}
-
 		public static void ClearTemporaryFiles()
 		{
 			ClearDirectory(CachePath);
@@ -221,7 +205,7 @@ namespace SVNHistorySearcher.Models
 					result += c;
 				}
 			}
-			result = Utils.JoinPathsWin(Settings.RepositoriesFolder, result + Utils.CalculateMD5Hash(repositoryUrl.ToLower()).Substring(0, 8));
+			result = Utils.JoinPathsWin(RepositoriesFolder, result + Utils.CalculateMD5Hash(repositoryUrl.ToLower()).Substring(0, 8));
 			return result;
 		}
 	}
