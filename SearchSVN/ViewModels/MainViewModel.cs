@@ -391,7 +391,7 @@ namespace SVNHistorySearcher.ViewModels
 		{
 			get
 			{
-				return SearchOptions.TreeRevision?.Revision ?? 0;
+				return SearchOptions.TreeRevision ?? 0;
 			}
 			set
 			{
@@ -400,7 +400,7 @@ namespace SVNHistorySearcher.ViewModels
 
 					long newVal = Math.Max(Math.Min(subversionSearcher.HeadRevision, value), 1);
 					bool hasChanged = newVal != TreeRevision;
-					SearchOptions.TreeRevision = new SvnRevision(newVal);
+					SearchOptions.TreeRevision = newVal;
 					if (hasChanged)
 					{
 						RaisePropertyChanged("TreeRevisionText");
@@ -504,34 +504,25 @@ namespace SVNHistorySearcher.ViewModels
 		#region Date stuff
 
 		private string dateFormat = "dd.MM.yyyy";
-		private DateTime searchFromDate = new DateTime(1999, 02, 25);
-		private DateTime searchToDate = DateTime.UtcNow;
-		private long searchFromRevision = 0;
-		private long searchToRevision = long.MaxValue;
-		private bool useDateForStart = true;
-		private bool useDateForEnd = false;
-
 		public string StartRevisionText
 		{
 			get
 			{
-				return useDateForStart ? searchFromDate.ToString(dateFormat) : searchFromRevision.ToString();
+				if (SearchOptions.SearchFromRevision.RevisionType == SvnRevisionType.Number)
+					return SearchOptions.SearchFromRevision.RevisionType.ToString();
+				if (SearchOptions.SearchFromRevision.RevisionType == SvnRevisionType.Time)
+					return SearchOptions.SearchFromRevision.Time.ToString(dateFormat);
+				return "";
 			}
 			set
 			{
-				long res;
-				DateTime dt;
-				if (long.TryParse(value, out res))
+				if (long.TryParse(value, out long res))
 				{
-					searchFromRevision = res;
-					useDateForStart = false;
-					SearchOptions.SearchFromRevision = new SharpSvn.SvnRevision(searchFromRevision);
+					SearchOptions.SearchFromRevision = new SharpSvn.SvnRevision(res);
 				}
-				else if (DateTime.TryParseExact(value, dateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
+				else if (DateTime.TryParseExact(value, dateFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out DateTime dt))
 				{
-					searchFromDate = dt;
-					useDateForStart = true;
-					SearchOptions.SearchFromRevision = new SharpSvn.SvnRevision(searchFromDate.Date);
+					SearchOptions.SearchFromRevision = new SharpSvn.SvnRevision(dt.Date);
 				}
 				else
 				{
@@ -544,29 +535,27 @@ namespace SVNHistorySearcher.ViewModels
 		{
 			get
 			{
-				return useDateForEnd ? searchToDate.ToString(dateFormat) : (searchToRevision == long.MaxValue ? "HEAD" : searchToRevision.ToString());
+				if (SearchOptions.SearchToRevision.RevisionType == SvnRevisionType.Number)
+					return SearchOptions.SearchToRevision.RevisionType.ToString();
+				if (SearchOptions.SearchToRevision.RevisionType == SvnRevisionType.Time)
+					return SearchOptions.SearchToRevision.Time.ToString(dateFormat);
+				if (SearchOptions.SearchToRevision.RevisionType == SvnRevisionType.Head)
+					return "HEAD";
+				return "";
 			}
 			set
 			{
-				long res;
-				DateTime dt;
-				if (value.ToLower() == "head")
+				if (value.ToUpper() == "HEAD")
 				{
-					searchToRevision = long.MaxValue;
-					useDateForEnd = false;
-					SearchOptions.SearchToRevision = new SharpSvn.SvnRevision(searchToRevision);
+					SearchOptions.SearchToRevision = new SharpSvn.SvnRevision(SvnRevisionType.Head);
 				}
-				else if (long.TryParse(value, out res))
+				else if (long.TryParse(value, out long res))
 				{
-					searchToRevision = res;
-					useDateForEnd = false;
-					SearchOptions.SearchToRevision = new SharpSvn.SvnRevision(searchToRevision);
+					SearchOptions.SearchToRevision = new SharpSvn.SvnRevision(res);
 				}
-				else if (DateTime.TryParseExact(value, dateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
+				else if (DateTime.TryParseExact(value, dateFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out DateTime dt))
 				{
-					searchToDate = dt;
-					useDateForEnd = true;
-					SearchOptions.SearchToRevision = new SharpSvn.SvnRevision(searchToDate.Date);
+					SearchOptions.SearchToRevision = new SharpSvn.SvnRevision(dt.Date);
 				}
 				else
 				{

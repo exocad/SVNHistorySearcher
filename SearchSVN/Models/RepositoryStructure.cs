@@ -745,56 +745,54 @@ namespace SVNHistorySearcher.Models
 				return null;
 			}
 
-			long startRevisionNumber = 0;
-			long endRevisionNumber = long.MaxValue;
-			long treeRevisionNumber = -1;
-
-			if (searchOptions.SearchFromRevision.Revision != -1)
+			long? startRevisionNumber = null;
+			long? endRevisionNumber = null;
+			if (searchOptions.SearchFromRevision.RevisionType == SvnRevisionType.Number)
 			{
-				// revision number was entered
 				startRevisionNumber = searchOptions.SearchFromRevision.Revision;
 			}
-			else
+			else if (searchOptions.SearchFromRevision.RevisionType == SvnRevisionType.Time)
 			{
-				for (int i = 1; i < Revisions.Count; i++)
+				for (int i = 0; i < Revisions.Count; i++)
 				{
-					if (Revisions[i].Time >= searchOptions.SearchFromRevision.Time)
+					if (Revisions[i].Time.Date >= searchOptions.SearchFromRevision.Time.Date)
 					{
-						startRevisionNumber = Revisions[i - 1].Revision;
+						startRevisionNumber = Revisions[i].Revision;
 						break;
 					}
 				}
 			}
 
-			if (searchOptions.SearchToRevision.Revision != -1)
-			{
-				// revision number was entered
+			if (searchOptions.SearchToRevision.RevisionType == SvnRevisionType.Number) {
 				endRevisionNumber = searchOptions.SearchToRevision.Revision;
-			}
-			else
+			} 
+			else if (searchOptions.SearchToRevision.RevisionType == SvnRevisionType.Time)
 			{
-				for (int i = Revisions.Count - 2; i >= 0; i--)
+				for (int i = Revisions.Count - 1; i >= 0; i--)
 				{
-					if (Revisions[i].Time <= searchOptions.SearchToRevision.Time)
+					if (Revisions[i].Time.Date <= searchOptions.SearchToRevision.Time.Date)
 					{
-						endRevisionNumber = Revisions[i + 1].Revision;
+						endRevisionNumber = Revisions[i].Revision;
 						break;
 					}
 				}
 			}
-
-			if (searchOptions.TreeRevision.Revision != -1)
+			else if (searchOptions.SearchToRevision.RevisionType == SvnRevisionType.Head)
 			{
-				treeRevisionNumber = searchOptions.TreeRevision.Revision;
-			}
-			else
-			{
-				treeRevisionNumber = endRevisionNumber;
+				endRevisionNumber = HeadRevision;
 			}
 
 
-			ICollection<long> ignoreRevisions = new HashSet<long>();
-			if (searchOptions.Authors.Count > 0)
+			if(!startRevisionNumber.HasValue || !endRevisionNumber.HasValue)
+			{
+				Progress.DebugLog("startRevision or endRevision number is null");
+				Progress.Log("something failed");
+				return null;
+			}
+
+
+			HashSet<long> ignoreRevisions = new HashSet<long>();
+			if (searchOptions.Authors.Count != 0)
 			{
 				foreach (CommitInfo r in Revisions.Values)
 				{
@@ -809,11 +807,9 @@ namespace SVNHistorySearcher.Models
 			// adding the files that were selected in the checkbox tree
 			foreach (string fname in filesOfInterest)
 			{
-				foreach (DiffInfo di in GetFileHistory(fname, startRevisionNumber, endRevisionNumber, ignoreRevisions, searchOptions.StopOnCopy))
+				foreach (DiffInfo di in GetFileHistory(fname, startRevisionNumber.Value, endRevisionNumber.Value, ignoreRevisions, searchOptions.StopOnCopy))
 				{
-
-					IList<string> li;
-					if (diffInfoFileRelations.TryGetValue(di, out li) == false)
+					if (diffInfoFileRelations.TryGetValue(di, out IList<string> li) == false)
 					{
 						diffInfoFileRelations[di] = li = new List<string>();
 					}
@@ -840,7 +836,7 @@ namespace SVNHistorySearcher.Models
 					{
 						foreach (NodeAtTime n in kv.Value)
 						{
-							foreach (DiffInfo di in GetFileHistory(n, startRevisionNumber, endRevisionNumber, ignoreRevisions, true))
+							foreach (DiffInfo di in GetFileHistory(n, startRevisionNumber.Value, endRevisionNumber.Value, ignoreRevisions, true))
 							{
 								IList<string> li;
 								if (diffInfoFileRelations.TryGetValue(di, out li) == false)

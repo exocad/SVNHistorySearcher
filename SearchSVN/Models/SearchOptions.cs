@@ -15,7 +15,7 @@ namespace SVNHistorySearcher.Models
 		[XmlIgnore]
 		public SvnRevision SearchToRevision;
 		[XmlIgnore]
-		public SvnRevision TreeRevision;
+		public long? TreeRevision;
 		[XmlIgnore]
 		public string Text = "";
 		[XmlIgnore]
@@ -38,7 +38,7 @@ namespace SVNHistorySearcher.Models
 
 		public SearchOptions()
 		{
-			SearchFromRevision = new SvnRevision(1);
+			SearchFromRevision = new SvnRevision(new System.DateTime(1999, 02, 25, 0, 0, 0, 0, System.DateTimeKind.Utc));
 			SearchToRevision = new SvnRevision(SvnRevisionType.Head);
 		}
 
