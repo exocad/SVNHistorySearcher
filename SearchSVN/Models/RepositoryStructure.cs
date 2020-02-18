@@ -755,7 +755,7 @@ namespace SVNHistorySearcher.Models
 			{
 				for (int i = 0; i < Revisions.Count; i++)
 				{
-					if (Revisions[i].Time.Date >= searchOptions.SearchFromRevision.Time.Date)
+					if (Revisions[i].Time >= searchOptions.SearchFromRevision.Time)
 					{
 						startRevisionNumber = Revisions[i].Revision;
 						break;
@@ -770,7 +770,7 @@ namespace SVNHistorySearcher.Models
 			{
 				for (int i = Revisions.Count - 1; i >= 0; i--)
 				{
-					if (Revisions[i].Time.Date <= searchOptions.SearchToRevision.Time.Date)
+					if (Revisions[i].Time <= searchOptions.SearchToRevision.Time)
 					{
 						endRevisionNumber = Revisions[i].Revision;
 						break;
@@ -792,11 +792,12 @@ namespace SVNHistorySearcher.Models
 
 
 			HashSet<long> ignoreRevisions = new HashSet<long>();
-			if (searchOptions.Authors.Count != 0)
+			HashSet<string> authors = new HashSet<string>(from a in searchOptions.Authors where !String.IsNullOrWhiteSpace(a) select a.ToUpper());
+			if (authors.Count != 0)
 			{
 				foreach (CommitInfo r in Revisions.Values)
 				{
-					if (r.Author != null && !(searchOptions.Authors.Contains(r.Author.ToLower()) ^ searchOptions.ExcludeAuthors))
+					if (r.Author != null && !(searchOptions.Authors.Contains(r.Author.ToUpper()) ^ searchOptions.ExcludeAuthors))
 					{
 						ignoreRevisions.Add(r.Revision);
 					}
