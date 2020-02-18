@@ -2026,9 +2026,9 @@ namespace SVNHistorySearcher.Models
 		}
 
 
-		public IList<string> GetFullNodeList(IList<Tuple<string, bool>> nodesWithRecursiveInfo, long revision)
+		public List<string> GetFullNodeList(IList<Tuple<string, bool>> nodesWithRecursiveInfo, long revision)
 		{
-			IList<string> result = new List<string>();
+			List<string> result = new List<string>();
 
 			foreach (Tuple<string, bool> n in nodesWithRecursiveInfo)
 			{

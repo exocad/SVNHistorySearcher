@@ -25,9 +25,9 @@ namespace SVNHistorySearcher.ViewModels
 			this.mainViewModel = mainViewModel;
 		}
 
-		public IList<Tuple<string, bool>> GetSelectedNodes()
+		public List<Tuple<string, bool>> GetSelectedNodes()
 		{
-			IList<Tuple<string, bool>> files = new List<Tuple<string, bool>>();
+			List<Tuple<string, bool>> files = new List<Tuple<string, bool>>();
 
 			if (Items != null)
 			{

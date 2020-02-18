@@ -240,8 +240,8 @@ namespace SVNHistorySearcher.ViewModels
 
 		AtomicBoolean currentlyLoadingRepository = new AtomicBoolean(false);
 
-		IList<string> previousNodeList = null;
-		IList<Tuple<string, bool>> previousSelectedList = null;
+		List<string> previousNodeList = null;
+		List<Tuple<string, bool>> previousSelectedList = null;
 
 		Dictionary<string, ICommand> _buttonCommands = new Dictionary<string, ICommand>();
 
@@ -509,24 +509,24 @@ namespace SVNHistorySearcher.ViewModels
 			get
 			{
 				if (SearchOptions.SearchFromRevision.RevisionType == SvnRevisionType.Number)
-					return SearchOptions.SearchFromRevision.RevisionType.ToString();
+					return SearchOptions.SearchFromRevision.Revision.ToString();
 				if (SearchOptions.SearchFromRevision.RevisionType == SvnRevisionType.Time)
-					return SearchOptions.SearchFromRevision.Time.ToString(dateFormat);
+					return SearchOptions.SearchFromRevision.Time.ToString();
 				return "";
 			}
 			set
 			{
 				if (long.TryParse(value, out long res))
 				{
-					SearchOptions.SearchFromRevision = new SharpSvn.SvnRevision(res);
+					SearchOptions.SearchFromRevision = new SvnRevision(res);
 				}
-				else if (DateTime.TryParseExact(value, dateFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out DateTime dt))
+				else if (DateTime.TryParse(value, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out DateTime dt))
 				{
-					SearchOptions.SearchFromRevision = new SharpSvn.SvnRevision(dt.Date);
+					SearchOptions.SearchFromRevision = new SvnRevision(dt);
 				}
 				else
 				{
-					MessageBox.Show(String.Format("Date or revision is in the wrong format.\nPlease enter an integer or a date in the following format: \"{0}\"", dateFormat));
+					MessageBox.Show(String.Format("Date or revision is in the wrong format."));
 				}
 			}
 		}
@@ -536,9 +536,9 @@ namespace SVNHistorySearcher.ViewModels
 			get
 			{
 				if (SearchOptions.SearchToRevision.RevisionType == SvnRevisionType.Number)
-					return SearchOptions.SearchToRevision.RevisionType.ToString();
+					return SearchOptions.SearchToRevision.Revision.ToString();
 				if (SearchOptions.SearchToRevision.RevisionType == SvnRevisionType.Time)
-					return SearchOptions.SearchToRevision.Time.ToString(dateFormat);
+					return SearchOptions.SearchToRevision.Time.ToString();
 				if (SearchOptions.SearchToRevision.RevisionType == SvnRevisionType.Head)
 					return "HEAD";
 				return "";
@@ -547,19 +547,19 @@ namespace SVNHistorySearcher.ViewModels
 			{
 				if (value.ToUpper() == "HEAD")
 				{
-					SearchOptions.SearchToRevision = new SharpSvn.SvnRevision(SvnRevisionType.Head);
+					SearchOptions.SearchToRevision = new SvnRevision(SvnRevisionType.Head);
 				}
 				else if (long.TryParse(value, out long res))
 				{
-					SearchOptions.SearchToRevision = new SharpSvn.SvnRevision(res);
+					SearchOptions.SearchToRevision = new SvnRevision(res);
 				}
-				else if (DateTime.TryParseExact(value, dateFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out DateTime dt))
+				else if (DateTime.TryParse(value, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out DateTime dt))
 				{
-					SearchOptions.SearchToRevision = new SharpSvn.SvnRevision(dt.Date);
+					SearchOptions.SearchToRevision = new SvnRevision(dt);
 				}
 				else
 				{
-					MessageBox.Show(String.Format("Date or revision is in the wrong format.\nPlease enter an integer or a date in the following format: \"{0}\"", dateFormat));
+					MessageBox.Show(String.Format("Date or revision is in the wrong format.", dateFormat));
 				}
 			}
 		}
@@ -1036,9 +1036,7 @@ namespace SVNHistorySearcher.ViewModels
 			if (options.Text != "")
 			{
 
-				IList<string> files;
-
-				IList<Tuple<string, bool>> nod = RepositoryOverview.GetSelectedNodes();
+				List<Tuple<string, bool>> nod = RepositoryOverview.GetSelectedNodes();
 				if (nod.Count == 0 && FilenameRegex == "")
 				{
 					Progress.Log("No files specified");
@@ -1069,17 +1067,17 @@ namespace SVNHistorySearcher.ViewModels
 					if (hashCode != 0)
 					{
 						previousSelectedList = nod;
-						files = previousNodeList = subversionSearcher.GetFullNodeList(nod, TreeRevision);
+						options.Files = previousNodeList = subversionSearcher.GetFullNodeList(nod, TreeRevision);
 					}
 					else
 					{
-						files = previousNodeList;
+						options.Files = previousNodeList;
 					}
 				}
 				else
 				{
 					previousSelectedList = nod;
-					files = previousNodeList = subversionSearcher.GetFullNodeList(nod, TreeRevision);
+					options.Files = previousNodeList = subversionSearcher.GetFullNodeList(nod, TreeRevision);
 				}
 
 				SearchResults results = subversionSearcher.Search(options);

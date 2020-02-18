@@ -357,7 +357,7 @@ namespace SVNHistorySearcher
 			}
 		}
 
-		public void GetCheckedNodes(ref IList<Tuple<string, bool>> nodes)
+		public void GetCheckedNodes(ref List<Tuple<string, bool>> nodes)
 		{
 			if (_isChecked != false)
 			{
