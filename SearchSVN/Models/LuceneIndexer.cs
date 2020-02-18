@@ -97,7 +97,7 @@ namespace SVNHistorySearcher.Models
 
 			ConcurrentBag<DiffInfo> notFoundPrep = new ConcurrentBag<DiffInfo>();
 
-			Regex pattern = new Regex(searchOptions.UseRegex ? searchOptions.Text : Regex.Escape(searchOptions.Text), searchOptions.CaseSensitive ? 0 : RegexOptions.IgnoreCase);
+			Regex pattern = new Regex(searchOptions.UseRegex ? searchOptions.Text : Regex.Escape(searchOptions.Text), RegexOptions.Multiline | (searchOptions.CaseSensitive ? 0 : RegexOptions.IgnoreCase));
 
 			long searchedTrough = 0;
 
@@ -539,7 +539,8 @@ namespace SVNHistorySearcher.Models
 			int backtrackTo = 0;
 			foreach (Match moo in pattern.Matches(text))
 			{
-				bool expectNewLine = false;
+				bool expectNewLine = true;
+
 				// backtracking to start of line
 				for (int j = moo.Index - 1; j >= backtrackTo; j--)
 				{
