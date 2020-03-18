@@ -170,7 +170,6 @@ namespace SVNHistorySearcher.ViewModels
 
 			this.Items = new List<CheckableItem> { rootFolder };
 
-			Progress.Log("Tree loaded at revision {0}", revision);
 			currentTreeRevision = revision;
 			currentTreeHeadPath = path;
 			currentSubversionSearcherUsedForTree = subversionSearcher;
