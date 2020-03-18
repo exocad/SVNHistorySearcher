@@ -86,7 +86,21 @@ namespace SVNHistorySearcher.Models
 			CreateDirectories();
 			ClearTemporaryFiles();
 
-			if (!File.Exists(SettingsFilePath))
+			if(File.Exists(SettingsFilePath))
+			{
+				try
+				{
+					_instance = Load(SettingsFilePath);
+				}
+				catch (Exception ex)
+				{
+					File.Move(SettingsFilePath, SettingsFilePath + ".old");
+					Progress.ErrorLog(ex);
+					_instance = null;
+				}
+			}
+
+			if (_instance == null)
 			{
 				var assembly = System.Reflection.Assembly.GetExecutingAssembly();
 				var fileName = assembly.GetManifestResourceNames().Single(str => str.EndsWith("settings.xml"));
@@ -97,8 +111,8 @@ namespace SVNHistorySearcher.Models
 					string text = sr.ReadToEnd().Replace("[VERSION]", settingsVersion);
 					File.WriteAllText(SettingsFilePath, text);
 				}
+				_instance = Load(SettingsFilePath);
 			}
-			_instance = Load(SettingsFilePath);
 		}
 
 		public static void Save()
