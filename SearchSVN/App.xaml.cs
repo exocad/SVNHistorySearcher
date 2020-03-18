@@ -236,9 +236,13 @@ namespace SVNHistorySearcher
 		}
 
 		private void Application_Startup(object sender, StartupEventArgs e)
-		{
+        {
+            Console.SetError(Models.Progress.ErrorLogWriter);
+#if DEBUG
+            Console.SetOut(Models.Progress.DebugLogWriter);
+#endif
 
-			MainWindow mainWindow = new MainWindow();
+            MainWindow mainWindow = new MainWindow();
 
 			MainViewModel = new MainViewModel();
 			mainWindow.DataContext = MainViewModel;

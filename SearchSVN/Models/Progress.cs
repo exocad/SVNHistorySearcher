@@ -15,11 +15,11 @@ namespace SVNHistorySearcher.Models
 		static List<Action> onMajorChange = new List<Action>();
 
 		static Stream errorLog = new FileStream(@"error.log", FileMode.Create, FileAccess.Write);
-		static StreamWriter errorLogWriter = new StreamWriter(errorLog) { AutoFlush = true };
+		public static StreamWriter ErrorLogWriter = new StreamWriter(errorLog) { AutoFlush = true };
 
 #if DEBUG
 		static Stream debugLog = new FileStream(@"debug.log", FileMode.Create, FileAccess.Write);
-		static StreamWriter debugLogWriter = new StreamWriter(debugLog) { AutoFlush = true };
+		public static StreamWriter DebugLogWriter = new StreamWriter(debugLog) { AutoFlush = true };
 #endif
 
 		static int previousFailedRequests = 0;
@@ -149,7 +149,7 @@ namespace SVNHistorySearcher.Models
 		{
 			lock (_lock)
 			{
-				errorLogWriter.WriteLine(message);
+				ErrorLogWriter.WriteLine(message);
 			}
 		}
 
@@ -157,7 +157,7 @@ namespace SVNHistorySearcher.Models
 		{
 			lock (_lock)
 			{
-				errorLogWriter.WriteLine(format, args);
+				ErrorLogWriter.WriteLine(format, args);
 			}
 		}
 
@@ -167,7 +167,7 @@ namespace SVNHistorySearcher.Models
 #if DEBUG
 			lock (_lock)
 			{
-				debugLogWriter.WriteLine(message);
+				DebugLogWriter.WriteLine(message);
 			}
 #endif
 		}
@@ -177,7 +177,7 @@ namespace SVNHistorySearcher.Models
 #if DEBUG
 			lock (_lock)
 			{
-				debugLogWriter.WriteLine(format, args);
+				DebugLogWriter.WriteLine(format, args);
 			}
 #endif
 		}
