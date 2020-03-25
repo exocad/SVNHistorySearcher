@@ -34,6 +34,8 @@ namespace SVNHistorySearcher.Views
 
 			TB_username.Text = username;
 			TB_password.Password = password;
+
+			TB_username.Focus();
 		}
 
 		private void ButtonCancel_Click(object sender, RoutedEventArgs e)
