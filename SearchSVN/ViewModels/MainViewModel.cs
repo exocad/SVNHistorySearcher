@@ -816,31 +816,26 @@ namespace SVNHistorySearcher.ViewModels
 				for (int i = 0; i < 4; i++)
 				{
 
-					if (info == SubversionSearcher.AuthenticationInfo.Successful)
+					if (info.Successful)
 					{
 						if (i == 0)
 						{
 							useCredentials = false;
 						}
-						break;
-					}
-					else if (info == SubversionSearcher.AuthenticationInfo.UnknownError)
-					{
-						Progress.Log("An error has occured. Read error.log for more details");
-						break;
-
-					}
-					else if (info == SubversionSearcher.AuthenticationInfo.RepositoryDoesNotExist)
-					{
-						Progress.Log("The requested repository could not be found");
-						break;
-
+						 break;
 					}
 					else if (
-					  info == SubversionSearcher.AuthenticationInfo.PasswordDeclined ||
-					  info == SubversionSearcher.AuthenticationInfo.NoSuchUser ||
-					  info == SubversionSearcher.AuthenticationInfo.NoMoreCredentialsOrTriedToManyTimes)
+						info.ThrownException != null && (
+							info.ThrownException is SharpSvn.SvnAuthorizationException ||
+							info.ThrownException is SharpSvn.SvnRepositoryIOForbiddenException ||
+							info.ThrownException is SharpSvn.SvnAuthenticationException) ||
+						info.ThrownException?.InnerException != null && (
+							info.ThrownException.InnerException is SharpSvn.SvnAuthorizationException ||
+							info.ThrownException.InnerException is SharpSvn.SvnRepositoryIOForbiddenException ||
+							info.ThrownException.InnerException is SharpSvn.SvnAuthenticationException))
 					{
+						// trying to make sense of sharpsvn's exceptions
+						// opening credentials window
 
 						if (i == 0)
 						{
@@ -857,12 +852,17 @@ namespace SVNHistorySearcher.ViewModels
 							info = SubversionSearcher.CheckCredentials(repoUrl, Settings.Instance.Username, Settings.Instance.Password);
 						}
 					}
+					else
+					{
+						Progress.Log(String.Format("{0}\r\nSee error.log", info.ExceptionMessage));
+						break;
+					}
 
 				}
 				// END trying  to find credentials
 
 
-				if (info == SubversionSearcher.AuthenticationInfo.Successful)
+				if (info.Successful)
 				{
 					Progress.Log("Loading Repository");
 

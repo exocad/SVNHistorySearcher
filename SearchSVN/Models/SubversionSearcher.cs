@@ -2158,14 +2158,26 @@ namespace SVNHistorySearcher.Models
 		}
 
 
-		public enum AuthenticationInfo
+		public class AuthenticationInfo
 		{
-			Successful,
-			NoSuchUser,
-			PasswordDeclined,
-			RepositoryDoesNotExist,
-			NoMoreCredentialsOrTriedToManyTimes,
-			UnknownError
+			public bool Successful { get; private set; }
+			public Exception ThrownException { get; private set; }
+			public String ExceptionMessage { get; private set; }
+
+			private AuthenticationInfo(bool successful, Exception exception)
+			{
+				Successful = successful;
+				ThrownException = exception;
+				ExceptionMessage = exception?.Message;
+			}
+			public static AuthenticationInfo GetSuccessful()
+			{
+				return new AuthenticationInfo(true, null);
+			}
+			public static AuthenticationInfo GetFailed(Exception exception)
+			{
+				return new AuthenticationInfo(false, exception);
+			}
 		}
 
 		public static AuthenticationInfo CheckCredentials(string anyUrl, string username, string password)
@@ -2185,39 +2197,14 @@ namespace SVNHistorySearcher.Models
 
 				SvnInfoEventArgs info;
 				client.GetInfo(SvnTarget.FromString(anyUrl), out info);
+
+				return AuthenticationInfo.GetSuccessful();
 			}
 			catch (Exception ex)
 			{
 				Progress.ErrorLog(ex);
-				if (ex.InnerException != null)
-				{
-
-					if (ex.InnerException is SharpSvn.SvnAuthorizationException)
-					{
-						return AuthenticationInfo.NoSuchUser;
-					}
-					else if (ex.InnerException is SharpSvn.SvnRepositoryIOForbiddenException)
-					{
-						return AuthenticationInfo.PasswordDeclined;
-					}
-					else if (ex.InnerException is SharpSvn.SvnSystemException)
-					{
-						return AuthenticationInfo.RepositoryDoesNotExist;
-					}
-					else if (ex.InnerException is SharpSvn.SvnAuthenticationException)
-					{
-						Progress.ErrorLog(ex);
-						return AuthenticationInfo.NoMoreCredentialsOrTriedToManyTimes;
-					}
-					else
-					{
-						Progress.ErrorLog(ex);
-						return AuthenticationInfo.UnknownError;
-					}
-				}
+				return AuthenticationInfo.GetFailed(ex);
 			}
-
-			return AuthenticationInfo.Successful;
 		}
 
 		public static AuthenticationInfo HasCredentials(string anyUrl)
@@ -2235,45 +2222,13 @@ namespace SVNHistorySearcher.Models
 				SvnInfoEventArgs info;
 				bool r = client.GetInfo(SvnTarget.FromString(anyUrl), out info);
 
+				return AuthenticationInfo.GetSuccessful();
 			}
 			catch (Exception ex)
 			{
 				Progress.ErrorLog(ex);
-				if (ex.InnerException != null)
-				{
-
-					if (ex.InnerException is SharpSvn.SvnAuthorizationException)
-					{
-						return AuthenticationInfo.NoSuchUser;
-					}
-					else if (ex.InnerException is SharpSvn.SvnRepositoryIOForbiddenException)
-					{
-						return AuthenticationInfo.PasswordDeclined;
-					}
-					else if (ex.InnerException is SharpSvn.SvnSystemException)
-					{
-						Progress.ErrorLog(ex);
-						return AuthenticationInfo.RepositoryDoesNotExist;
-					}
-					else if (ex.InnerException is SharpSvn.SvnAuthenticationException)
-					{
-						Progress.ErrorLog(ex);
-						return AuthenticationInfo.NoMoreCredentialsOrTriedToManyTimes;
-					}
-					else if (ex.InnerException is SharpSvn.SvnRepositoryIOException)
-					{
-						Progress.ErrorLog(ex);
-						return AuthenticationInfo.RepositoryDoesNotExist;
-					}
-					else
-					{
-						Progress.ErrorLog(ex);
-						return AuthenticationInfo.UnknownError;
-					}
-				}
+				return AuthenticationInfo.GetFailed(ex);
 			}
-
-			return AuthenticationInfo.Successful;
 		}
 
 
