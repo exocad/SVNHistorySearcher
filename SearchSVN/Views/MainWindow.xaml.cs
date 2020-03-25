@@ -87,5 +87,25 @@ namespace SVNHistorySearcher
 			var mvm = ((ViewModels.MainViewModel)DataContext);
 			mvm.TreeRevisionText = sender.Text;
 		}
+
+		/// <summary>
+		/// initiates search when pressing enter
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void SearchTextOnKeyDownHandler(object sender, KeyEventArgs e)
+		{
+			if (e.Key == Key.Return)
+			{
+				if(sender is TextBox)
+				{
+					var tb = (TextBox)sender;
+					
+					MainViewModel mvm = (MainViewModel)this.DataContext;
+					mvm.SearchString = tb.Text;
+					mvm.ButtonSearchCommand.Execute(null);
+				}
+			}
+		}
 	}
 }
