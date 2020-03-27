@@ -1060,9 +1060,9 @@ namespace SVNHistorySearcher.ViewModels
 
 				if (previousSelectedList != null)
 				{
-					int hashCode =
-						(from t in previousSelectedList select t.Item1.GetHashCode() + t.Item2.GetHashCode()).Sum()
-						- (from t in nod select t.Item1.GetHashCode() + t.Item2.GetHashCode()).Sum();
+					int hashCode = 0;
+					previousSelectedList.ForEach(s => hashCode += s.GetHashCode());
+					nod.ForEach(s => hashCode -= s.GetHashCode());
 
 					if (hashCode != 0)
 					{
