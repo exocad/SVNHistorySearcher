@@ -286,8 +286,12 @@
 		<string>.zip</string>
 		<string>.zipx</string>
 	</FileExtensionBlacklist>
-  <ColumnOneWidth>250</ColumnOneWidth>
-  <ColumnTwoWidth>250</ColumnTwoWidth>
+  <ColumnOneWidth>200</ColumnOneWidth>
+  <ColumnTwoWidth>200</ColumnTwoWidth>
+  <ColumnTextViewer>200</ColumnTextViewer>
+  <ColumnRepoViewWidth>200</ColumnRepoViewWidth>
+  <ColumnResultViewWidth>200</ColumnResultViewWidth>
   <WindowHeight>724</WindowHeight>
   <WindowWidth>1118</WindowWidth>
+  <WindowIsMaximized>false</WindowIsMaximized>
 </Settings>

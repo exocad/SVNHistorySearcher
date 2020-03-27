@@ -40,8 +40,12 @@ namespace SVNHistorySearcher.Models
 		public SearchOptions PreviousSearchOptions { get; set; }
 		public double WindowHeight { get; set; }
 		public double WindowWidth { get; set; }
+		public double ColumnRepoViewWidth { get; set; }
+		public double ColumnResultViewWidth { get; set; }
 		public double ColumnOneWidth { get; set; }
 		public double ColumnTwoWidth { get; set; }
+		public double ColumnTextViewer { get; set; }
+		public bool WindowIsMaximized { get; set; }
 
 		public string Username { get; set; }
 		

@@ -298,22 +298,58 @@ namespace SVNHistorySearcher.ViewModels
 				RaisePropertyChanged("WindowHeight");
 			}
 		}
-		public double ColumnOneWidth
+		public GridLength ColumnOneWidth
 		{
-			get { return Settings.Instance.ColumnOneWidth; }
+			get { return new GridLength(Settings.Instance.ColumnOneWidth, GridUnitType.Pixel); }
 			set
 			{
-				Settings.Instance.ColumnOneWidth = value;
+				Settings.Instance.ColumnOneWidth = value.Value;
 				RaisePropertyChanged("ColumnOneWidth");
 			}
 		}
-		public double ColumnTwoWidth
+		public GridLength ColumnTwoWidth
 		{
-			get { return Settings.Instance.ColumnTwoWidth; }
+			get { return new GridLength(Settings.Instance.ColumnTwoWidth, GridUnitType.Pixel); }
 			set
 			{
-				Settings.Instance.ColumnTwoWidth = value;
-				RaisePropertyChanged("ColumnOneWidth");
+				Settings.Instance.ColumnTwoWidth = value.Value;
+				RaisePropertyChanged("ColumnTwoWidth");
+			}
+		}
+		public GridLength ColumnRepoViewWidth
+		{
+			get { return new GridLength(Settings.Instance.ColumnRepoViewWidth, GridUnitType.Star); }
+			set
+			{
+				Settings.Instance.ColumnRepoViewWidth = value.Value;
+				RaisePropertyChanged("ColumnRepoViewWidth");
+			}
+		}
+		public GridLength ColumnResultViewWidth
+		{
+			get { return new GridLength(Settings.Instance.ColumnResultViewWidth, GridUnitType.Star); }
+			set
+			{
+				Settings.Instance.ColumnResultViewWidth = value.Value;
+				RaisePropertyChanged("ColumnResultViewWidth");
+			}
+		}
+		public GridLength ColumnTextViewer
+		{
+			get { return new GridLength(Settings.Instance.ColumnTextViewer, GridUnitType.Star); }
+			set
+			{
+				Settings.Instance.ColumnTextViewer = value.Value;
+				RaisePropertyChanged("ColumnTextViewer");
+			}
+		}
+		public WindowState WindowState
+		{
+			get { return Settings.Instance.WindowIsMaximized ? WindowState.Maximized : WindowState.Normal; }
+			set
+			{
+				Settings.Instance.WindowIsMaximized = value == WindowState.Maximized;
+				RaisePropertyChanged("WindowIsMaximized");
 			}
 		}
 
