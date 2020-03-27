@@ -42,43 +42,37 @@ namespace SVNHistorySearcher.Models
 			SearchToRevision = new SvnRevision(SvnRevisionType.Head);
 		}
 
+
 		public int GetHashCodeReloadRelevant()
 		{
-			int result = 11;
-			if (Files != null)
-			{
-				foreach (var f in Files)
-				{
-					result += f.GetHashCode();
-				}
-			}
-			if (Authors != null)
-			{
-				foreach (var f in Authors)
-				{
-					result += f.GetHashCode();
-				}
-			}
-			result += 1 * (SearchFromRevision != null ? SearchFromRevision.GetHashCode() : 1);
-			result += 2 * (SearchToRevision != null ? SearchToRevision.GetHashCode() : 1);
-			result += 3 * (TreeRevision != null ? TreeRevision.GetHashCode() : 1);
-			result += 5 * (Repository != null ? Repository.GetHashCode() : 1);
-			result += 7 * (FilenameSubstring != null ? FilenameSubstring.GetHashCode() : 1);
-			result += 11 * (SearchInContent.GetHashCode() + 1);
-			result += 13 * (StopOnCopy.GetHashCode() + 1);
-			result += 17 * (ExcludeAuthors.GetHashCode() + 1);
-			return result;
-		}
+			var hashCode = -420364669;
 
+			int hcFiles = 0;
+			int hcAuthors = 0;
+			Files.ForEach(s => hcFiles += s.GetHashCode());
+			Files.ForEach(s => hcAuthors += s.GetHashCode());
+
+			hashCode = hashCode * -1521134295 + hcFiles;
+			hashCode = hashCode * -1521134295 + hcAuthors;
+			hashCode = hashCode * -1521134295 + EqualityComparer<SvnRevision>.Default.GetHashCode(SearchFromRevision);
+			hashCode = hashCode * -1521134295 + EqualityComparer<SvnRevision>.Default.GetHashCode(SearchToRevision);
+			hashCode = hashCode * -1521134295 + TreeRevision.GetHashCode();
+			hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Repository);
+			hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(FilenameSubstring);
+			hashCode = hashCode * -1521134295 + SearchInContent.GetHashCode();
+			hashCode = hashCode * -1521134295 + StopOnCopy.GetHashCode();
+			hashCode = hashCode * -1521134295 + ExcludeAuthors.GetHashCode();
+			return hashCode;
+		}
 
 		public override int GetHashCode()
 		{
-			int result = GetHashCodeReloadRelevant();
-			result += 19 * (Text != null ? Text.GetHashCode() : 1);
-			result += 23 * (CaseSensitive.GetHashCode() + 1);
-			result += 29 * (SearchInRenames.GetHashCode() + 1);
-			result += 31 * (UseRegex.GetHashCode() + 1);
-			return result;
+			var hashCode = GetHashCodeReloadRelevant();
+			hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Text);
+			hashCode = hashCode * -1521134295 + CaseSensitive.GetHashCode();
+			hashCode = hashCode * -1521134295 + UseRegex.GetHashCode();
+			hashCode = hashCode * -1521134295 + SearchInRenames.GetHashCode();
+			return hashCode;
 		}
 
 		public SearchOptions DeepCopy() {
