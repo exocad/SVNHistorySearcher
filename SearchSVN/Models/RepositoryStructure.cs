@@ -321,10 +321,19 @@ namespace SVNHistorySearcher.Models
 
 				foreach (var c in previousNode.Children)
 				{
-					if (c.AddRevision <= previousRevision && (!c.DeleteRevision.HasValue || previousRevision < c.DeleteRevision))
+					if (c.ExistsAtRevision(previousRevision))
 					{
+						string relpath;
 
-						string relpath = c.Path.Substring(previousNode.Path.Length);
+						if (previousNode.Path == "")
+						{
+							relpath = "/" + c.Path;
+						}
+						else
+						{
+							relpath = c.Path.Substring(previousNode.Path.Length);
+						}
+						
 						string newPath = path + relpath;
 
 						AddCopy(newPath, c, currentNode, currentRevision, previousRevision, ref filesCopiedThisRevision);
