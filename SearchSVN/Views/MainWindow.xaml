@@ -28,7 +28,7 @@
                 </DataTemplate>
             </ComboBox.ItemTemplate>
         </ComboBox>
-        <Button Command="{Binding ButtonChangeRepository}" Content="Change Repository" HorizontalAlignment="Right" VerticalAlignment="Top" Width="108" Margin="0,10,10,0" Grid.Column="1" Height="20"/>
+        <Button Command="{Binding ButtonChangeRepository}" Content="Load Repository" HorizontalAlignment="Right" VerticalAlignment="Top" Width="108" Margin="0,10,10,0" Grid.Column="1" Height="20"/>
 
         <Label Content="Find what?" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top" Width="76" Height="25" Grid.Column="0"/>
         <TextBox Text="{Binding SearchString}" KeyDown="SearchTextOnKeyDownHandler" Height="23" Margin="86,43,90,0" TextWrapping="Wrap" VerticalAlignment="Top"  Grid.Column="0" Grid.ColumnSpan="2"/>
@@ -49,7 +49,7 @@
                 <CheckBox Content="Use regular expressions" IsChecked="{Binding UseRegex}"/>
                 <CheckBox Content="Stop on copy/rename" IsChecked="{Binding StopOnCopy}" ToolTip="Choosing this option limits the content search to modifications made to selected files since they have their current names."/>
                 <CheckBox Content="Search in filenames" IsChecked="{Binding SearchInRenames}"/>
-                <CheckBox Content="Search in content changes" IsChecked="{Binding SearchInContent}"/>
+                <CheckBox Content="Search in diffs" IsChecked="{Binding SearchInContent}"/>
             </StackPanel>
         </GroupBox>
 
