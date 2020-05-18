@@ -115,5 +115,10 @@ namespace SVNHistorySearcher
 				ButtonLoadRepository.Command.Execute(null);
 			}
 		}
+
+		private void PreviewGrid_Loaded(object sender, RoutedEventArgs e)
+		{
+			diffInfoRow.MinHeight = diffInfoRow.ActualHeight;
+		}
 	}
 }
