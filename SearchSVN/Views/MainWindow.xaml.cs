@@ -107,5 +107,13 @@ namespace SVNHistorySearcher
 				}
 			}
 		}
+
+		private void RepoUrlBox_KeyDown(object sender, KeyEventArgs e)
+		{
+			if(e.Key == Key.Enter)
+			{
+				ButtonLoadRepository.Command.Execute(null);
+			}
+		}
 	}
 }
