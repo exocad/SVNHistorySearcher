@@ -726,7 +726,14 @@ namespace SVNHistorySearcher.Models
 					if (i > 0)
 					{
 						i--;
-						revA = li[i].DeleteRevision.Value;
+						if (li[i].DeleteRevision.HasValue)
+						{
+							revA = li[i].DeleteRevision.Value;
+						}
+						else
+						{
+							Progress.DebugLog("DeleteRevision is null for {0}@{1}", li[i].Path, li[i].AddRevision);
+						}
 					}
 					break;
 				}
