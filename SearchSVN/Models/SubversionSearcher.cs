@@ -1606,6 +1606,10 @@ namespace SVNHistorySearcher.Models
 						Progress.DebugLog("retrying");
 						hasToReload = true;
 					}
+					else
+					{
+						break;
+					}
 				}
 			}
 
