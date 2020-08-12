@@ -1120,6 +1120,7 @@ namespace SVNHistorySearcher.ViewModels
 
 				if (results == null)
 				{
+					Progress.Log("Search failed");
 					return; // search failed
 				}
 
