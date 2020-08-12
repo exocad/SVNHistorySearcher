@@ -606,6 +606,7 @@ namespace SVNHistorySearcher.Models
 				// checks if there are still fetching threads and start a new one if one died somehow
 				while (diffQueue.Count > 0)
 				{
+					Progress.Log(String.Format("Fetching {0} unified diffs from subversion server...", diffQueue != null ? diffQueue.Count : 0));
 					Thread.Sleep(500);
 
 					bool hasWorkers = false;
