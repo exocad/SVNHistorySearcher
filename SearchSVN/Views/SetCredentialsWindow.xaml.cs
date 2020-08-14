@@ -23,30 +23,39 @@ namespace SVNHistorySearcher.Views
 	{
 		MainViewModel mvm;
 
-		Action OnRespond;
+		Action<(bool cancelled, string username, string password)> OnRespond;
 
-		public SetCredentialsWindow(MainViewModel mvm, string username, string password, Action onRespond = null)
+		bool clickedOk = false;
+
+		public SetCredentialsWindow(MainViewModel mvm, string initialUsername, string initialPassword, Action<(bool cancelled, string username, string password)> onRespond = null)
 		{
 			InitializeComponent();
+
+			this.Closing += SetCredentialsWindow_Closing;
 
 			this.mvm = mvm;
 			this.OnRespond = onRespond;
 
-			TB_username.Text = username;
-			TB_password.Password = password;
+			TB_username.Text = initialUsername;
+			TB_password.Password = initialPassword;
 
 			TB_username.Focus();
 		}
 
+		private void SetCredentialsWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+		{
+			OnRespond?.Invoke((!clickedOk, TB_username.Text, TB_password.Password));
+		}
+
 		private void ButtonCancel_Click(object sender, RoutedEventArgs e)
 		{
-			mvm.SetCredentialsWindow = null;
 			this.Close();
 		}
 
 		private void ButtonOk_Click(object sender, RoutedEventArgs e)
 		{
-			mvm.CredentialsWindowResponse(this, TB_username.Text, TB_password.Password, OnRespond);
+			clickedOk = true;
+			this.Close();
 		}
 
 		private void TB_password_GotFocus(object sender, KeyboardFocusChangedEventArgs e)

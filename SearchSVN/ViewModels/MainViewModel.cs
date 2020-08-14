@@ -611,7 +611,7 @@ namespace SVNHistorySearcher.ViewModels
 			{
 				return Settings.Instance.RepositoryUrl;
 			}
-			private set
+			set
 			{
 				Settings.Instance.RepositoryUrl = value;
 				RaisePropertyChanged("RepositoryUrl");
@@ -881,9 +881,21 @@ namespace SVNHistorySearcher.ViewModels
 						{
 							Progress.Log("Wrong credentials");
 							var mrse = new ManualResetEvent(false);
-							App.Current.Dispatcher.Invoke(() => { OpenCredentialsWindow(() => { mrse.Set(); }); });
+
+							bool cancelled = false;
+
+							App.Current.Dispatcher.Invoke(() => { 
+								OpenCredentialsWindow(res => {
+									HandleCredentialsWindowResponse(res);
+									cancelled = res.cancelled;
+									mrse.Set(); 
+								}); 
+							});
 
 							mrse.WaitOne();
+
+							if (cancelled)
+								break;
 
 							info = SubversionSearcher.CheckCredentials(repoUrl, Settings.Instance.Username, Settings.Instance.Password);
 						}
@@ -940,40 +952,7 @@ namespace SVNHistorySearcher.ViewModels
 				}
 			}
 
-			if (!currentlyLoadingRepository.CompareAndSet(true, false))
-			{
-				// should never happen
-			}
-		}
-
-
-		/// <summary>
-		/// Callback method that the credentials window uses after the user has clicked OK on it
-		/// </summary>
-		/// <param name="crw">instance of credentials window</param>
-		/// <param name="username">typed in username</param>
-		/// <param name="password">typed in password</param>
-		/// <param name="onRespond">will be called at the end of this method</param>
-		public void CredentialsWindowResponse(SetCredentialsWindow crw, string username, string password, Action onRespond = null)
-		{
-			crw.Close();
-			SetCredentialsWindow = null;
-			if (username.Length == 0)
-			{
-				Settings.Instance.Username = "";
-				Settings.Instance.Password = "";
-			}
-			else if (username != Settings.Instance.Username || password != Settings.Instance.Password)
-			{
-				Settings.Instance.Username = username;
-				Settings.Instance.Password = password;
-			}
-
-			Settings.Instance.Username = Settings.Instance.Username;
-			Settings.Instance.Password = Settings.Instance.Password;
-
-			if (onRespond != null)
-				onRespond();
+			currentlyLoadingRepository.Set(false);
 		}
 
 
@@ -1043,7 +1022,7 @@ namespace SVNHistorySearcher.ViewModels
 		}
 
 
-		void OpenCredentialsWindow(Action onRespond = null)
+		void OpenCredentialsWindow(Action<(bool cancelled, string username, string password)> onRespond = null)
 		{
 			if (SetCredentialsWindow != null && SetCredentialsWindow.IsActive == false)
 			{
@@ -1055,6 +1034,32 @@ namespace SVNHistorySearcher.ViewModels
 				SetCredentialsWindow = new SetCredentialsWindow(this, "", "", onRespond);
 				SetCredentialsWindow.DataContext = this;
 				SetCredentialsWindow.Show();
+			}
+		}
+
+
+		/// <summary>
+		/// Callback method that the credentials window uses after the user has clicked OK on it
+		/// </summary>
+		public void HandleCredentialsWindowResponse((bool cancelled, string username, string password) response)
+		{
+			SetCredentialsWindow = null;
+
+			if(!response.cancelled)
+			{
+				if (response.username.Length == 0)
+				{
+					Settings.Instance.Username = "";
+					Settings.Instance.Password = "";
+				}
+				else if (response.username != Settings.Instance.Username || response.password != Settings.Instance.Password)
+				{
+					Settings.Instance.Username = response.username;
+					Settings.Instance.Password = response.password;
+				}
+
+				Settings.Instance.Username = Settings.Instance.Username;
+				Settings.Instance.Password = Settings.Instance.Password;
 			}
 		}
 
