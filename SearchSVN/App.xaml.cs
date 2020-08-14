@@ -244,7 +244,7 @@ namespace SVNHistorySearcher
 
             MainWindow mainWindow = new MainWindow();
 
-			MainViewModel = new MainViewModel();
+			MainViewModel = new MainViewModel(mainWindow);
 			mainWindow.DataContext = MainViewModel;
 			mainWindow.Show();
 			MainViewModel.Initialize();

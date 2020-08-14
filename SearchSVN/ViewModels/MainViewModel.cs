@@ -238,6 +238,8 @@ namespace SVNHistorySearcher.ViewModels
 		public SetCredentialsWindow SetCredentialsWindow;
 		Task searchTask;
 
+		private Window MainWindow;
+
 		AtomicBoolean currentlyLoadingRepository = new AtomicBoolean(false);
 
 		List<string> previousNodeList = null;
@@ -984,9 +986,9 @@ namespace SVNHistorySearcher.ViewModels
 			}
 		}
 
-		public MainViewModel()
+		public MainViewModel(Window mainWindow)
 		{
-
+			this.MainWindow = mainWindow;
 		}
 
 		~MainViewModel()
@@ -1032,6 +1034,7 @@ namespace SVNHistorySearcher.ViewModels
 			if (SetCredentialsWindow == null)
 			{
 				SetCredentialsWindow = new SetCredentialsWindow(this, "", "", onRespond);
+				SetCredentialsWindow.Owner = this.MainWindow;
 				SetCredentialsWindow.DataContext = this;
 				SetCredentialsWindow.Show();
 			}
