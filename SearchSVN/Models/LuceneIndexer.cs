@@ -133,7 +133,7 @@ namespace SVNHistorySearcher.Models
 								text = GetDiff(diff.Item1, out docId);
 							}
 
-							if (text == null || text == "")
+							if (text == null)
 							{
 								Progress.DebugLog("Text is null {0}, docId: {1}", diff.Item1, diff.Item2);
 								notFoundPrep.Add(diff.Item1);

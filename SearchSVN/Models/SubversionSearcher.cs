@@ -756,7 +756,12 @@ namespace SVNHistorySearcher.Models
 									if (diff.NodeAtTime != null && !diff.NodeAtTime.IsFile)
 									{
 										TagFolder(diff);
-									} // something went wrong. should be catched on integrity checking before text search
+									}
+									else
+									{
+										// propery change in file -> add empty diff to db
+										indexer.AddToIndex(diff, new MemoryStream(), null);
+									}
 								}
 								else
 								{
