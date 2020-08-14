@@ -10,7 +10,7 @@ The tool "SVNHistorySearcher" was developed in the company exocad GmbH by the au
 * The tool can will build up its own search structure database, such that many fast queries can be done after this initial database build-up phase is finished. 
 
 ## Instruction  
-1. Select Repository. Click "Change Repository"  
+1. Select Repository. Click "Load Repository"  
 
 2. Put the string you want to search for in the "Find what?" field  
 
@@ -37,7 +37,7 @@ The tool "SVNHistorySearcher" was developed in the company exocad GmbH by the au
 **NOTE:** In order to search your repository for all files with a certain name you have to put an \* in the Filename field.  
 **NOTE:** The "stop on copy" option is ignored here because it doesn't make sense here.  
 
-**Search in content changes** If checked: Will in diffs of selected files  
+**Search in diffs** If checked: Will in diffs of selected files  
    
 **Authors**  Limits the search to commits of certain authors. **Exclude** Excludes commits certain authors have made from search.  
 
