@@ -114,10 +114,8 @@ namespace SVNHistorySearcher.Models
 			DeleteRevision = revision;
 			foreach (NodeAtTime n in Children)
 			{
-				if (n.DeleteRevision > revision)
-				{
+				if (!n.DeleteRevision.HasValue)
 					n.SetDeleted(revision);
-				}
 			}
 		}
 
@@ -172,7 +170,7 @@ namespace SVNHistorySearcher.Models
 		/// <returns>True if it exists. False if not.</returns>
 		public bool ExistsAtRevision(long revision)
 		{
-			return revision >= AddRevision && (!DeleteRevision.HasValue || revision < DeleteRevision);
+			return revision >= AddRevision && (!DeleteRevision.HasValue || revision < DeleteRevision.Value);
 		}
 	}
 }
