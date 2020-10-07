@@ -35,7 +35,7 @@ namespace SVNHistorySearcher.Models
 		public int RepositoryHistoryLength { get; set; }
 		public List<string> RecentRepositories { get; set; }
 		public string TortoisePath { get; set; }
-		public int MaxThreads { get; set; }
+		public int MaxFetchingThreads { get; set; }
 		public List<string> FileExtensionBlacklist { get; set; }
 		public SearchOptions PreviousSearchOptions { get; set; }
 		public double WindowHeight { get; set; }

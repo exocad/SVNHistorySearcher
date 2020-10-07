@@ -298,7 +298,7 @@ namespace SVNHistorySearcher.Models
 		/// <exception cref="System.Exception"></exception>
 		public SubversionSearcher(string rawUrl, string username, string password)
 		{
-			maxThreads = Settings.Instance.MaxThreads;
+			maxThreads = Settings.Instance.MaxFetchingThreads;
 
 			runningProcesses = new ConcurrentDictionary<Process, byte>();
 
