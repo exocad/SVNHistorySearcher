@@ -235,7 +235,7 @@
                         <Label Content="Author" Grid.Column="0"/>
                         <TextBox Text="{Binding FilePreview.Author, Mode=OneWay}" IsTabStop="False" IsReadOnly="True" Grid.Column="1"/>
                         <Label Content="Msg" Grid.Column="2"/>
-                        <TextBox Text="{Binding FilePreview.Message, Mode=OneWay}" IsTabStop="False" TextWrapping="Wrap" Grid.Column="3" Grid.RowSpan="2"/>
+                        <TextBox Text="{Binding FilePreview.Message, Mode=OneWay}" IsTabStop="False" IsReadOnly="True" TextWrapping="Wrap" Grid.Column="3" Grid.RowSpan="2"/>
                         <Label Content="Date" Grid.Column="4"/>
                         <TextBox Text="{Binding FilePreview.Date, Mode=OneWay}" IsTabStop="False" IsReadOnly="True" Grid.Column="5"/>
                     </Grid>
