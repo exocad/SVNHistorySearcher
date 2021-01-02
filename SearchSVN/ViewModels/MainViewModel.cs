@@ -1207,6 +1207,12 @@ namespace SVNHistorySearcher.ViewModels
 					Progress.Log("Could not open file. see error.log");
 					Progress.ErrorLog(ex);
 				}
+			} 
+			else
+			{
+				var args = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "shell32.dll");
+				args += ",OpenAs_RunDLL " + filePath;
+				Process.Start("rundll32.exe", args);
 			}
 		}
 

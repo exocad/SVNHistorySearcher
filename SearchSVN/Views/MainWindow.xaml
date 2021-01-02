@@ -133,7 +133,7 @@
                                         <StackPanel.ContextMenu>
                                             <ContextMenu>
                                                 <MenuItem Header="Open" Command="{Binding OpenFile}"/>
-                                                <!--<MenuItem Header="Open with..." Command="{Binding OpenFileWith}"/>-->
+                                                <MenuItem Header="Open with..." Command="{Binding OpenFileWith}"/>
                                                 <MenuItem Header="Download and open in explorer" Command="{Binding OpenParentInExplorer}"/>
                                                 <MenuItem Header="Set as Repository overview root" Command="{Binding SetAsTreeRoot}" IsEnabled="{Binding IsFolder}"/>
                                             </ContextMenu>
