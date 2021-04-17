@@ -813,7 +813,7 @@ namespace SVNHistorySearcher.Models
 			{
 				foreach (CommitInfo r in Revisions.Values)
 				{
-					if (r.Author != null && !(searchOptions.Authors.Contains(r.Author.ToUpper()) ^ searchOptions.ExcludeAuthors))
+					if (r.Author != null && !(searchOptions.Authors.Contains(r.Author) ^ searchOptions.ExcludeAuthors))
 					{
 						ignoreRevisions.Add(r.Revision);
 					}
