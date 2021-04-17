@@ -100,7 +100,7 @@
 
                     <Label Content="Authors" Grid.Column="0"/>
                     <TextBox TextWrapping="Wrap" Grid.Column="1"  Text="{Binding AuthorsString}" ToolTip="Type in Authors, split by a comma. ( au, tho, rs )"/>
-                    <CheckBox Content="Exclude" Margin="5" VerticalAlignment="Center" Grid.Column="2" IsChecked="{Binding ExcludeAuthors}"/>
+                    <CheckBox Content="Exclude" ToolTip="If checked: Excludes commits of specified authors" Margin="5" VerticalAlignment="Center" Grid.Column="2" IsChecked="{Binding ExcludeAuthors}"/>
 
                     <Label Content="Filename" Grid.Row="2"/>
                     <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" TextWrapping="Wrap" Text="{Binding FilenameRegex}" ToolTip="Type &quot;config.xml&quot; to search in all files that contain &quot;config.xml&quot; in name. You can type in &quot;*&quot; to search in all files."/>
