@@ -16,7 +16,7 @@ namespace SVNHistorySearcher.Models
 		public long Revision { get { return 0; } }
 		public string Author { get { return ""; } }
 		public string Message { get { return ""; } }
-		public DateTime? Date { get { return DateTime.Now; } }
+		public DateTime? Date { get { return null; } }
 		public string Content
 		{
 			get
